@@ -1,0 +1,645 @@
+<!--
+  JourneyKit legacy prototype.
+  This file was migrated from flyai-flipbook-lab/web/chat-demo2.html.
+  It is kept only as an interaction reference and is not the final JourneyKit style.
+-->
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#faf6ec" />
+    <title>JourneyKit Legacy Prototype · 点对点综合交通方案</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="stage">
+      <aside class="stage-margin" aria-hidden="true">
+        <span class="seal">JOURNEYKIT LEGACY № 02</span>
+        <span class="folio">FOLIO 300426</span>
+      </aside>
+
+      <section class="phone" aria-label="点对点综合交通方案 demo（浅色版）">
+        <div class="phone-body">
+          <header class="topbar">
+            <div class="statusbar">
+              <span>9:41</span>
+              <span class="status-icons" aria-hidden="true"><i></i><i></i><i></i></span>
+            </div>
+            <div class="navrow">
+              <button class="icon-btn" aria-label="菜单"><span></span><span></span><span></span></button>
+              <div class="agent-chip">
+                <span class="agent-dot" aria-hidden="true"></span>
+                JourneyKit · 交通顾问
+              </div>
+              <button class="icon-btn round" aria-label="更多">⋯</button>
+            </div>
+          </header>
+
+          <section class="scroll" id="scroll">
+            <div class="user-bubble">
+              我从唐山去巴厘岛，帮我规划一条门到门综合交通路线
+              <em>04 · 30 · 2026</em>
+            </div>
+
+            <div class="assistant-head">
+              <span class="bot-mark" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+                  <path d="M4 20 Q14 6 28 10 L26 14 Q18 10 10 18 Z" fill="currentColor" />
+                  <circle cx="22" cy="12" r="1.4" fill="#faf6ec" />
+                </svg>
+              </span>
+              <div class="bot-meta">
+                <strong>JourneyKit Legacy Prototype</strong>
+                <span>Plan 07 · TSL → DPS · 综合打包方案</span>
+              </div>
+            </div>
+
+            <!-- ===== HERO (now as a card) ===== -->
+            <article class="hero-card">
+              <header class="hero-card-head">
+                <span class="hero-kicker">已为你打包好这条路线</span>
+                <span class="hero-badge">JourneyKit · 旧方案原型</span>
+              </header>
+
+              <h1 class="hero-title">
+                从<b>唐山的家</b>
+                <span class="hero-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 120 20" width="120" height="20" preserveAspectRatio="none">
+                    <path d="M2 14 Q30 4 60 10 T118 6" fill="none" stroke="#c07a1a" stroke-width="1.4" stroke-linecap="round" />
+                    <path d="M108 2 L118 6 L110 12" fill="none" stroke="#c07a1a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+                一路到<em>巴厘岛酒店</em>
+              </h1>
+
+              <p class="hero-lede">
+                我把这趟路拆成 <b>7 小段</b>：出家门打车、坐高铁、换地铁进机场、飞新加坡、在樟宜换个航站楼、再飞巴厘岛、落地打车到酒店。每一段都帮你想好了衔接。
+              </p>
+
+              <ol class="hero-spine" aria-label="全程时间轴">
+                <li>
+                  <b>早上出发</b>
+                  <time>05:20 · 唐山的家</time>
+                </li>
+                <li>
+                  <b>中午飞走</b>
+                  <time>08:55 · 北京首都机场</time>
+                </li>
+                <li>
+                  <b>傍晚换乘</b>
+                  <time>15:05 · 新加坡樟宜</time>
+                </li>
+                <li class="end">
+                  <b>当晚到店</b>
+                  <time>21:00 · 巴厘岛酒店</time>
+                </li>
+              </ol>
+
+              <dl class="hero-stats" aria-label="核心指标">
+                <div>
+                  <dt>全程用时</dt>
+                  <dd>约 15 小时</dd>
+                </div>
+                <div>
+                  <dt>新加坡转机留</dt>
+                  <dd>2 小时 05 分</dd>
+                </div>
+                <div>
+                  <dt>落地巴厘岛</dt>
+                  <dd>当地傍晚 8 点</dd>
+                </div>
+              </dl>
+            </article>
+
+            <!-- ===== INSIGHTS ===== -->
+            <section class="insights" aria-label="这趟路上最要紧的三件事">
+              <header class="section-bar">
+                <span class="bar-kicker">出发前先记住这三件事</span>
+                <span class="bar-rule" aria-hidden="true"></span>
+                <span class="bar-label">共 3 件</span>
+              </header>
+              <ol class="insights-list">
+                <li>
+                  <span class="insight-num">01</span>
+                  <div>
+                    <strong>早上到北京后，别在站里逛</strong>
+                    <p>高铁 <em>早上 6:44</em> 到朝阳站，紧接着坐地铁去首都机场，<em>7:38</em> 进 T3 航站楼。距离起飞还有 <em>1 小时 17 分</em>，够用但不宽裕，<b>值机→安检→登机口一路走，不要折返买东西</b>。</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="insight-num">02</span>
+                  <div>
+                    <strong>新加坡停留 2 小时，是这趟最需要判断的一段</strong>
+                    <p>前一班飞机停 <em>樟宜 T1</em>，下一班要从 <em>T3</em> 起飞。落地后先别喝咖啡——<b>先看行李小票上最后的三字代码是不是"DPS"</b>（如果是，行李直接飞到巴厘岛，你不用管；如果不是，要去 Transfer Desk 问）。然后跟着"Transfer / 转机"指示走，不要跟着人群去入境。这部分我做了可点击的交互面板，待会儿点那张橙色大卡就能展开。</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="insight-num">03</span>
+                  <div>
+                    <strong>到巴厘岛已经天黑了，打车就行，别挤公共交通</strong>
+                    <p><em>晚上 8 点</em> 落地，去金巴兰的 RIMBA 酒店大概 <em>12 公里 / 30 分钟</em>。<b>提前在手机装好 Gojek 或 Grab</b>，落地再叫；或者用机场门口的 Bluebird（蓝鸟出租车，岛上最稳的品牌）。夜航 + 时差，别省这点打车钱。</p>
+                  </div>
+                </li>
+              </ol>
+            </section>
+
+            <!-- ===== JOURNEY TIMELINE ===== -->
+            <section class="journey" aria-label="逐段路线详情">
+              <header class="section-bar">
+                <span class="bar-kicker">按出发顺序，一段段来</span>
+                <span class="bar-rule" aria-hidden="true"></span>
+                <span class="bar-label">共 7 段</span>
+              </header>
+
+              <div class="timeline">
+                <!-- 1 · small · taxi -->
+                <article class="leg leg-small" data-index="01">
+                  <div class="leg-rail"><span class="node" data-kind="small">①</span></div>
+                  <div class="leg-card" data-expandable="true">
+                    <button class="leg-header" type="button" aria-expanded="false">
+                      <div class="leg-header-main">
+                        <div class="leg-tags">
+                          <span class="tag tag-mode small">小交通 · TAXI</span>
+                          <span class="tag tag-time">05:20 — 05:30 · 10m</span>
+                        </div>
+                        <h3>凤凰御庭小区 <span class="to" aria-hidden="true">→</span> 承德南站</h3>
+                      </div>
+                      <span class="chev" aria-hidden="true"></span>
+                    </button>
+                    <div class="leg-summary">
+                      <figure class="minimap" aria-hidden="true">
+                        <svg class="minimap-svg" viewBox="0 0 200 80" preserveAspectRatio="none">
+                          <defs>
+                            <pattern id="contour1" width="14" height="14" patternUnits="userSpaceOnUse">
+                              <path d="M0 14 Q7 8 14 14" fill="none" stroke="rgba(74,107,93,0.22)" stroke-width="0.8" />
+                            </pattern>
+                          </defs>
+                          <rect width="200" height="80" fill="url(#contour1)" />
+                          <path d="M16 58 Q60 36 100 42 T188 22" fill="none" stroke="#4a6b5d" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="0 0" />
+                          <circle cx="16" cy="58" r="4" fill="#4a6b5d" />
+                          <circle cx="188" cy="22" r="5" fill="#c07a1a" />
+                        </svg>
+                        <figcaption>
+                          <span>凤凰御庭</span>
+                          <span class="dash"></span>
+                          <span>承德南站</span>
+                        </figcaption>
+                      </figure>
+                      <p class="summary-line">目标是稳定赶上 <b>05:52</b> 的 G4368。建议把上车点和行李装车时间算进去。</p>
+                    </div>
+                    <div class="leg-detail" role="region">
+                      <div class="leg-detail-inner">
+                        <h4>展开详情 · 打车建议</h4>
+                        <div class="detail-cols">
+                          <dl class="detail-kv">
+                            <div><dt>距离</dt><dd>约 3.8 km</dd></div>
+                            <div><dt>路径</dt><dd>御庭路 → 学院路 → 承德南站北广场</dd></div>
+                            <div><dt>预计费用</dt><dd>¥ 18 — 26</dd></div>
+                            <div><dt>叫车平台</dt><dd>滴滴 · 高德 · 花小猪</dd></div>
+                          </dl>
+                          <ul class="detail-tips">
+                            <li><em>05:05</em> 前发车，避开出租上下交班</li>
+                            <li>行李 3 件以内 · 普通轿车足够</li>
+                            <li>北广场落客区步行到进站 3 分钟</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- 2 · big · rail -->
+                <article class="leg leg-big" data-index="02">
+                  <div class="leg-rail"><span class="node" data-kind="big">②</span></div>
+                  <div class="leg-card" data-expandable="true">
+                    <button class="leg-header" type="button" aria-expanded="false">
+                      <div class="leg-header-main">
+                        <div class="leg-tags">
+                          <span class="tag tag-mode big">大交通 · RAIL</span>
+                          <span class="tag tag-time">G4368 · 52m · 二等座</span>
+                        </div>
+                        <div class="big-ticket">
+                          <div class="bt-col">
+                            <time>05:52</time>
+                            <small>TSL · 承德南</small>
+                          </div>
+                          <div class="bt-arc" aria-hidden="true">
+                            <span class="bt-duration">52 MIN</span>
+                            <svg viewBox="0 0 80 20" width="100%" height="20" preserveAspectRatio="none">
+                              <path d="M2 14 Q40 2 78 14" fill="none" stroke="#c07a1a" stroke-width="1.4" stroke-linecap="round" stroke-dasharray="3 3" />
+                            </svg>
+                          </div>
+                          <div class="bt-col end">
+                            <time>06:44</time>
+                            <small>BJC · 朝阳</small>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="chev" aria-hidden="true"></span>
+                    </button>
+                    <div class="leg-summary">
+                      <p class="summary-line">第一段主干交通，抵达后不要在站内停留，直接进入机场接驳节奏。</p>
+                    </div>
+                    <div class="leg-detail" role="region">
+                      <div class="leg-detail-inner">
+                        <h4>展开详情 · 车次 · 座位 · 站内</h4>
+                        <div class="detail-cols">
+                          <dl class="detail-kv">
+                            <div><dt>车型</dt><dd>CR400AF · 复兴号</dd></div>
+                            <div><dt>列车长度</dt><dd>16 节编组</dd></div>
+                            <div><dt>推荐车厢</dt><dd>第 4 车厢 · 靠前 · 出站近</dd></div>
+                            <div><dt>出站口</dt><dd>北京朝阳 · 东北出口 · 接地铁 3 号线</dd></div>
+                            <div><dt>票价（参考）</dt><dd>¥ 155 二等座</dd></div>
+                          </dl>
+                          <ul class="detail-tips">
+                            <li>建议 <em>05:35</em> 前到站，走快速进站通道</li>
+                            <li>下车不等人流，直接向东北出口走</li>
+                            <li>06:50 之前能下到 3 号线朝阳站</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- 3 · small · metro chain -->
+                <article class="leg leg-small" data-index="03">
+                  <div class="leg-rail"><span class="node" data-kind="small">③</span></div>
+                  <div class="leg-card" data-expandable="true">
+                    <button class="leg-header" type="button" aria-expanded="false">
+                      <div class="leg-header-main">
+                        <div class="leg-tags">
+                          <span class="tag tag-mode small">小交通 · METRO</span>
+                          <span class="tag tag-time">06:50 — 07:38 · 48m</span>
+                        </div>
+                        <h3>北京朝阳站 <span class="to" aria-hidden="true">→</span> 首都机场 T3</h3>
+                      </div>
+                      <span class="chev" aria-hidden="true"></span>
+                    </button>
+                    <div class="leg-summary">
+                      <ol class="chain">
+                        <li><b>朝阳站</b><span>3号线</span></li>
+                        <li><b>团结湖</b><span>换 10 号</span></li>
+                        <li><b>三元桥</b><span>换 机场线</span></li>
+                        <li><b>T3 北出口</b><span>到达</span></li>
+                      </ol>
+                    </div>
+                    <div class="leg-detail" role="region">
+                      <div class="leg-detail-inner">
+                        <h4>展开详情 · 逐段耗时 · 出口</h4>
+                        <ol class="chain-detail">
+                          <li>
+                            <span class="ch-time">06:50 → 07:04</span>
+                            <b>3 号线 · 朝阳站 → 团结湖</b>
+                            <em>约 14m · 地下换乘 3m</em>
+                          </li>
+                          <li>
+                            <span class="ch-time">07:07 → 07:19</span>
+                            <b>10 号线 · 团结湖 → 三元桥</b>
+                            <em>约 12m · 同站换乘 2m</em>
+                          </li>
+                          <li>
+                            <span class="ch-time">07:21 → 07:38</span>
+                            <b>机场线 · 三元桥 → T3</b>
+                            <em>约 17m · 抵达 T3 北</em>
+                          </li>
+                        </ol>
+                        <p class="buffer-note">到机场 <b>07:38</b>，距起飞 <b>08:55</b> 还有 <b>1h17</b>。值机 → 安检 → 登机口，一路走不要折返。</p>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- 4 · big · flight -->
+                <article class="leg leg-big" data-index="04">
+                  <div class="leg-rail"><span class="node" data-kind="big">④</span></div>
+                  <div class="leg-card" data-expandable="true">
+                    <button class="leg-header" type="button" aria-expanded="false">
+                      <div class="leg-header-main">
+                        <div class="leg-tags">
+                          <span class="tag tag-mode big">大交通 · FLIGHT</span>
+                          <span class="tag tag-time">SQ 805 · 6h10 · A350</span>
+                        </div>
+                        <div class="big-ticket">
+                          <div class="bt-col">
+                            <time>08:55</time>
+                            <small>PEK · T3</small>
+                          </div>
+                          <div class="bt-arc" aria-hidden="true">
+                            <span class="bt-duration">6H 10M</span>
+                            <svg viewBox="0 0 80 20" width="100%" height="20" preserveAspectRatio="none">
+                              <path d="M2 14 Q40 -2 78 14" fill="none" stroke="#c07a1a" stroke-width="1.4" stroke-linecap="round" />
+                              <text x="40" y="10" font-size="9" text-anchor="middle" fill="#c07a1a" font-family="JetBrains Mono">✈</text>
+                            </svg>
+                          </div>
+                          <div class="bt-col end">
+                            <time>15:05</time>
+                            <small>SIN · T1</small>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="chev" aria-hidden="true"></span>
+                    </button>
+                    <div class="leg-summary">
+                      <p class="summary-line">这段决定后续是否从容。落地后先看 <b>SV856</b> 的航站楼和登机口，再处理餐饮、休息。</p>
+                    </div>
+                    <div class="leg-detail" role="region">
+                      <div class="leg-detail-inner">
+                        <h4>展开详情 · 机型 · 座位 · 餐食</h4>
+                        <div class="detail-cols">
+                          <dl class="detail-kv">
+                            <div><dt>航空公司</dt><dd>新加坡航空 · SQ</dd></div>
+                            <div><dt>机型</dt><dd>Airbus A350-900 · 3-3-3</dd></div>
+                            <div><dt>推荐座位</dt><dd>42A / 42K · 后舱靠窗 · 下机快</dd></div>
+                            <div><dt>餐食</dt><dd>起飞后 1h · 亚洲热食 / 素食预订</dd></div>
+                            <div><dt>抵达</dt><dd>樟宜 T1 · D gate 区域概率高</dd></div>
+                          </dl>
+                          <ul class="detail-tips">
+                            <li>落地 <em>15:05</em>，下一段 SV856 是 <em>17:10</em> 从 T3</li>
+                            <li>落地立刻拿手机查 MyTransit 看 T3 登机口</li>
+                            <li>留 2h05 做换乘，行李/安检/登机三步走</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- 5 · FREE · click to FLIP-open top sheet -->
+                <article class="leg leg-free" data-index="05">
+                  <div class="leg-rail"><span class="node" data-kind="free">⑤</span></div>
+                  <div class="leg-card free-card">
+                    <button
+                      class="free-hero"
+                      id="openFreeFocus"
+                      type="button"
+                      aria-label="打开樟宜机场现场演示"
+                    >
+                      <div class="free-hero-media">
+                        <img
+                          id="freePreviewImage"
+                          src="../../public/assets/prototype-legacy/node_afa1d723e55448838acd7fcf14aba732.jpg"
+                          alt="樟宜机场 T1→T3 换乘俯视图"
+                        />
+                        <span class="free-portal" aria-hidden="true"></span>
+                        <div class="free-media-top">
+                          <span class="tag tag-mode free">自由交通 · 现场判断</span>
+                          <span class="free-stamp">樟宜 · 2 小时 05 分</span>
+                        </div>
+                        <span class="free-hint" aria-hidden="true">
+                          <span class="hint-ping" aria-hidden="true"></span>
+                          点开看现场演示
+                        </span>
+                      </div>
+                      <div class="free-panel">
+                        <div class="free-panel-head">
+                          <span class="panel-kicker">新加坡樟宜机场 · 这段我给你做了现场演示</span>
+                          <h3>
+                            到新加坡后，跟着我一步步换到 <em>T3</em>
+                            <small>点一下这张图，我把整段演示放大给你看</small>
+                          </h3>
+                        </div>
+                        <p class="free-panel-lede">
+                          这段自由时间只有 <b>2 小时 05 分</b>，别当成普通走路。点一下这张卡，<b>它会丝滑展开到顶部</b>变成一份现场讲解——点图上任意区域都会触发动画推进，跟着看一遍你就知道落地第一件事该做什么。
+                        </p>
+                        <span class="free-cta">
+                          <span class="cta-text">展开现场演示</span>
+                          <span class="cta-arrow" aria-hidden="true"></span>
+                        </span>
+                      </div>
+                    </button>
+                  </div>
+                </article>
+
+                <!-- 6 · big · flight 2 -->
+                <article class="leg leg-big" data-index="06">
+                  <div class="leg-rail"><span class="node" data-kind="big">⑥</span></div>
+                  <div class="leg-card" data-expandable="true">
+                    <button class="leg-header" type="button" aria-expanded="false">
+                      <div class="leg-header-main">
+                        <div class="leg-tags">
+                          <span class="tag tag-mode big">大交通 · FLIGHT</span>
+                          <span class="tag tag-time">SV 856 · 2h50 · 787</span>
+                        </div>
+                        <div class="big-ticket">
+                          <div class="bt-col">
+                            <time>17:10</time>
+                            <small>SIN · T3</small>
+                          </div>
+                          <div class="bt-arc" aria-hidden="true">
+                            <span class="bt-duration">2H 50M</span>
+                            <svg viewBox="0 0 80 20" width="100%" height="20" preserveAspectRatio="none">
+                              <path d="M2 14 Q40 -2 78 14" fill="none" stroke="#c07a1a" stroke-width="1.4" stroke-linecap="round" />
+                            </svg>
+                          </div>
+                          <div class="bt-col end">
+                            <time>20:00</time>
+                            <small>DPS · INT</small>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="chev" aria-hidden="true"></span>
+                    </button>
+                    <div class="leg-summary">
+                      <p class="summary-line">抵达已经是晚间，不要再排公共交通，直接进入酒店接驳流程。</p>
+                    </div>
+                    <div class="leg-detail" role="region">
+                      <div class="leg-detail-inner">
+                        <h4>展开详情 · 舱位 · 落地提醒</h4>
+                        <div class="detail-cols">
+                          <dl class="detail-kv">
+                            <div><dt>航空公司</dt><dd>沙特航空 · SV</dd></div>
+                            <div><dt>机型</dt><dd>Boeing 787-9 · 3-3-3</dd></div>
+                            <div><dt>到达</dt><dd>巴厘岛 努拉莱伊国际 · 国际抵达厅</dd></div>
+                            <div><dt>时差</dt><dd>与新加坡无时差 · 比北京 -1h</dd></div>
+                          </dl>
+                          <ul class="detail-tips">
+                            <li>免签过关前先取行李再走绿色通道</li>
+                            <li>抵达后手机装巴厘岛电子签截图备查</li>
+                            <li>出口直走到预定的酒店接驳打车点</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+
+                <!-- 7 · small · taxi final -->
+                <article class="leg leg-small" data-index="07">
+                  <div class="leg-rail"><span class="node" data-kind="small">⑦</span></div>
+                  <div class="leg-card" data-expandable="true">
+                    <button class="leg-header" type="button" aria-expanded="false">
+                      <div class="leg-header-main">
+                        <div class="leg-tags">
+                          <span class="tag tag-mode small">小交通 · TAXI</span>
+                          <span class="tag tag-time">12 km · 约 30m</span>
+                        </div>
+                        <h3>努拉莱伊机场 <span class="to" aria-hidden="true">→</span> 金巴兰 RIMBA 酒店</h3>
+                      </div>
+                      <span class="chev" aria-hidden="true"></span>
+                    </button>
+                    <div class="leg-summary">
+                      <figure class="minimap" aria-hidden="true">
+                        <svg class="minimap-svg" viewBox="0 0 200 80" preserveAspectRatio="none">
+                          <defs>
+                            <pattern id="contour2" width="14" height="14" patternUnits="userSpaceOnUse">
+                              <path d="M0 14 Q7 8 14 14" fill="none" stroke="rgba(74,107,93,0.2)" stroke-width="0.8" />
+                            </pattern>
+                          </defs>
+                          <rect width="200" height="80" fill="url(#contour2)" />
+                          <path d="M10 28 Q80 46 120 54 T192 64" fill="none" stroke="#4a6b5d" stroke-width="2.2" stroke-linecap="round" />
+                          <circle cx="10" cy="28" r="4" fill="#4a6b5d" />
+                          <circle cx="192" cy="64" r="5" fill="#c07a1a" />
+                        </svg>
+                        <figcaption><span>DPS 机场</span><span class="dash"></span><span>RIMBA</span></figcaption>
+                      </figure>
+                      <p class="summary-line">提前保存酒店英文名 / 地址 / 航班到达截图，落地后直接给司机确认。</p>
+                    </div>
+                    <div class="leg-detail" role="region">
+                      <div class="leg-detail-inner">
+                        <h4>展开详情 · 打车平台 · 夜间安全</h4>
+                        <div class="detail-cols">
+                          <dl class="detail-kv">
+                            <div><dt>距离</dt><dd>约 12 km · 30 分钟</dd></div>
+                            <div><dt>可选平台</dt><dd>Gojek · Grab · Bluebird Taxi</dd></div>
+                            <div><dt>费用（夜间）</dt><dd>¥ 80 — 140</dd></div>
+                            <div><dt>上车点</dt><dd>T1 国际到达出口右转 50m 的 Taxi stand</dd></div>
+                          </dl>
+                          <ul class="detail-tips">
+                            <li>Bluebird 是岛上信誉最稳的品牌</li>
+                            <li>提前手机下载 Gojek / Grab 避免现场排队</li>
+                            <li>酒店提供免费 pickup 时优先用，夜间更稳</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="quick-actions" aria-label="接下来还能帮你做">
+              <button type="button">帮我设值机提醒</button>
+              <button type="button">只看新加坡那段换乘</button>
+              <button type="button">把这份方案存成 PDF</button>
+            </section>
+
+            <footer class="chat-footer">
+              <span class="sign">— JourneyKit Legacy Prototype</span>
+            </footer>
+          </section>
+
+          <footer class="composer">
+            <input type="text" placeholder="对路线还有什么问题就问问我吧" aria-label="向 Agent 继续提问" />
+            <button class="mic" aria-label="语音输入" type="button"></button>
+          </footer>
+
+          <!-- ===== FREE FOCUS · FLIP from card → top sheet ===== -->
+          <section
+            class="free-focus"
+            id="freeFocus"
+            aria-label="樟宜机场现场演示"
+            aria-hidden="true"
+          >
+            <div class="focus-backdrop" id="closeBackdrop"></div>
+            <article
+              class="focus-sheet"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="focusTitle"
+            >
+              <header class="focus-header">
+                <button class="focus-close" id="closeFreeFocus" aria-label="收起演示" type="button">
+                  <span aria-hidden="true"></span>
+                </button>
+                <div class="focus-meta">
+                  <p class="focus-kicker">新加坡樟宜机场 · 现场演示</p>
+                  <h2 id="focusTitle">先把这 2 小时拆成三件事</h2>
+                </div>
+                <button class="focus-reset" id="resetFocus" type="button" disabled>
+                  回总览
+                </button>
+              </header>
+
+              <!-- 5-layer playback2 stage -->
+              <figure class="focus-visual" id="focusVisual" data-caption="点任意光圈看演示">
+                <img
+                  id="focusImage"
+                  src="../../public/assets/prototype-legacy/node_afa1d723e55448838acd7fcf14aba732.jpg"
+                  alt="樟宜机场现场俯视图"
+                />
+                <img id="focusIncoming" alt="" aria-hidden="true" />
+                <video id="focusVideo" muted playsinline preload="metadata"></video>
+                <span class="focus-portal" aria-hidden="true"></span>
+                <span class="focus-beam" aria-hidden="true"></span>
+                <span class="focus-travelers" id="focusTravelers" aria-hidden="true"></span>
+
+                <!-- Hotspot rings — visible only on overview -->
+                <div class="focus-hotspots" id="focusHotspots">
+                  <button
+                    type="button"
+                    class="hotspot"
+                    data-topic="baggage"
+                    style="--hx: 24%; --hy: 66%"
+                    aria-label="演示：先看行李是否直挂"
+                  >
+                    <span class="hs-ring"></span>
+                    <span class="hs-label">
+                      <b>先看行李</b>
+                      <em>是否直挂到巴厘岛</em>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    class="hotspot"
+                    data-topic="security"
+                    style="--hx: 52%; --hy: 58%"
+                    aria-label="演示：跟着换航站楼"
+                  >
+                    <span class="hs-ring"></span>
+                    <span class="hs-label">
+                      <b>跟着换航站楼</b>
+                      <em>T1 → T3 动线</em>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    class="hotspot"
+                    data-topic="gate"
+                    style="--hx: 78%; --hy: 48%"
+                    aria-label="演示：锁定登机口"
+                  >
+                    <span class="hs-ring"></span>
+                    <span class="hs-label">
+                      <b>锁定登机口</b>
+                      <em>看大屏确认</em>
+                    </span>
+                  </button>
+                </div>
+              </figure>
+
+              <!-- Copy below stage -->
+              <section class="focus-copy" id="focusCopy">
+                <h3>先把这 2 小时拆成三件事</h3>
+                <p>
+                  新加坡樟宜机场很大，但流程其实很简单：<b>先搞清楚行李、再跟着指示牌换航站楼、最后锁定登机口</b>。点上面图里的三个光圈，我会一个一个演示给你看。
+                </p>
+                <ul>
+                  <li>看行李小票最后是不是写到 <b>DPS</b>（巴厘岛），是就不用管</li>
+                  <li>认准 <b>Transfer / 转机</b> 指示，不要跟着人群去"入境"</li>
+                  <li>进 T3 出发层第一件事：抬头看大屏找你的登机口</li>
+                </ul>
+              </section>
+            </article>
+          </section>
+
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

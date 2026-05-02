@@ -1,0 +1,11 @@
+.env.local
+.DS_Store
+node_modules/
+.next/
+dist/
+coverage/
+资料备份/
+
+# Large local-only raw references. Keep these outside normal Git upload unless
+# the team decides to use Git LFS or an artifact store.
+public/assets/reference/flipbook/*.mov

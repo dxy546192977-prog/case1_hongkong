@@ -1,0 +1,72 @@
+{
+  "mode": "static_fixture",
+  "project": "JourneyKit",
+  "source": "Migrated playback2 assets from flyai-flipbook-lab. Legacy reference only.",
+  "root_node_id": "overview",
+  "nodes": [
+    {
+      "node_id": "overview",
+      "title": "旧版自由交通总览",
+      "subtitle": "从旧 playback2 迁移，仅用于交互参考",
+      "image_url": "../../public/assets/prototype-legacy/node_afa1d723e55448838acd7fcf14aba732.jpg",
+      "hotspots": [
+        {
+          "id": "baggage",
+          "label": "行李",
+          "x": 0.25,
+          "y": 0.66,
+          "target_node_id": "baggage"
+        },
+        {
+          "id": "security",
+          "label": "安检",
+          "x": 0.51,
+          "y": 0.49,
+          "target_node_id": "security"
+        },
+        {
+          "id": "gate",
+          "label": "登机口",
+          "x": 0.78,
+          "y": 0.64,
+          "target_node_id": "gate"
+        }
+      ]
+    },
+    {
+      "node_id": "baggage",
+      "title": "行李直挂参考页",
+      "image_url": "../../public/assets/prototype-legacy/node_49175859a0aa4963bc68a36620319ccc.jpg",
+      "hotspots": []
+    },
+    {
+      "node_id": "security",
+      "title": "转机安检参考页",
+      "image_url": "../../public/assets/prototype-legacy/node_76a6a7a3a3a14dfd96637f047678f881.jpg",
+      "hotspots": []
+    },
+    {
+      "node_id": "gate",
+      "title": "登机口路线参考页",
+      "image_url": "../../public/assets/prototype-legacy/node_c57b2ed233d9444bbe0141c0fc6231cb.jpg",
+      "hotspots": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "overview",
+      "to": "baggage",
+      "video_url": "../../public/assets/prototype-legacy/transition_9f45b4935033ab2bd0911038.mp4"
+    },
+    {
+      "from": "overview",
+      "to": "security",
+      "video_url": "../../public/assets/prototype-legacy/transition_e53ba2c54fbca54677e9eef3.mp4"
+    },
+    {
+      "from": "overview",
+      "to": "gate",
+      "video_url": "../../public/assets/prototype-legacy/transition_bca82e79ca47254bc9c1a4b1.mp4"
+    }
+  ]
+}

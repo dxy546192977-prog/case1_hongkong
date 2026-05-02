@@ -1,0 +1,90 @@
+{
+  "case_id": "case1_hongkong",
+  "project": "JourneyKit",
+  "status": "draft",
+  "origin_image": "public/assets/reference/interaction/综合交通行程.png",
+  "segments": [
+    {
+      "id": "tangshan_to_tangshan_station",
+      "city": "唐山 - 唐山",
+      "category": "small_transport",
+      "mode": "打车",
+      "route": "凤凰御庭小区 → 承德南站",
+      "time": "5:20 - 5:30",
+      "duration": "10m"
+    },
+    {
+      "id": "tangshan_to_beijing_rail",
+      "city": "唐山 - 北京",
+      "category": "major_transport",
+      "mode": "火车",
+      "route": "承德南站 → 北京朝阳站",
+      "train_no": "G4368",
+      "time": "5:52 - 6:44",
+      "duration": "52m"
+    },
+    {
+      "id": "beijing_city_transfer",
+      "city": "北京 - 北京",
+      "category": "small_transport",
+      "mode": "地铁",
+      "route": [
+        "北京站 → 北京 首都T3",
+        "朝阳站（出入口）→ 团结湖",
+        "团结湖 → 三元桥",
+        "三元桥 → 3号航站楼（北出口）"
+      ],
+      "lines": [
+        "地铁3号线",
+        "地铁10号线",
+        "首都机场线"
+      ],
+      "time": "6:50 - 7:38",
+      "duration": "48m",
+      "buffer": "提前1h07m抵达"
+    },
+    {
+      "id": "beijing_to_singapore",
+      "city": "北京 - 新加坡",
+      "category": "major_transport",
+      "mode": "飞机",
+      "route": "北京 首都T3 → 新加坡 樟宜机场 T1",
+      "flight_no": "SQ805",
+      "aircraft": "空客350大",
+      "time": "8:55 - 15:05",
+      "duration": "6h10m"
+    },
+    {
+      "id": "singapore_airport_walk",
+      "city": "新加坡 - 新加坡",
+      "category": "free_transport",
+      "mode": "步行/机场自由交通",
+      "route": "新加坡 樟宜机场 T1 → 新加坡 樟宜机场 T3",
+      "duration": "2h05m",
+      "module": "airport_canvas"
+    },
+    {
+      "id": "singapore_to_bali",
+      "city": "新加坡 - 巴厘岛",
+      "category": "major_transport",
+      "mode": "飞机",
+      "route": "新加坡 樟宜机场 T3 → 巴厘岛 努拉莱伊机场",
+      "flight_no": "SV856",
+      "aircraft": "波音787大",
+      "time": "17:10 - 20:00",
+      "duration": "2h50m"
+    },
+    {
+      "id": "bali_to_hotel",
+      "city": "巴厘岛 - 巴厘岛",
+      "category": "small_transport",
+      "mode": "打车",
+      "route": "巴厘岛 努拉莱伊机场 → 巴厘岛 金巴兰RIMBA酒店",
+      "distance": "12km",
+      "duration": "30m"
+    }
+  ],
+  "notes": [
+    "当前结构化内容来自用户提供的综合交通行程图，后续以 case1_hongkong 的真实香港机场自由交通模块替换机场段。"
+  ]
+}

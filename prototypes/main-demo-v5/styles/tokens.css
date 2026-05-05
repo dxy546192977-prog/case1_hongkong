@@ -1,0 +1,100 @@
+:root {
+  /* surface — 全屏白底，hairline 极轻 */
+  --bg-page: #ffffff;
+  --bg-surface: #ffffff;
+  --bg-surface-soft: #f7f8fa;
+  --bg-surface-mute: #f2f3f5;
+  --bg-chip: #ffffff; /* 首页 chip：Figma frame 01 是白底 + hairline */
+  --bg-bubble-user-soft: #ebf5ff; /* Figma 取色：用户首条问句气泡（浅冷蓝白）*/
+  --bg-bubble-user-solid: #0044ff; /* Figma 取色：Q&A 答案与后续输入（实蓝白字）*/
+  --bg-dim: rgba(15, 17, 22, 0.34);
+
+  /* ink — 取自 Figma 真实文字 fill */
+  --ink: #222222; /* 主文 (Figma TEXT fill #222222) */
+  --ink-soft: #2c2f36;
+  --ink-mid: #5b6068;
+  --ink-muted: #8a8f99;
+  --ink-faint: #b6bac2;
+  --ink-greeting: #bbc5ec; /* "HI, 今天想去哪儿呢？" Figma fill #bbc5ec */
+  --ink-greeting-sub: #a0a9b7; /* "把这趟出行说清楚..." Figma fill #a0a9b7 */
+  --hairline: rgba(15, 17, 22, 0.06);
+  --hairline-strong: rgba(15, 17, 22, 0.10);
+
+  /* accents — Figma 真实色 */
+  --accent-primary: #0044ff; /* 主蓝 Figma fill #0044ff */
+  --accent-primary-press: #0033cc;
+  --accent-soft: #6666ff; /* 略亮按钮 Figma fill #6666ff（"立即预订"等）*/
+  --accent-on-primary: #ffffff;
+  --accent-blue-tint: #e5ecff; /* 次要标签 Figma fill #e5ecff */
+  --accent-blue-soft: #f3f6ff;
+  --accent-red: #ff3b30;
+  --accent-red-soft: #ffefee;
+
+  /* category — 比上一版更克制，主要靠浅色背景区分 */
+  --cat-major: #174dff;
+  --cat-major-tint: #eaf0ff;
+  --cat-small: #4a4e57;
+  --cat-small-tint: #ececef;
+  --cat-free: #c47b3a;
+  --cat-free-tint: #faece0;
+
+  /* radius */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-pill: 9999px;
+
+  /* spacing (4px base) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-14: 56px;
+
+  /* shadows — 极轻，只用于浮层与悬浮 */
+  --elev-1: 0 1px 2px rgba(15, 17, 22, 0.04);
+  --elev-2: 0 4px 14px -6px rgba(15, 17, 22, 0.10);
+  --elev-3: 0 16px 36px -12px rgba(15, 17, 22, 0.12);
+  --elev-sheet: 0 -10px 30px -8px rgba(15, 17, 22, 0.16);
+
+  /* type scale */
+  --t-11: 11px;
+  --t-12: 12px;
+  --t-13: 13px;
+  --t-14: 14px;
+  --t-15: 15px;
+  --t-16: 16px;
+  --t-17: 17px;
+  --t-19: 19px;
+  --t-22: 22px;
+  --t-26: 26px;
+  --t-30: 30px;
+
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+
+  --ease-os: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-emph: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 180ms;
+  --dur-base: 280ms;
+  --dur-emph: 420ms;
+  --dur-sheet: 520ms;
+
+  --font-sans: -apple-system, "SF Pro Text", "SF Pro Display", "PingFang SC",
+    "Hiragino Sans GB", "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: "SF Mono", "JetBrains Mono", "Menlo", monospace;
+
+  --device-w: 390px;
+  --device-h: 844px;
+  --device-radius: 44px;
+  --safe-top: 50px;
+  --safe-bottom: 34px;
+}

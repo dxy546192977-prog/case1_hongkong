@@ -7,6 +7,7 @@ JourneyKit 是一个点对点综合交通方案项目。当前本地项目用于
 - 已迁移旧 `chat-demo2` 为独立静态原型：`prototypes/chat-demo2-legacy/index.html`。
 - 已整理香港机场、风格参考、交互示意、flipbook 参考视频和 image2 生成资产。
 - 已建立 `data/case1_hongkong/` 数据入口，后续用于主行程 UI、机场无限画布节点和图像生成服务。
+- 已接入完整串联 demo v5：`prototypes/main-demo-v5/`，覆盖首页、问答、方案、行程定制、下单、支付、行前准备和 HK 机场展开页。
 - 旧 FlyAI Flipbook Lab 仅作为素材来源，不是 JourneyKit 运行依赖。
 - 当前仓库是初版协作 demo，不是最终稿。详细状态见 `docs/DEMO_STATUS.md`。
 
@@ -20,8 +21,9 @@ python3 -m http.server 8899
 打开：
 
 - `http://127.0.0.1:8899/prototypes/chat-demo2-legacy/index.html`
+- `http://127.0.0.1:8899/prototypes/main-demo-v5/index.html`
 
-这个页面是旧原型迁移版，只用于参考“自由交通卡片展开 + playback2 转场”的交互骨架，不代表 JourneyKit 最终视觉风格。
+`main-demo-v5` 是当前可演示的完整串联 demo。`chat-demo2-legacy` 是旧原型迁移版，只用于参考“自由交通卡片展开 + playback2 转场”的交互骨架。
 
 ## 协作与上传
 
@@ -34,8 +36,11 @@ python3 -m http.server 8899
 ```text
 docs/                              项目计划、协作上下文、机场模块和资产流程
 prototypes/chat-demo2-legacy/       旧 chat-demo2 静态迁移原型
+prototypes/main-demo-v5/            当前完整串联 demo v5
 public/assets/reference/            机场、风格、交互、flipbook 参考资料
 public/assets/generated/image2-hkg/  网页端 ChatGPT Project / image2 生成资产
+public/assets/main-demo/             main-demo 静态图片资产
+public/assets/main-demo-v4/          main-demo HK 机场展开页图片和转场资产
 public/assets/prototype-legacy/      旧 playback2 图片和视频
 data/case1_hongkong/                香港 case 的结构化数据和生成落地目录
 ```

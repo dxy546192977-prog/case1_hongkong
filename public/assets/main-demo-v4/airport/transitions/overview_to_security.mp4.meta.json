@@ -1,0 +1,15 @@
+{
+  "id": "security",
+  "label": "L7 Security + Departure Immigration",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019df7c9-88a4-7f83-a9c0-ad2a1d911fd7",
+  "remote_url": "https://v3b.fal.media/files/b/0a98fb00/7rhIrS3fjyCqnhoHDdlBj_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "start_image": "public/assets/main-demo-v4/airport/overview.png",
+  "end_image": "public/assets/main-demo-v4/airport/frame_security.png",
+  "completed_at": "2026-05-05T11:39:54Z",
+  "note": "downloaded via proxy http://127.0.0.1:8118; prompt see scripts/gen-hkg-transitions.mjs"
+}

@@ -1,10 +1,12 @@
 pages:
   stage: deploy
   script:
-    - mkdir -p public/prototypes
-    - cp -R prototypes/main-demo-v5 public/prototypes/main-demo-v5
+    - mkdir -p pages-dist/prototypes pages-dist/public/assets
+    - cp -R prototypes/main-demo-v5 pages-dist/prototypes/main-demo-v5
+    - cp -R public/assets/main-demo pages-dist/public/assets/main-demo
+    - cp -R public/assets/main-demo-v4 pages-dist/public/assets/main-demo-v4
     - |
-      cat > public/index.html <<'HTML'
+      cat > pages-dist/index.html <<'HTML'
       <!doctype html>
       <html lang="zh-CN">
         <head>
@@ -18,6 +20,8 @@ pages:
         </body>
       </html>
       HTML
+    - rm -rf public
+    - mv pages-dist public
   artifacts:
     paths:
       - public

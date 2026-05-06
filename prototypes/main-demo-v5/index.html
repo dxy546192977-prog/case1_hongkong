@@ -120,7 +120,9 @@
       <div class="dev-tabs__group">
         <span class="dev-tabs__label">订单后</span>
         <button data-jump="prep">行前</button>
-        <button data-jump="hkg">HK机场</button>
+        <button data-jump="hkg-family">HK亲子</button>
+        <button data-jump="hkg-business">HK商务</button>
+        <button data-jump="hkg-transfer">HK中转</button>
       </div>
     </nav>
 
@@ -128,7 +130,7 @@
     <script type="module">
       // dev-tabs：手机框外的跳转 tab，方便演示直达。
       import { setState } from "./src/state.js";
-      import { bootChat, viewItinerary, setItineraryMode } from "./src/actions.js";
+      import { bootChat, viewItinerary, setItineraryMode, setAirportProfile } from "./src/actions.js";
 
       const PLAN = "balanced";
       const PAX = [
@@ -198,14 +200,17 @@
             paymentStatus: "paid",
           });
         },
-        hkg: () => {
-          setState({
-            screen: "trip-expanded",
-            sheet: null,
-            selectedTripCardId: "trip-hkg-airport",
-            selectedPlanId: PLAN,
-            paymentStatus: "paid",
-          });
+        "hkg-family": () => {
+          setAirportProfile("family");
+          setState({ selectedPlanId: PLAN, paymentStatus: "paid" });
+        },
+        "hkg-business": () => {
+          setAirportProfile("business");
+          setState({ selectedPlanId: PLAN, paymentStatus: "paid" });
+        },
+        "hkg-transfer": () => {
+          setAirportProfile("transfer");
+          setState({ selectedPlanId: PLAN, paymentStatus: "paid" });
         },
       };
 

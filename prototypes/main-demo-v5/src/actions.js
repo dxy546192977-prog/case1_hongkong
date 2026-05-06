@@ -292,6 +292,20 @@ export function collapseTripCard() {
   setState({ screen: "trip" });
 }
 
+export function setAirportProfile(profile) {
+  setState({
+    airportProfile: profile || "family",
+    hkgView: "route",
+    screen: "trip",
+    sheet: null,
+    selectedTripCardId: "trip-hkg-airport",
+  });
+}
+
+export function setHkgView(view) {
+  setState({ hkgView: view === "itinerary" ? "itinerary" : "route" });
+}
+
 export function backToPrep() {
   setState({ screen: "prep" });
 }

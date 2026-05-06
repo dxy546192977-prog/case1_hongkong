@@ -1,0 +1,15 @@
+{
+  "id": "overview_to_checkin",
+  "label": "Business overview to Aisle B premium check-in",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfcde-b050-72d0-adf6-eb224c9e4787",
+  "remote_url": "https://v3b.fal.media/files/b/0a991c50/G1eDkXQUM7T_-hkbLUe4J_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the full Hong Kong airport business-route overview into the L7 Aisle B premium check-in frame. The motion should feel like sliding across one infinite airport route map, not a crossfade. Follow the business route from the lower origin toward the dedicated First and Business class check-in island, with the dotted passenger route staying stable and legible. Calm, premium, efficient pacing for a corporate traveler guide. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not invent flight times, fixed gate numbers, retail brands, airline logos, extra signs, or dense text. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/business/overview.png",
+  "end_image": "public/assets/main-demo-v5/airport/business/checkin.png",
+  "completed_at": "2026-05-06T10:44:05.307Z"
+}

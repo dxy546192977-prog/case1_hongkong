@@ -23,6 +23,8 @@ const initialState = {
   agreementAccepted: false, // v5 O2：订单确认页用户协议勾选状态
   myTripsExpanded: false,
   selectedTripCardId: null, // 当前看的"我的行程" detail 卡
+  airportProfile: "family", // 'family' | 'business' | 'transfer'
+  hkgView: "route", // 'route' | 'itinerary'
   prepOpenId: null,
   toast: null,
 };

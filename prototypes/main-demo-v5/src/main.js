@@ -20,6 +20,7 @@ import {
   openTripCard,
   expandTripCard,
   collapseTripCard,
+  setHkgView,
   backToPrep,
   backToChat,
   focusComposer,
@@ -74,6 +75,7 @@ const handlers = {
   "open-trip-card": (el) => openTripCard(el.dataset.cardId),
   "expand-trip-card": () => expandTripCard(),
   "collapse-trip-card": () => collapseTripCard(),
+  "set-hkg-view": (el) => setHkgView(el.dataset.hkgView),
   "back-to-prep": () => backToPrep(),
   "back-to-chat": () => backToChat(),
   "toggle-agreement": () => toggleAgreement(),
@@ -96,9 +98,12 @@ subscribe((state) => render(state, root));
 // 启动：默认进 chat 流；?airport 直达机场展开页（调试快捷入口，跳过前置步骤）
 const params = new URLSearchParams(window.location.search);
 if (params.has("airport")) {
+  const profile = params.get("airport");
   setState({
     screen: "trip-expanded",
     selectedTripCardId: "trip-hkg-airport",
+    airportProfile: profile || "family",
+    hkgView: "route",
   });
 } else {
   bootChat();

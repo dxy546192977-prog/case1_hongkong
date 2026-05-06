@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f9fc" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JourneyKit · 香港机场主动推送 demo</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles/tokens.css?v=v5-push-1" />
+    <link rel="stylesheet" href="./styles/base.css?v=v5-push-1" />
+    <link rel="stylesheet" href="./styles/components.css?v=v5-push-1" />
+    <link rel="stylesheet" href="./styles/hkg-push-demo.css?v=v5-push-1" />
+  </head>
+  <body class="hkg-push-demo-body">
+    <div class="stage">
+      <div class="device" role="presentation">
+        <div class="app" id="app">
+          <div class="notch" aria-hidden="true"></div>
+          <div class="statusbar" aria-hidden="true">
+            <span>9:41</span>
+            <span class="right">5G · 100%</span>
+          </div>
+          <div class="app-frame" id="frame"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./src/hkg-push-demo.js?v=v5-push-1"></script>
+  </body>
+</html>

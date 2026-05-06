@@ -13,6 +13,7 @@ import {
   myTrips,
   trip,
 } from "../src/data.js";
+import { HKG_PROFILE_KEYS, hkgProfiles } from "../src/data/hkg-profiles.js";
 import {
   getState,
   setState,
@@ -31,6 +32,7 @@ import {
   toggleMyTrips,
   openTripCard,
 } from "../src/actions.js";
+import { renderDetailScreen, renderOffstageSwitcher, renderPushFrame } from "../src/hkg-push-demo.js";
 
 // ---- data: 3 plans, 各自的 segment 结构 ----
 
@@ -38,34 +40,33 @@ test("3 个方案，主推方案唯一", () => {
   assert.equal(plans.length, 3);
   const primary = plans.filter((p) => p.primary);
   assert.equal(primary.length, 1);
-  assert.equal(primary[0].id, "plan-bus");
+  assert.equal(primary[0].id, "balanced");
 });
 
-test("plan-ferry 是 6 段（综合交通行程_香港机场 原版）", () => {
-  const ferry = plans.find((p) => p.id === "plan-ferry");
-  assert.equal(ferry.segments.length, 6);
-  // 段 2 = 轮渡
-  assert.equal(ferry.segments[1].mode, "轮渡");
-  assert.equal(ferry.segments[1].from, "虎门港澳客运码头");
-});
-
-test("plan-bus 是 6 段，段 2 = 大巴", () => {
-  const bus = plans.find((p) => p.id === "plan-bus");
+test("balanced 是 6 段，段 2 = 大巴", () => {
+  const bus = plans.find((p) => p.id === "balanced");
   assert.equal(bus.segments.length, 6);
   assert.equal(bus.segments[1].mode, "大巴");
 });
 
-test("plan-direct 是 4 段，无香港中转", () => {
-  const direct = plans.find((p) => p.id === "plan-direct");
+test("comfort 是 4 段，无香港中转", () => {
+  const direct = plans.find((p) => p.id === "comfort");
   assert.equal(direct.segments.length, 4);
   const hkSegments = direct.segments.filter((s) => s.from.includes("香港"));
   assert.equal(hkSegments.length, 0);
 });
 
-test("3 方案价格符合 Figma：5241 / 5478 / 6827", () => {
-  assert.equal(plans.find((p) => p.id === "plan-bus").totalPrice, 5241);
-  assert.equal(plans.find((p) => p.id === "plan-ferry").totalPrice, 5478);
-  assert.equal(plans.find((p) => p.id === "plan-direct").totalPrice, 6827);
+test("low 也是 4 段，无香港中转", () => {
+  const low = plans.find((p) => p.id === "low");
+  assert.equal(low.segments.length, 4);
+  const hkSegments = low.segments.filter((s) => s.from.includes("香港"));
+  assert.equal(hkSegments.length, 0);
+});
+
+test("3 方案价格符合 v5：1545 / 1660 / 1592", () => {
+  assert.equal(plans.find((p) => p.id === "balanced").totalPrice, 1545);
+  assert.equal(plans.find((p) => p.id === "comfort").totalPrice, 1660);
+  assert.equal(plans.find((p) => p.id === "low").totalPrice, 1592);
 });
 
 test("起点/终点/日期固定", () => {
@@ -156,7 +157,7 @@ test("answerIntake q1 → 推 user 气泡 + q2", async () => {
   startIntake("seed");
   await new Promise((r) => setTimeout(r, 1000));
   answerIntake("q1", "taxi");
-  await new Promise((r) => setTimeout(r, 800));
+  await new Promise((r) => setTimeout(r, 1400));
   const s = getState();
   const lastQa = [...s.conversation].reverse().find((m) => m.type === "qa");
   assert.equal(lastQa.qid, "q2");
@@ -165,16 +166,16 @@ test("answerIntake q1 → 推 user 气泡 + q2", async () => {
 
 test("viewItinerary 切到 itinerary 屏 + 默认选中 major 段", () => {
   resetState();
-  viewItinerary("plan-ferry");
+  viewItinerary("balanced");
   const s = getState();
   assert.equal(s.screen, "itinerary");
-  assert.equal(s.selectedPlanId, "plan-ferry");
-  assert.equal(s.selectedSegmentId, "s2"); // ferry 的 major
+  assert.equal(s.selectedPlanId, "balanced");
+  assert.equal(s.selectedSegmentId, "3");
 });
 
 test("startOrder 打开 passenger sheet 并 clone passengers", () => {
   resetState();
-  viewItinerary("plan-bus");
+  viewItinerary("balanced");
   startOrder();
   const s = getState();
   assert.equal(s.sheet, "passenger-pick");
@@ -185,7 +186,7 @@ test("startOrder 打开 passenger sheet 并 clone passengers", () => {
 
 test("togglePassenger 切换选中态", () => {
   resetState();
-  viewItinerary("plan-bus");
+  viewItinerary("balanced");
   startOrder();
   const before = getState().passengers.find((p) => p.id === "p3").selected;
   togglePassenger("p3");
@@ -195,7 +196,7 @@ test("togglePassenger 切换选中态", () => {
 
 test("confirmPassengers → order-confirm sheet", () => {
   resetState();
-  viewItinerary("plan-bus");
+  viewItinerary("balanced");
   startOrder();
   confirmPassengers();
   assert.equal(getState().sheet, "order-confirm");
@@ -203,10 +204,129 @@ test("confirmPassengers → order-confirm sheet", () => {
 
 test("closeSheet 清空 sheet", () => {
   resetState();
-  viewItinerary("plan-bus");
+  viewItinerary("balanced");
   startOrder();
   closeSheet();
   assert.equal(getState().sheet, null);
+});
+
+// ---- HKG profiles: 亲子 / 商务 / 中转机场路书 ----
+
+test("HKG profiles 覆盖亲子 / 商务 / 中转", () => {
+  assert.deepEqual(HKG_PROFILE_KEYS, ["family", "business", "transfer"]);
+  HKG_PROFILE_KEYS.forEach((key) => {
+    const profile = hkgProfiles[key];
+    assert.equal(profile.id, key);
+    assert.ok(profile.title.includes("香港国际机场"));
+    assert.ok(profile.lead);
+    assert.ok(profile.overview);
+    assert.ok(profile.map.overview);
+    assert.ok(profile.nodes.length >= 3);
+  });
+});
+
+test("HKG profile 节点都有坐标、图片和 drawer 文案", () => {
+  Object.values(hkgProfiles).forEach((profile) => {
+    profile.nodes.forEach((node) => {
+      assert.match(node.num, /^\d{2}$/);
+      assert.ok(node.label);
+      assert.ok(node.title);
+      assert.ok(node.detail);
+      assert.ok(node.image);
+      assert.ok(node.x >= 0 && node.x <= 1);
+      assert.ok(node.y >= 0 && node.y <= 1);
+    });
+  });
+});
+
+test("亲子 profile 使用用户提供的 main-demo-v5 亲子组图", () => {
+  const family = hkgProfiles.family;
+  assert.equal(family.nodes.length, 4);
+  assert.ok(family.map.overview.includes("/main-demo-v5/airport/family/overview.png"));
+  family.nodes.forEach((node) => {
+    assert.ok(node.image.includes("/main-demo-v5/airport/family/"));
+  });
+});
+
+test("亲子 profile 转场都从总览图进入目标帧", () => {
+  const family = hkgProfiles.family;
+  const expected = new Map([
+    ["family-checkin", "overview_to_checkin.mp4"],
+    ["family-assist", "overview_to_security.mp4"],
+    ["family-leisure", "overview_to_leisure.mp4"],
+    ["family-gate", "overview_to_gate.mp4"],
+  ]);
+  const overviewEdges = family.edges.filter((edge) => edge.from === "overview");
+  assert.equal(overviewEdges.length, expected.size);
+  overviewEdges.forEach((edge) => {
+    assert.equal(edge.from, "overview");
+    assert.equal(edge.video.endsWith(expected.get(edge.to)), true);
+    assert.equal(edge.required, true);
+  });
+});
+
+test("商务 profile 使用 main-demo-v5 商务组图和总览转场", () => {
+  const business = hkgProfiles.business;
+  const expected = new Map([
+    ["business-checkin", "overview_to_checkin.mp4"],
+    ["business-fast", "overview_to_security.mp4"],
+    ["business-pier", "overview_to_lounge.mp4"],
+    ["business-boarding", "overview_to_gate.mp4"],
+  ]);
+  assert.equal(business.nodes.length, 4);
+  assert.ok(business.map.overview.includes("/main-demo-v5/airport/business/overview.png"));
+  business.nodes.forEach((node) => {
+    assert.ok(node.image.includes("/main-demo-v5/airport/business/"));
+    assert.equal(node.video?.includes("/main-demo-v5/airport/business/transitions/"), true);
+    assert.equal(node.video?.endsWith(expected.get(node.id)), true);
+    assert.ok(node.video?.endsWith(".mp4"));
+  });
+});
+
+test("中转 profile 使用 main-demo-v5 中转组图和总览转场", () => {
+  const transfer = hkgProfiles.transfer;
+  const expected = new Map([
+    ["transfer-arrival", "overview_to_arrival.mp4"],
+    ["transfer-desk", "overview_to_desk.mp4"],
+    ["transfer-security", "overview_to_security.mp4"],
+    ["transfer-gate", "overview_to_gate.mp4"],
+  ]);
+  assert.equal(transfer.nodes.length, 4);
+  assert.equal(transfer.talkTracks.length, 3);
+  assert.ok(transfer.map.overview.includes("/main-demo-v5/airport/transfer/overview.png"));
+  transfer.nodes.forEach((node) => {
+    assert.ok(node.image.includes("/main-demo-v5/airport/transfer/"));
+    assert.equal(node.video?.includes("/main-demo-v5/airport/transfer/transitions/"), true);
+    assert.equal(node.video?.endsWith(expected.get(node.id)), true);
+  });
+});
+
+test("亲子文案不渲染免税店或商圈维护信息", () => {
+  const text = JSON.stringify(hkgProfiles.family);
+  assert.doesNotMatch(text, /免税|商圈|品牌促销/);
+});
+
+test("商务文案不写死权益承诺", () => {
+  const text = JSON.stringify(hkgProfiles.business);
+  assert.doesNotMatch(text, /100%|必能|保证/);
+});
+
+test("HKG push demo 只保留推送卡片页和路书详情页", () => {
+  const push = renderPushFrame();
+  const switcher = renderOffstageSwitcher("family");
+  const detail = renderDetailScreen(hkgProfiles.business);
+  HKG_PROFILE_KEYS.forEach((key) => {
+    assert.ok(switcher.includes(`data-demo-profile="${key}"`));
+  });
+  assert.ok(push.includes(`data-demo-screen="push"`));
+  assert.ok(detail.includes("data-hkg-profile-detail"));
+  assert.ok(detail.includes("data-hkg-route-map"));
+  assert.doesNotMatch(detail, /data-action="set-hkg-view"/);
+});
+
+test("中转主线不把提取行李作为默认步骤", () => {
+  const text = JSON.stringify(hkgProfiles.transfer);
+  assert.doesNotMatch(text, /提取行李|取行李/);
 });
 
 test("toggleMyTrips 切 expanded", () => {

@@ -1,0 +1,15 @@
+{
+  "id": "overview_to_security",
+  "label": "Family overview to assistance/security",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfcad-ce28-7730-a7f8-709ce4b14842",
+  "remote_url": "https://v3b.fal.media/files/b/0a991b0f/M5YBodmwbqRs_T_EAh0Cd_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the full Hong Kong airport family-route overview into the special assistance and security frame. Move from the overview toward the security threshold, preserving the same airport-map orientation and dotted passenger route. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not add new factual text, gate numbers, flight times, airline logos, or retail information. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/family/overview.png",
+  "end_image": "public/assets/main-demo-v5/airport/family/security.png",
+  "completed_at": "2026-05-06T09:50:52.529Z"
+}

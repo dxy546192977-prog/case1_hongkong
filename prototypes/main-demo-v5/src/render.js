@@ -6,6 +6,9 @@ import { renderPrep } from "./views/prep.js";
 import { renderTrip, renderTripExpanded } from "./views/trip-detail.js";
 import { renderSheet } from "./views/order-sheet.js";
 import { attachAirportFlipbook } from "./views/airport-flipbook.js";
+import { getHkgProfile } from "./data/hkg-profiles.js";
+import { attachHkgDrawer } from "./views/hkg-drawer.js";
+import { attachHkgRouteMap } from "./views/hkg-route-map.js";
 import { myTrips } from "./data.js";
 import { setItineraryMode } from "./actions.js";
 
@@ -97,6 +100,14 @@ export function render(state, root) {
   // trip-expanded 屏：若包含 airport-flipbook，挂载 vanilla 控制器（不走 store）
   if (state.screen === "trip-expanded") {
     requestAnimationFrame(() => {
+      const hkg = frame.querySelector("[data-hkg-profile-detail]");
+      if (hkg) {
+        const profile = getHkgProfile(state.airportProfile);
+        attachHkgRouteMap(hkg, profile);
+        attachHkgDrawer(hkg);
+        return;
+      }
+
       const fb = frame.querySelector("[data-airport-flipbook]");
       if (!fb) return;
       const card = myTrips.find((c) => c.id === state.selectedTripCardId);

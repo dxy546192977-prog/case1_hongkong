@@ -138,6 +138,11 @@ img {
   background: transparent;
 }
 
+.app:has(.hkg-profile-detail) .statusbar {
+  background: transparent;
+  color: #10203a;
+}
+
 .statusbar .right {
   display: inline-flex;
   align-items: center;

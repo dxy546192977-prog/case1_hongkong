@@ -4,6 +4,8 @@ import { myTrips, prepCards } from "../data.js";
 import { renderMyTripsControl } from "./my-trips-control.js";
 import { renderComposer } from "./chat.js";
 import { renderAirportFlipbook } from "./airport-flipbook.js";
+import { renderHkgProfileCard } from "./hkg-profile-card.js";
+import { renderHkgProfileDetail } from "./hkg-profile-detail.js";
 import { ICON } from "../icons.js";
 
 // 把 prep 卡片转成 trip-detail 期望的形态
@@ -31,6 +33,7 @@ function findCardById(id) {
 export function renderTrip(state) {
   const card = findCardById(state.selectedTripCardId) || myTrips[1];
   const d = card.detail;
+  const isHkgAirport = card.id === "trip-hkg-airport";
 
   return `
     <header class="appbar">
@@ -43,11 +46,15 @@ export function renderTrip(state) {
       <div class="trip-detail">
         <div class="trip-detail__top">${card.isPrep ? "行前必读" : "你的有 1 个行程即将出发"}</div>
 
-        <button class="trip-card-detail trip-card-detail--clickable" data-action="expand-trip-card" aria-label="展开详情">
-          ${d.time ? `<div class="trip-card-detail__time">${d.time}<span class="trip-card-detail__chev">${ICON.chevronDown(18)}</span></div>` : ""}
-          <h2 class="trip-card-detail__headline">${d.headline}</h2>
-          <p class="trip-card-detail__lead">${d.lead || ""}</p>
-        </button>
+        ${
+          isHkgAirport
+            ? renderHkgProfileCard(state)
+            : `<button class="trip-card-detail trip-card-detail--clickable" data-action="expand-trip-card" aria-label="展开详情">
+                ${d.time ? `<div class="trip-card-detail__time">${d.time}<span class="trip-card-detail__chev">${ICON.chevronDown(18)}</span></div>` : ""}
+                <h2 class="trip-card-detail__headline">${d.headline}</h2>
+                <p class="trip-card-detail__lead">${d.lead || ""}</p>
+              </button>`
+        }
       </div>
     </div>
 
@@ -60,6 +67,10 @@ export function renderTrip(state) {
 export function renderTripExpanded(state) {
   const card = findCardById(state.selectedTripCardId) || myTrips[1];
   const d = card.detail;
+
+  if (card.id === "trip-hkg-airport") {
+    return renderHkgProfileDetail(state);
+  }
 
   // HK 机场卡 v4：可点击 flipbook（光圈 → mp4 转场 → 真实文案随节点联动）
   if (d.airportFlipbook) {

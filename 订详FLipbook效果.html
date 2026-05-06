@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f9fc" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JourneyKit · 香港机场主动推送 demo</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./prototypes/main-demo-v5/styles/tokens.css?v=v5-push-2" />
+    <link rel="stylesheet" href="./prototypes/main-demo-v5/styles/base.css?v=v5-push-2" />
+    <link rel="stylesheet" href="./prototypes/main-demo-v5/styles/personas.css?v=v5-push-2" />
+    <link rel="stylesheet" href="./prototypes/main-demo-v5/styles/components.css?v=v5-push-2" />
+    <link rel="stylesheet" href="./prototypes/main-demo-v5/styles/transit-assistant.css?v=v5-push-2" />
+    <link rel="stylesheet" href="./prototypes/main-demo-v5/styles/hkg-push-demo.css?v=v5-push-2" />
+    <style>
+      /* 仅本页：隐藏“前往登机口的路线说明”模块（标题+副文） */
+      .ta-sheet__body > .ta-section:first-of-type > .ta-section__head {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="hkg-push-demo-body">
+    <div class="stage">
+      <div class="device" role="presentation">
+        <div class="app" id="app">
+          <div class="notch" aria-hidden="true"></div>
+          <div class="statusbar" aria-hidden="true">
+            <span>9:41</span>
+            <span class="right">5G · 100%</span>
+          </div>
+          <div class="app-frame" id="frame"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="./prototypes/main-demo-v5/src/hkg-push-demo.js?v=v5-push-1"></script>
+  </body>
+</html>

@@ -6,6 +6,13 @@ dist/
 coverage/
 资料备份/
 
+# Local-only tooling caches
+.aone_copilot/
+
+# Nested independent Git repos (each maintained on its own remote)
+case1_hongkong/
+case2_hongkong/
+
 # Large local-only raw references. Keep these outside normal Git upload unless
 # the team decides to use Git LFS or an artifact store.
 public/assets/reference/flipbook/*.mov

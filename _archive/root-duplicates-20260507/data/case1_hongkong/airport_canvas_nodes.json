@@ -1,0 +1,61 @@
+{
+  "case_id": "case1_hongkong",
+  "module": "airport_canvas",
+  "status": "draft_schema",
+  "schema_version": "0.1.0",
+  "nodes": [
+    {
+      "node_id": "hkg_root",
+      "parent_id": null,
+      "title": "香港机场自由交通总览",
+      "query": "从主行程进入香港机场自由交通模块后的第一张无限画布总览页",
+      "tap_point": null,
+      "tap_subject": null,
+      "facts_used": [],
+      "image_urls": {},
+      "provider": "fixture",
+      "image_model": null,
+      "prompt_model": null,
+      "authored_prompt": "",
+      "final_prompt": "",
+      "video_url": null,
+      "children": [
+        "hkg_baggage",
+        "hkg_transfer_security",
+        "hkg_gate_route"
+      ]
+    },
+    {
+      "node_id": "hkg_baggage",
+      "parent_id": "hkg_root",
+      "title": "行李衔接",
+      "query": "点击行李相关区域后的下一层节点",
+      "facts_used": [],
+      "image_urls": {},
+      "provider": "pending"
+    },
+    {
+      "node_id": "hkg_transfer_security",
+      "parent_id": "hkg_root",
+      "title": "转机安检",
+      "query": "点击转机或安检相关区域后的下一层节点",
+      "facts_used": [],
+      "image_urls": {},
+      "provider": "pending"
+    },
+    {
+      "node_id": "hkg_gate_route",
+      "parent_id": "hkg_root",
+      "title": "登机口路线",
+      "query": "点击登机口或路线相关区域后的下一层节点",
+      "facts_used": [],
+      "image_urls": {},
+      "provider": "pending"
+    }
+  ],
+  "generation_runtime": {
+    "enabled_when_env_has_provider_key": true,
+    "output_dir": "data/case1_hongkong/generated_nodes/",
+    "fixture_fallback": "prototypes/chat-demo2-legacy/playback2-latest.json"
+  }
+}

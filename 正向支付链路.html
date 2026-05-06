@@ -17,12 +17,12 @@
       → src/data.js（transit 字段）、src/views/transit-helpers.js、transit-card.js、transit-assistant.js、styles/transit-*.css
     -->
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./case1_hongkong/prototypes/main-demo-v5/styles/tokens.css?v=v5-1" />
-    <link rel="stylesheet" href="./case1_hongkong/prototypes/main-demo-v5/styles/base.css?v=v5-1" />
-    <link rel="stylesheet" href="./case1_hongkong/prototypes/main-demo-v5/styles/personas.css?v=v5-1" />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/tokens.css?v=v5-1" />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/base.css?v=v5-1" />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/personas.css?v=v5-1" />
     <!-- components.css 内部已 @import 了 personas.css / transit-card.css / transit-assistant.css，
          主 index 再 link 一次 personas.css 确保 :root fallback 生效（重复 @import 无副作用）。 -->
-    <link rel="stylesheet" href="./case1_hongkong/prototypes/main-demo-v5/styles/components.css?v=v5-3" />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/components.css?v=v5-3" />
     <style>
       /* 浅色 demo 舞台主题（参考 港航Qwen-对话流.html 的 --demo-bg） */
       :root {
@@ -294,11 +294,11 @@
     </script>
     <!-- portabled-demo-stage-dock end -->
 
-    <script type="module" src="./case1_hongkong/prototypes/main-demo-v5/src/main.js?v=v5-3"></script>
+    <script type="module" src="./hongkong_journey/prototypes/main-demo-v5/src/main.js?v=v5-3"></script>
     <script type="module">
       // dev-tabs：手机框外的跳转 tab，方便演示直达。
-      import { setState, subscribe, getState } from "./case1_hongkong/prototypes/main-demo-v5/src/state.js";
-      import { bootChat, viewItinerary, setItineraryMode } from "./case1_hongkong/prototypes/main-demo-v5/src/actions.js";
+      import { setState, subscribe, getState } from "./hongkong_journey/prototypes/main-demo-v5/src/state.js";
+      import { bootChat, viewItinerary, setItineraryMode } from "./hongkong_journey/prototypes/main-demo-v5/src/actions.js";
 
       function readPersonaFromHash() {
         const m = (location.hash || "").match(/persona=([a-z]+)/i);
@@ -431,19 +431,6 @@
             transitSheetMode: "map",
           });
         },
-        // 主动推送 (HKG)：把独立 demo 页 iframe 嵌入到 .app-frame 中，
-        // 复用其完整 push → detail 剧本与 profile 切换器（family / business / transfer）。
-        push: () => {
-          const frame = document.getElementById("frame");
-          if (!frame) return;
-          // 已经嵌过 iframe 就不重复挂载，避免重置剧本进度
-          if (frame.querySelector('iframe[data-embed="hkg-push"]')) return;
-          // 清空主项目 state 渲染产物，让 iframe 独占 .app-frame
-          frame.innerHTML =
-            '<iframe data-embed="hkg-push" src="./case1_hongkong/prototypes/main-demo-v5/hkg-push-demo.html" ' +
-            'style="border:0;width:100%;height:100%;display:block;background:#fff;" ' +
-            'title="主动推送 demo"></iframe>';
-        },
       };
 
       // 暴露 handlers 给 Demo Stage Dock 使用（保留全部多阶段节点）
@@ -458,7 +445,6 @@
         order: handlers.order,
         pay: handlers.pay,
         prep: handlers.prep,
-        push: handlers.push,
         hkg: handlers.hkg,
         h5: handlers.h5,
       };

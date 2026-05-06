@@ -10,7 +10,7 @@ coverage/
 .aone_copilot/
 
 # Nested independent Git repos (each maintained on its own remote)
-case1_hongkong/
+hongkong_journey/
 case2_hongkong/
 
 # Large local-only raw references. Keep these outside normal Git upload unless

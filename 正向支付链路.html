@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <title>正向支付链路</title>
+    <!-- 保留当前标签页，只在新标签页打开目标页面 -->
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background: #ececee;
+        font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+        color: #0f131a;
+      }
+      .tip { font-size: 14px; opacity: 0.7; }
+      .fallback-link {
+        padding: 10px 20px;
+        background: #0f131a;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+      .fallback-link:hover { background: #2a2f3a; }
+    </style>
+    <script>
+      (function () {
+        var target = "订详FLipbook效果.html";
+        // 进入当前页后，尝试在新标签页打开目标页面
+        try {
+          window.open(target, "_blank", "noopener,noreferrer");
+        } catch (e) {
+          // 兜底：忽略异常，用户可点击按钮手动打开
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <p class="tip">当前页会保留，并在新标签页打开订详 FLipbook 效果。</p>
+    <a class="fallback-link" href="订详FLipbook效果.html" target="_blank" rel="noopener noreferrer">如未自动打开，点此新开标签页</a>
+  </body>
+</html>

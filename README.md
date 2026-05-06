@@ -2,21 +2,22 @@
 
 这个仓库当前由两条主线并行组成：
 
-- `case1_hongkong`：JourneyKit 香港行程原型线（`main-demo-v5`、历史迁移、资产沉淀）。
+- `case1_hongkong`：JourneyKit 香港行程原型主线（`main-demo-v5`、历史迁移、资产沉淀）。
 - `case2_hongkong`：Qwen 高舱推荐 / 对话流 H5 线（含航司数据库、PPT、发布配置）。
 
-同时，根目录还保留了一套与 `case1_hongkong` 高度相似的 `prototypes/`、`public/`、`docs/` 目录，主要用于演示与过渡。
+为减少重复类目，根目录的 `prototypes/`、`docs/`、`data/` 已统一收口到 `case1_hongkong`（根目录同名目录为软链接）。
 
 ## 建议你优先使用的入口
 
-- 维护 `case1_hongkong` 相关内容时：优先在 `case1_hongkong/` 下改动。
+- 维护 `case1_hongkong` 相关内容时：统一在 `case1_hongkong/` 下改动。
 - 维护 Qwen 高舱项目时：优先在 `case2_hongkong/` 下改动。
-- 根目录 `prototypes/` 与 `public/`：视为“工作台/兼容层”，新改动建议同步判断是否应沉淀到子 case。
+- 根目录 `prototypes/`、`docs/`、`data/`：为兼容旧路径保留的入口，实际内容来自 `case1_hongkong/`。
+- 根目录 `public/`：保留为运行时资源目录。
 
 ## 目录总览（按职责）
 
 ```text
-case1_hongkong/                    香港行程规划主线（JourneyKit）
+case1_hongkong/                    香港行程规划主线（JourneyKit，单一事实源）
   ├─ prototypes/main-demo-v5/      串联版主原型（首页到机场详情）
   ├─ prototypes/chat-demo2-legacy/ 历史原型（参考用）
   ├─ docs/                         case1 文档
@@ -29,9 +30,11 @@ case2_hongkong/                    Qwen 高舱推荐/对话流主线
   ├─ 7 上传Github/                 发布与对外说明
   └─ 10 切图素材/                  共用切图资产
 
-prototypes/                        根目录原型（与 case1 存在重叠）
-public/assets/                     根目录资产（与 case1 存在重叠）
-docs/                              根目录项目文档（与 case1 存在重叠）
+prototypes/                        软链接 → case1_hongkong/prototypes
+docs/                              软链接 → case1_hongkong/docs
+data/                              软链接 → case1_hongkong/data
+public/assets/                     根目录运行时资产
+_archive/root-duplicates-20260507/ 根目录历史重复目录备份
 ```
 
 ## 快速预览
@@ -50,7 +53,7 @@ python3 -m http.server 8899
 
 ## 文件整理规则（建议执行）
 
-- 单一事实源：同一功能只保留一个“主维护目录”，其他目录只做镜像或归档。
+- 单一事实源：同一功能只保留一个“主维护目录”（当前为 `case1_hongkong`），其他目录只做软链接或归档。
 - 先标注再迁移：对重复目录先在 README 标注“主/备”，确认稳定后再清理。
 - 素材分类：`reference`（外部参考）、`generated`（AI 生成）、`runtime`（运行必需）分开存放。
 - 文档收口：同类文档尽量收敛到各自 case 的 `docs/`，根目录只留总索引与跨 case 约定。

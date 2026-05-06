@@ -1,0 +1,15 @@
+{
+  "id": "overview_to_arrival",
+  "label": "Transfer overview to arrival and Transfer-sign zone",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfda1-2a64-7d83-b0c7-c44293e26d21",
+  "remote_url": "https://v3b.fal.media/files/b/0a99214a/TG-AkRAaaXhWgY916E3hv_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second push-in (zoom-in) camera move toward the LOWER-LEFT section of the map — the arrival corridor and 'Transfer / Departures' wayfinding cluster on the L5 arrivals level. The camera should dolly-in / zoom-in centered on the lower-left destination area, with that area growing larger throughout the move. The camera must NOT pan from upper-right downward, must NOT pan laterally, must NOT slide sideways. The starting framing is the full overview; the ending framing is the lower-left arrival cluster, scaled up. Stay airside the whole time. Calm, reassuring, certainty-first pacing. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Avoid panning from upper-right, lateral camera glide, sideways panning, downward sliding, or rotation. Do not invent flight times, fixed gate numbers, retail brands, airline logos, extra signs, or dense text. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/transfer/overview.png",
+  "end_image": "public/assets/main-demo-v5/airport/transfer/arrival.png",
+  "completed_at": "2026-05-06T14:17:23.359Z"
+}

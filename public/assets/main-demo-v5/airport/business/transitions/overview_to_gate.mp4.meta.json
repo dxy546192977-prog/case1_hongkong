@@ -1,0 +1,15 @@
+{
+  "id": "overview_to_gate",
+  "label": "Business overview to priority boarding gate",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfcde-b0e0-7630-8573-3bacaa1ab6ad",
+  "remote_url": "https://v3b.fal.media/files/b/0a991c4e/o3qRl2kCfdlCzr-UIHXh3_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the full Hong Kong airport business-route overview into the final priority boarding gate frame. Follow the business route from the overview toward the gate without rotating the camera, keeping the movement calm, confident, and efficient for a corporate traveler guide. Suggest a short priority boarding lane at the gate, but keep it abstract — no specific gate numbers or airline logos. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not add fixed gate numbers, flight times, shopping brands, extra lounge claims, or new factual signage. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/business/overview.png",
+  "end_image": "public/assets/main-demo-v5/airport/business/gate.png",
+  "completed_at": "2026-05-06T10:43:51.038Z"
+}

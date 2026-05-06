@@ -1,0 +1,15 @@
+{
+  "id": "checkin_to_security",
+  "label": "Business Aisle B → Self-service Fast Security",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfd59-23e9-7fb2-bf78-92dbf3a9fff3",
+  "remote_url": "https://v3b.fal.media/files/b/0a991f72/whkA5p_WDvKRyx1O_WkUS_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the L7 Aisle B premium check-in frame onward into the L7 self-service fast security and immigration frame. Stay on the same continuous airport route map; keep the dotted passenger route visible. Calm, premium pacing. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not invent flight times, fixed gate numbers, retail brands, airline logos, extra signs, or dense text. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/business/checkin.png",
+  "end_image": "public/assets/main-demo-v5/airport/business/security.png",
+  "completed_at": "2026-05-06T12:57:33.452Z"
+}

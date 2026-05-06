@@ -1,0 +1,15 @@
+{
+  "id": "overview_to_lounge",
+  "label": "Business overview to The Pier business lounge",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfcde-b1ba-73f3-a91f-5698e72ce09d",
+  "remote_url": "https://v3b.fal.media/files/b/0a991c4e/qILm4ofp5TUH0DoEr9hvC_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the full Hong Kong airport business-route overview into the L6 premium business lounge cluster frame. The camera should travel from the overview into the lounge entry zone as if the airport map is one continuous canvas, keeping the blue route, soft glass architecture, and the calm premium service atmosphere stable. Suggest a quiet seating area and shower / dining service icons inside the lounge volume, but stay illustrative. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not write specific lounge names, brand logos, gate numbers, flight times, or dense signage. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/business/overview.png",
+  "end_image": "public/assets/main-demo-v5/airport/business/lounge.png",
+  "completed_at": "2026-05-06T10:44:14.005Z"
+}

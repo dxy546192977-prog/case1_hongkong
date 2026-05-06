@@ -1,0 +1,15 @@
+{
+  "id": "security_to_gate",
+  "label": "Transfer security → onward boarding gate",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfd59-2431-7b31-96a0-bbed95466fe6",
+  "remote_url": "https://v3b.fal.media/files/b/0a991f70/FWWA6_uYau6dNJ6BLgbVg_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the airside Transfer Security frame onward into the onward boarding gate frame. Follow the transfer route across the airside corridor without rotating the camera, calm reassuring pacing. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not add fixed gate numbers, flight times, shopping brands, extra lounge claims, or new factual signage. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/transfer/security.png",
+  "end_image": "public/assets/main-demo-v5/airport/transfer/gate.png",
+  "completed_at": "2026-05-06T12:57:19.546Z"
+}

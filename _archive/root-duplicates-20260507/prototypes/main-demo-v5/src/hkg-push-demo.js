@@ -318,6 +318,15 @@ export function adaptHkgProfileToTransitDetail(profile) {
       flightArrive: win.flightArrive,
       flightDepart: win.flightDepart,
       layoverText: win.layoverText || "—",
+      // 登机牌信息 5 列卡片：与原视觉一致（登机时间 / 航站楼 / 登机口 / 组别 / 座位号）
+      // 起飞前 90 分钟登机口才会公布，因此默认 gate 为「待定」、group 为「—」
+      boardingPass: {
+        boardingTime: win.boardingTime || "14:05",
+        terminal: win.terminal || "T1",
+        gate: win.gate || "待定",
+        group: win.boardingGroup || "—",
+        seat: win.seat || "27C",
+      },
       tasks: profile.nodes.map((n, idx) => nodeToTask(n, idx)),
     },
     airportFlipbook: {

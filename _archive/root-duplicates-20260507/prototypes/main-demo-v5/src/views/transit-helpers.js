@@ -113,6 +113,35 @@ export function renderCounterGuidanceBlock(transit, variant) {
     </div>`;
 }
 
+/**
+ * 登机牌信息 5 列卡片：登机时间 / 航站楼 / 登机口 / 组别 / 座位号
+ * 视觉与首屏顶部 ta-hero__meter 同源（白底圆角 + 等分列 + 上灰小标签下黑大字）
+ */
+export function renderBoardingPassCard(transit) {
+  const bp = transit.boardingPass;
+  if (!bp) return "";
+  const cells = [
+    { label: "登机时间", value: bp.boardingTime },
+    { label: "航站楼", value: bp.terminal },
+    { label: "登机口", value: bp.gate },
+    { label: "组别", value: bp.group },
+    { label: "座位号", value: bp.seat },
+  ];
+  const cellsHtml = cells
+    .map(
+      (cell) => `
+        <div class="ta-bp__cell">
+          <span class="ta-bp__cell-label">${escapeHtmlLite(cell.label)}</span>
+          <b class="ta-bp__cell-value">${escapeHtmlLite(cell.value ?? "—")}</b>
+        </div>`,
+    )
+    .join("");
+  return `
+    <div class="ta-bp" role="group" aria-label="登机牌信息">
+      ${cellsHtml}
+    </div>`;
+}
+
 export function renderBoardingCountdownBlock(transit, variant) {
   const bc = transit.boardingCountdown;
   if (!bc) return "";

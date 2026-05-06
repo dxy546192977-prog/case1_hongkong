@@ -1203,3 +1203,56 @@
 .composer--editing .composer__input {
   height: 32px;
 }
+
+/* ============================================================
+ * 登机牌信息 5 列卡片（登机时间 / 航站楼 / 登机口 / 组别 / 座位号）
+ *
+ * 宿主：.ta-sheet（白底圆角浮层）内、.ta-sheet__head 之下、.ta-rail 之上
+ * 视觉：浅灰底圆角胶囊（与 .ta-hero__meter 同色 #f2f4f7），5 等分列，
+ *      列间 1px 细分隔线，上灰小标签 / 下深色加粗值
+ * 档位可见性：
+ *   - map  档（横排概览）：隐藏，保持「head + rail」纯净，与历史视觉一致
+ *   - half / list 档（用户上拉浮层后）：显示
+ *   写法与同文件 .ta-rail 在 half/list 档隐藏对仗
+ * ============================================================ */
+.ta-sheet .ta-bp {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: stretch;
+  margin: 4px 16px 8px;
+  padding: 12px 6px;
+  background: #f2f4f7;
+  border-radius: var(--r-md);
+}
+/* map 档（默认横排概览）：隐藏登机牌卡片，只露 head + rail */
+.ta-screen[data-sheet-mode="map"] .ta-sheet .ta-bp {
+  display: none;
+}
+.ta-sheet .ta-bp__cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 4px;
+  min-width: 0;
+  border-left: 1px solid rgba(15, 19, 26, 0.08);
+}
+.ta-sheet .ta-bp__cell:first-child {
+  border-left: 0;
+}
+.ta-sheet .ta-bp__cell-label {
+  font-size: var(--t-11);
+  color: var(--ink-muted);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.ta-sheet .ta-bp__cell-value {
+  font-size: var(--t-17);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  white-space: nowrap;
+}

@@ -22,6 +22,7 @@ import {
   renderRouteChain,
   renderCounterGuidanceBlock,
   renderBoardingCountdownBlock,
+  renderBoardingPassCard,
   renderAnomaliesBlock,
   renderRouteWithArrowIcons,
 } from "./transit-helpers.js";
@@ -146,6 +147,8 @@ export function renderTransitAssistantScreen(d, state) {
         <header class="ta-sheet__head" data-drag-handle>
           ${renderTransitSheetHead(d, t)}
         </header>
+
+        ${renderBoardingPassCard(t)}
 
         ${renderTransitRail(t)}
 

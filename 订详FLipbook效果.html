@@ -23,6 +23,58 @@
       body.hkg-push-demo-body {
         background: #bac1d8;
       }
+      .demo-stage-dock-root {
+        position: fixed;
+        right: max(14px, env(safe-area-inset-right, 0px));
+        bottom: max(14px, env(safe-area-inset-bottom, 0px));
+        z-index: 100000;
+        font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+      .demo-stage-dock-fab {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #000;
+        box-shadow: 0 6px 20px rgba(15, 19, 26, 0.35);
+      }
+      .demo-stage-dock-fab svg {
+        width: 24px;
+        height: 24px;
+        fill: #fff;
+      }
+      .demo-stage-dock-panel {
+        display: none;
+        position: absolute;
+        right: 0;
+        bottom: 60px;
+        min-width: 220px;
+        padding: 10px;
+        background: rgba(15, 19, 26, 0.96);
+        border-radius: 14px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.32);
+      }
+      .demo-stage-dock-root.open .demo-stage-dock-panel {
+        display: grid;
+        gap: 6px;
+      }
+      .demo-stage-dock-item {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 10px;
+        text-align: left;
+        font-size: 13px;
+        color: #e8eaf0;
+        background: rgba(255, 255, 255, 0.07);
+        text-decoration: none;
+      }
     </style>
   </head>
   <body class="hkg-push-demo-body">
@@ -39,6 +91,35 @@
       </div>
     </div>
 
+    <div id="demoStageDockRoot" class="demo-stage-dock-root">
+      <button type="button" class="demo-stage-dock-fab" id="demoStageDockFab" aria-haspopup="true" aria-expanded="false" aria-controls="demoStageDockPanel" title="快速定位">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 14.5a2.5 2.5 0 1 1 2.5-2.5a2.5 2.5 0 0 1-2.5 2.5m0-4a1.5 1.5 0 1 0 1.5 1.5a1.5 1.5 0 0 0-1.5-1.5"/><path d="M21.435 11.505h-1.46a7.98 7.98 0 0 0-7.48-7.48v-1.46a.51.51 0 0 0-.5-.5a.515.515 0 0 0-.5.5v1.46a8 8 0 0 0-7.48 7.48h-1.45a.5.5 0 1 0 0 1h1.45a8.01 8.01 0 0 0 7.48 7.48v1.45a.51.51 0 0 0 .5.5a.5.5 0 0 0 .5-.5v-1.45a8 8 0 0 0 7.48-7.48h1.46a.5.5 0 0 0 0-1M12 19.005a7 7 0 1 1 7-7a7.02 7.02 0 0 1-7 7"/></svg>
+      </button>
+      <div class="demo-stage-dock-panel" id="demoStageDockPanel" role="menu" aria-label="快速定位">
+        <a class="demo-stage-dock-item" role="menuitem" href="/正向支付链路.html">返回：正向支付链路</a>
+      </div>
+    </div>
+    <script>
+      (function () {
+        var root = document.getElementById("demoStageDockRoot");
+        var fab = document.getElementById("demoStageDockFab");
+        if (!root || !fab) return;
+        function setOpen(open) {
+          root.classList.toggle("open", open);
+          fab.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+        fab.addEventListener("click", function (e) {
+          e.stopPropagation();
+          setOpen(!root.classList.contains("open"));
+        });
+        document.addEventListener("click", function () {
+          setOpen(false);
+        });
+        root.addEventListener("click", function (e) {
+          e.stopPropagation();
+        });
+      })();
+    </script>
     <script type="module" src="./_archive/root-duplicates-20260507/prototypes/main-demo-v5/src/hkg-push-demo.js?v=v5-push-2"></script>
   </body>
 </html>

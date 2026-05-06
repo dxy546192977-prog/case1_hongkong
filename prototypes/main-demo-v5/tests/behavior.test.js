@@ -283,6 +283,18 @@ test("商务 profile 使用 main-demo-v5 商务组图和总览转场", () => {
   });
 });
 
+test("HKG profile 所有转场边都有 mp4 素材引用", () => {
+  Object.values(hkgProfiles).forEach((profile) => {
+    profile.edges?.forEach((edge) => {
+      assert.ok(edge.from);
+      assert.ok(edge.to);
+      assert.ok(edge.video);
+      assert.equal(edge.video.endsWith(".mp4"), true);
+      assert.equal(edge.video.includes(`/main-demo-v5/airport/${profile.id}/transitions/`), true);
+    });
+  });
+});
+
 test("中转 profile 使用 main-demo-v5 中转组图和总览转场", () => {
   const transfer = hkgProfiles.transfer;
   const expected = new Map([

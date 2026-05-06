@@ -255,14 +255,11 @@
   height: 100%;
 }
 
-/* 按 profile 设 stage 实际比例（family/transfer 2:3、business 3:4）
-   覆盖 syncImageRatio 写入的 inline 变量 → 切换永不跳容器尺寸 */
-.hkg-detail-screen[data-profile="family"] .hkg-route-map__stage,
-.hkg-detail-screen[data-profile="transfer"] .hkg-route-map__stage {
+/* 3 张总览图实际都是 1024×1536 (2:3)，stage 统一锁 2:3
+   覆盖 syncImageRatio 写入的 inline 变量 → 切换永不跳容器尺寸
+   节点 x/y % 才能正确映射到图上对应位置 */
+.hkg-detail-screen .hkg-route-map__stage {
   --hkg-media-ratio: 2 / 3 !important;
-}
-.hkg-detail-screen[data-profile="business"] .hkg-route-map__stage {
-  --hkg-media-ratio: 3 / 4 !important;
 }
 
 .hkg-detail-map .hkg-route-map__stage {
@@ -281,9 +278,11 @@
 
 /* 视频转图片不再"一跳"：videoing 离场不渐变，立即让位给 image
    原 components.css 的 transition 260ms 会留下视频残影叠在已显示的 image 上
-   覆盖为 0ms 立即切，配合 waitImagePainted 已先画好 image 实现无缝替换 */
+   覆盖为 0ms 立即切，配合 waitImagePainted 已先画好 image 实现无缝替换
+   同时把视频 aspect-ratio 与 stage 一致，避免视频底部露出图片像素 */
 .hkg-detail-map .hkg-route-map__video {
   transition: opacity 0ms !important;
+  aspect-ratio: var(--hkg-media-ratio) !important;
 }
 
 /* 隐藏 hkg-route-map 内部的"回到总览"按钮（深蓝色）
@@ -330,7 +329,61 @@
   100% { transform: scale(1.5); opacity: 0; }
 }
 
-/* 切换节点时图片保持 contain 居中，不再做 scale 变形（之前 scale 1.06 导致位置跑偏） */
+/* 默认（含总览态）：translate(-50%, 40px) 不放大 */
+.hkg-detail-map .hkg-route-map__image,
+.hkg-detail-map .hkg-route-map__incoming,
+.hkg-detail-map .hkg-route-map__overlay {
+  transform: translate(-50%, 40px) !important;
+  transform-origin: center top;
+}
+
+/* video 始终带 scale 1.05（让视频结束 → image 同尺寸切换，避免容器尺寸跳变） */
+.hkg-detail-map .hkg-route-map__video {
+  transform: translate(-50%, 40px) scale(1.05) !important;
+  transform-origin: center top;
+}
+
+/* 各 profile 非 overview 节点：image + overlay scale 1.05 撑满消白边 + 单独 Y 偏移
+   transition transform 让 dataset.current 切换瞬间 scale 0→1.05 平滑过渡 */
+.hkg-detail-map .hkg-route-map__image,
+.hkg-detail-map .hkg-route-map__incoming {
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hkg-detail-screen[data-profile="family"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__image,
+.hkg-detail-screen[data-profile="family"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__incoming,
+.hkg-detail-screen[data-profile="family"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__overlay {
+  transform: translate(-50%, 34px) scale(1.05) !important; /* 上移 6px + 放大 */
+}
+
+.hkg-detail-screen[data-profile="business"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__image,
+.hkg-detail-screen[data-profile="business"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__incoming,
+.hkg-detail-screen[data-profile="business"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__overlay {
+  transform: translate(-50%, 28px) scale(1.05) !important; /* 上移 12px + 放大 */
+}
+
+.hkg-detail-screen[data-profile="transfer"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__image,
+.hkg-detail-screen[data-profile="transfer"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__incoming,
+.hkg-detail-screen[data-profile="transfer"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__overlay {
+  transform: translate(-50%, 48px) scale(1.05) !important; /* 下移 8px + 放大 */
+}
+
+/* image / video 都保持原 contain，不裁切 */
+
+/* 节点标签（shortLabel tag）改放圆点右侧水平位置；
+   接近右边缘的节点（x ≥ 70%）通过 data-label-side="left" 切到左侧 */
+.hkg-detail-map .hkg-route-node__tag {
+  top: 50% !important;
+  left: calc(50% + 18px) !important;
+  right: auto;
+  transform: translateY(-50%) !important;
+}
+
+.hkg-detail-map .hkg-route-node[data-label-side="left"] .hkg-route-node__tag {
+  left: auto !important;
+  right: calc(50% + 18px) !important;
+  transform: translateY(-50%) !important;
+}
 
 /* 浮动 appbar：放在地图上方 + safe-top 顶部 + 仅按钮可点 */
 .hkg-detail-screen .appbar.appbar--transparent {

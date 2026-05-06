@@ -233,6 +233,13 @@ function attachDetailSheet(rootFrame, profile) {
   const sheet = rootFrame.querySelector("#itin-sheet");
   if (!screen || !sheet) return;
 
+  // 节点标签朝向：默认右侧水平；x ≥ 70% 切左侧（避免触碰容器右边缘）
+  rootFrame.querySelectorAll(".hkg-route-node").forEach((btn) => {
+    const xStr = btn.style.getPropertyValue("--node-x") || "";
+    const xVal = parseFloat(xStr);
+    btn.dataset.labelSide = xVal >= 70 ? "left" : "right";
+  });
+
   // 拖拽（复用原版 attachItinSheetDrag）—— 3 档：map / card1 / half
   attachItinSheetDrag(screen, (mode) => {
     if (mode === "map") screen.dataset.mode = "map";
@@ -245,6 +252,8 @@ function attachDetailSheet(rootFrame, profile) {
   const triggerCard = (btn) => {
     const nodeId = btn.dataset.hkgCardLink;
     if (!nodeId) return;
+    // 即时点击态：先把卡片高亮，再触发地图转场（视频在背后加载）
+    highlight(nodeId);
     mapEl?.dispatchEvent(new CustomEvent("hkg:goto", { detail: { nodeId } }));
   };
   rootFrame.querySelectorAll("[data-hkg-card-link]").forEach((btn) => {

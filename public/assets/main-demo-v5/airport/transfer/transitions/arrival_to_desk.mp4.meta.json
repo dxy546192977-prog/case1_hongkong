@@ -1,0 +1,15 @@
+{
+  "id": "arrival_to_desk",
+  "label": "Transfer arrival → boarding-pass desk",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfd59-232b-7ac2-bcd7-185fd036b4b4",
+  "remote_url": "https://v3b.fal.media/files/b/0a991f70/F6dOYOe6qw3-kO-PbYXUv_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the arrival corridor with green Transfer signage onward into the airline Transit / Transfer Desk frame. Stay airside, keep the dotted transfer route stable, calm reassuring pacing. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not invent flight times, fixed gate numbers, retail brands, airline logos, extra signs, or dense text. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/transfer/arrival.png",
+  "end_image": "public/assets/main-demo-v5/airport/transfer/desk.png",
+  "completed_at": "2026-05-06T12:56:51.568Z"
+}

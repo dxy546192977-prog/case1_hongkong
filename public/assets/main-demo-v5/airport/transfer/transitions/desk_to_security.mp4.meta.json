@@ -1,0 +1,15 @@
+{
+  "id": "desk_to_security",
+  "label": "Transfer desk → transit security",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfda1-2b23-7c20-9d9d-912cceec8e3c",
+  "remote_url": "https://v3b.fal.media/files/b/0a992141/EDO9BqKwoS82sygGghANw_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second forward-progressing camera move from the airline Transit Desk frame INTO the airside Transfer Security frame with x-ray belts and tray pickup. The forward direction MUST be FROM lower-left INTO upper-right (or center-right) of the map — the security cluster lies up-and-right relative to the desk. Acceptable motion: dolly-in / zoom-in centered on the upper-right security cluster, OR a forward push that scales up the security area. The camera must NOT slide leftward, must NOT drift backward, must NOT feel like reversing or retreating. Element-morph between frames is acceptable as long as the visual progression goes forward toward the upper-right destination. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not add new factual text, gate numbers, flight times, airline logos, or specific eligibility wording. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/transfer/desk.png",
+  "end_image": "public/assets/main-demo-v5/airport/transfer/security.png",
+  "completed_at": "2026-05-06T14:14:13.753Z"
+}

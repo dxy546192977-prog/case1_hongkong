@@ -1,0 +1,25 @@
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public/prototypes
+    - cp -R prototypes/main-demo-v5 public/prototypes/main-demo-v5
+    - |
+      cat > public/index.html <<'HTML'
+      <!doctype html>
+      <html lang="zh-CN">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta http-equiv="refresh" content="0; url=./prototypes/main-demo-v5/index.html" />
+          <title>JourneyKit Demo</title>
+        </head>
+        <body>
+          <a href="./prototypes/main-demo-v5/index.html">打开 JourneyKit main-demo-v5</a>
+        </body>
+      </html>
+      HTML
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

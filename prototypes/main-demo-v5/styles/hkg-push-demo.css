@@ -32,8 +32,8 @@
 
 /* ---------- 共用 accent 变量（统一主蓝，覆盖 profile.accent 内联值） ---------- */
 .hkg-push-screen,
-.hkg-detail-screen {
-  --hkg-accent: var(--accent-primary, #0044ff) !important;
+.ta-screen {
+  --hkg-accent: var(--accent-primary, #0011ff) !important;
   --hkg-accent-soft: var(--accent-blue-tint, #e5ecff) !important;
 }
 
@@ -138,6 +138,7 @@
   font-weight: var(--w-semibold);
   color: var(--ink, #161b24);
   letter-spacing: 0;
+  text-align: left;
 }
 
 .hkg-push-card .trip-card-detail__lead {
@@ -163,6 +164,142 @@
   border: 1px solid color-mix(in srgb, var(--hkg-accent), transparent 80%);
   border-radius: var(--r-pill);
   font-weight: var(--w-medium);
+}
+
+/* ---------- 推送卡 · 行程 / 中转提示清单（融合图1 的分点结构） ---------- */
+.hkg-push-card__highlights {
+  margin: 4px 0 14px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.hkg-push-card__highlights-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 0;
+  padding: 2px 2px 10px;
+  border-bottom: 1px solid #e9edf3;
+}
+
+.hkg-push-card__highlights-title {
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink, #161b24);
+  letter-spacing: 0;
+}
+
+.hkg-push-card__highlights-meta {
+  font-size: var(--t-11);
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+}
+
+.hkg-push-card__highlights-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 行程时间轴：用小圆点 + 竖线串联各步骤，营造连续行程感 */
+/*
+  关键尺寸（保持一处变更、其余跟随）：
+  --tl-pad-x   : 容器左 padding（也是 icon 容器的起点）
+  --tl-icon-w  : icon 容器宽度
+  --tl-dot     : 圆点直径
+  圆点水平中心 = --tl-pad-x + --tl-icon-w / 2
+  竖线 left    = 圆点中心 - 竖线宽度 / 2
+*/
+.hkg-push-card__highlights-list {
+  --tl-pad-x: 2px;
+  --tl-icon-w: 16px;
+  --tl-dot: 8px;
+  --tl-line-w: 2px;
+}
+
+.hkg-push-card__highlight {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px var(--tl-pad-x);
+}
+
+/* 竖线：与圆点同轴居中，从当前 icon 容器底部延伸到下一项 icon 容器顶部 */
+.hkg-push-card__highlight::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--tl-pad-x) + var(--tl-icon-w) / 2 - var(--tl-line-w) / 2);
+  /* 起点：padding-top(10) + icon margin-top(2) + icon 高度(16) = 28 */
+  top: 28px;
+  /* 终点：延伸到下一项的 padding-top + icon margin-top = 12，加上当前 padding-bottom(10) = 0 (对齐下一项 icon 顶端) */
+  bottom: 0;
+  width: var(--tl-line-w);
+  background: #e3e7ef;
+  border-radius: 1px;
+}
+
+.hkg-push-card__highlight:last-child::before {
+  display: none;
+}
+
+/* 圆点：实心蓝色小圆，外围一圈白边强化与竖线的视觉分隔 */
+.hkg-push-card__highlight-icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: var(--tl-icon-w);
+  height: var(--tl-icon-w);
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hkg-push-card__highlight-icon::after {
+  content: "";
+  width: var(--tl-dot);
+  height: var(--tl-dot);
+  border-radius: 50%;
+  background: var(--hkg-accent);
+  box-shadow: 0 0 0 3px #fff;
+}
+
+.hkg-push-card__highlight-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hkg-push-card__highlight-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink, #161b24);
+  line-height: 1.3;
+}
+
+.hkg-push-card__highlight-time {
+  font-style: normal;
+  font-size: var(--t-11);
+  font-weight: var(--w-medium);
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+}
+
+.hkg-push-card__highlight-desc {
+  margin: 2px 0 0;
+  font-size: var(--t-12);
+  line-height: 1.5;
+  color: var(--ink-soft);
 }
 
 /* CTA 主按钮 */
@@ -214,16 +351,16 @@
 }
 
 /* ============================================================
- * 详情页 · 复用 .itin-screen / .appbar--transparent / .itin-sheet
+ * 详情页 · 复用沉浸式 H5 皮肤（.ta-screen + airport-flipbook + .ta-sheet）
+ *
+ * 详情屏整体样式由 transit-assistant.css / personas.css 提供，本文件仅做：
+ *   1. 加急话术块（.hkg-talktracks）样式补充
+ *   2. push demo 特有的「ta-section--talktracks」头部留白微调
  * ============================================================ */
 
-.hkg-detail-screen {
-  /* composer-h 改成 bare 高度，消除底 bar 上方灰带 */
-  background: #ecf3fb;
-  --composer-h: var(--composer-bare-h, 105px);
-
-  /* 新档位：card1 = 默认露 1 张完整卡（handle + 1 卡 + 留白 ≈ 182px） */
-  --sheet-h-card1: 182px;
+/* push demo 在 ta-sheet body 末尾追加的话术 section */
+.ta-sheet__body .ta-section--talktracks {
+  margin-top: 4px;
 }
 
 .hkg-detail-screen[data-mode="card1"] { --sheet-h: var(--sheet-h-card1); }
@@ -440,7 +577,7 @@
   font-weight: var(--w-semibold);
 }
 
-/* 加急话术（中转） */
+/* 加急话术（中转 profile 专属） */
 .hkg-talktracks {
   margin-top: 14px;
   display: flex;
@@ -505,7 +642,7 @@
 }
 
 .hkg-demo-switcher button {
-  --hkg-accent: var(--accent-primary, #0044ff);
+  --hkg-accent: var(--accent-primary, #0011ff);
   padding: 5px 12px;
   border: 0;
   border-radius: 999px;

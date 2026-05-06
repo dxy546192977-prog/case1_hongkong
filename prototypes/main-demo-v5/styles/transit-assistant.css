@@ -1,0 +1,1205 @@
+/* ============================================================
+   香港机场中转管家 · 全屏地图屏样式（.ta-screen / .ta-sheet / ...）
+   ------------------------------------------------------------
+   独立模块。主项目通过 components.css 的 @import 引入；独立预览
+   页（standalone/子效果_H5沉浸式_亲子人群.html）也直接 link 这个文件。
+   改这里就两边都改。
+
+   依赖的 CSS 变量（base.css / tokens.css 提供）：
+     --bg-page / --bg-surface / --bg-surface-soft / --bg-surface-mute
+     --hairline / --hairline-strong
+     --ink / --ink-mid / --ink-muted / --ink-soft / --ink-faint
+     --accent-primary / --accent-blue-tint / --accent-blue-soft
+     --t-11 ~ --t-22 / --w-medium / --w-semibold
+     --r-sm / --r-md / --r-lg / --r-xl / --r-pill
+     --elev-1 / --elev-2 / --elev-sheet
+     --dur-fast / --ease-os
+     --safe-bottom
+   ============================================================ */
+
+/* ---- 设计 token（局部，仅 .ta-screen 和折叠卡共享时使用） ----
+ * 折叠卡（.transit-card）也复用这一组变量，所以这里也声明一份；
+ * transit-card.css 里同样会声明，二选一加载也能正常工作。
+ *
+ * 3 类人群差异化：--ta-blue / --ta-blue-soft 走 --persona-accent / --persona-accent-soft
+ * （由 styles/personas.css 在 [data-persona] 上定义；未挂 persona 时
+ *  fallback 到原港航蓝，保持向后兼容）。--ta-family 在亲子人群下与
+ *  --ta-blue 同色（亲子的"暖粉"既是主色也是亲子点缀色），其它人群下走
+ *  独立的 family token，让"亲子专属"信号在通用模板里仍然存在但被弱化。
+ */
+.airport-screen--assistant,
+.ta-screen,
+.transit-card {
+  --ta-blue: var(--persona-accent, var(--accent-primary));
+  --ta-blue-soft: var(--persona-accent-soft, var(--accent-blue-tint));
+  --ta-blue-faint: var(--persona-accent-tint, var(--accent-blue-soft));
+  /* 锚定/编辑态统一使用中性蓝，不随 persona 变粉/金 */
+  --ta-anchor: #0011ff;
+  --ta-anchor-soft: #e9eeff;
+  --ta-anchor-faint: #f5f7ff;
+  --ta-green: #1f9d55;
+  --ta-green-soft: #e6f6ec;
+  --ta-amber: #d68a1a;
+  --ta-amber-soft: #fff3df;
+  --ta-family: #c93a6a;
+  --ta-family-soft: #ffeef3;
+  --ta-card-bg: #ffffff;
+  --ta-card-border: rgba(15, 17, 22, 0.08);
+}
+
+/* 亲子人群：把 family 提示色与人群强调色对齐（暖粉一体感） */
+[data-persona="family"].ta-screen,
+[data-persona="family"].transit-card {
+  --ta-family: var(--persona-accent);
+  --ta-family-soft: var(--persona-accent-soft);
+}
+
+/* ---------- 通用 section ---------- */
+.ta-section {
+  margin-top: 22px;
+}
+.ta-section__head {
+  margin: 0 0 12px;
+}
+.ta-section__title {
+  margin: 0 0 4px;
+  font-size: var(--t-15);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.ta-section__sub {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+/* ---------- HERO ---------- */
+.ta-hero {
+  padding: 16px;
+  background: var(--ta-card-bg);
+  border-radius: var(--r-lg);
+  border: 1px solid var(--ta-card-border);
+  box-shadow: var(--elev-1);
+}
+
+.ta-hero__chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* chip 统一灰底胶囊 + 前置 brand 蓝小圆点
+ * 自适应规则：
+ * 1) chip 内部不折行（white-space: nowrap），保证「HKG 中转管家」不会被拆成两行
+ * 2) chip 之间允许换行（容器侧 flex-wrap: wrap），窄屏自动堆到下一行
+ * 3) 给 chip 一个 max-width: 100%，极端窄屏时单个 chip 自身可省略号兜底
+ */
+.ta-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-size: var(--t-11);
+  font-weight: var(--w-medium);
+  line-height: 1.25;
+  background: #f2f4f7;
+  color: #475467;
+  white-space: nowrap;
+  max-width: 100%;
+  min-width: 0;
+}
+.ta-chip > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.ta-chip::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ta-blue);
+  opacity: 0.7;
+}
+.ta-chip svg {
+  flex: 0 0 auto;
+  color: currentColor;
+  opacity: 0.7;
+}
+.ta-chip--mode,
+.ta-chip--family,
+.ta-chip--feel-ok,
+.ta-chip--feel-normal,
+.ta-chip--feel-warn,
+.ta-chip--flight {
+  background: #f2f4f7;
+  color: #475467;
+}
+
+.ta-hero__title {
+  margin: 0 0 4px;
+  font-size: var(--t-22);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+}
+.ta-hero__tagline {
+  margin: 0 0 14px;
+  font-size: var(--t-13);
+  color: var(--ink-mid);
+}
+
+/* time-strip：抵达/起飞 + 中央黑底 pill */
+.ta-hero__meter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  background: #f2f4f7;
+  border-radius: var(--r-md);
+  border: 0;
+}
+.ta-hero__meter-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 48px;
+  flex: 1 1 0;
+}
+.ta-hero__meter-col--end {
+  align-items: flex-end;
+}
+.ta-hero__meter-label {
+  font-size: var(--t-11);
+  color: var(--ink-muted);
+}
+.ta-hero__meter-time {
+  font-size: var(--t-17);
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: 0.2px;
+}
+.ta-hero__meter-bar {
+  position: relative;
+  flex: 0 0 auto;
+  height: auto;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+}
+.ta-hero__meter-bar-fill {
+  display: none;
+}
+.ta-hero__meter-bar-tag {
+  position: static;
+  transform: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--t-12);
+  font-weight: var(--w-semibold);
+  border-radius: var(--r-pill);
+  white-space: nowrap;
+}
+.ta-hero__meter-bar-tag::after {
+  display: none;
+}
+
+/* notice 行：背景色 + 圆形高亮色瓦面 + 居中图标 */
+.ta-hero__status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  margin-top: 0;
+  margin-bottom: 8px;
+  border-radius: var(--r-md);
+  text-align: left;
+}
+.ta-hero__status--ok {
+  background: rgba(31, 157, 85, 0.08);
+}
+.ta-hero__status--info {
+  background: rgba(214, 138, 26, 0.10);
+}
+.ta-hero__status--ok .ta-hero__status-icon {
+  background: rgba(31, 157, 85, 0.18);
+  color: var(--ta-green);
+}
+.ta-hero__status--info .ta-hero__status-icon {
+  background: rgba(214, 138, 26, 0.18);
+  color: var(--ta-amber);
+}
+.ta-hero__status-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-top: 0;
+}
+.ta-hero__status-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: left;
+  padding-top: 2px;
+}
+.ta-hero__status-label {
+  margin: 0 0 2px;
+  font-size: var(--t-13);
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+}
+.ta-hero__status-tip {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  line-height: 1.5;
+  text-align: left;
+}
+.ta-hero__status-action {
+  margin: 8px 0 0;
+  font-size: var(--t-12);
+  font-weight: var(--w-medium);
+  color: var(--ink);
+  line-height: 1.5;
+  text-align: left;
+}
+
+.ta-hero__meter + .ta-hero__block-label {
+  margin-top: 16px;
+}
+.ta-hero__block-label {
+  margin: 14px 0 8px;
+  font-size: var(--t-11);
+  font-weight: 700;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+}
+
+.ta-counter {
+  padding: 12px 14px;
+  background: #fafbfc;
+  border-radius: var(--r-md);
+  border: 1px solid var(--ta-card-border);
+}
+.ta-counter__head {
+  margin-bottom: 2px;
+}
+.ta-counter__tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: var(--t-11);
+  font-weight: var(--w-semibold);
+  background: #e8f5ee;
+  color: #166a3a;
+}
+.ta-counter__tag[data-need="yes"] {
+  background: #fff3df;
+  color: #9a5b00;
+}
+.ta-counter__airline {
+  margin: 8px 0 4px;
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+}
+.ta-counter__sum,
+.ta-counter__next {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+.ta-counter__next {
+  margin-top: 8px;
+  color: var(--ink);
+  font-weight: var(--w-medium);
+}
+
+.ta-cd {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #f2f4f7;
+  border-radius: var(--r-md);
+  border: 1px solid var(--ta-card-border);
+}
+.ta-cd-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ta-blue);
+}
+.ta-cd-body {
+  flex: 1;
+  min-width: 0;
+}
+.ta-cd-title {
+  margin: 0 0 4px;
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+}
+.ta-cd-strat {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+
+.ta-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ta-alerts-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--ta-card-border);
+  background: var(--ta-card-bg);
+}
+.ta-alerts-item--warn {
+  background: var(--ta-amber-soft);
+  border-color: rgba(214, 138, 26, 0.45);
+}
+.ta-alerts-item--info {
+  background: #f7f8fa;
+}
+.ta-alerts-ico {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ink-muted);
+}
+.ta-alerts-item--warn .ta-alerts-ico {
+  color: var(--ta-amber);
+}
+.ta-alerts-body {
+  flex: 1;
+  min-width: 0;
+}
+.ta-alerts-ti {
+  margin: 0 0 4px;
+  font-size: var(--t-12);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+}
+.ta-alerts-tx {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  line-height: 1.45;
+}
+
+/* ---------- 任务清单 ---------- */
+.ta-tasks {
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px 6px;
+  background: var(--ta-card-bg);
+  border: 1px solid var(--ta-card-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--elev-1);
+}
+.ta-task {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  padding-bottom: 18px;
+}
+.ta-task:last-child {
+  padding-bottom: 0;
+}
+.ta-task__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 18px;
+  position: relative;
+}
+/* 圆点：时间与步骤列表左侧锚点（直径略小于正文行高，避免抢标题）
+ * - 直径 18px + 2px 描边
+ * - 极淡外圈光晕便于在亮背景上分界
+ */
+.ta-task__dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--ta-blue);
+  color: var(--ta-blue);
+  font-size: 10px;
+  font-weight: 700;
+  flex: 0 0 auto;
+  z-index: 2;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 2px rgba(0, 17, 255, 0.08);
+}
+.ta-task__line {
+  flex: 1 1 auto;
+  width: 2px;
+  margin-top: 4px;
+  background: #d8dde6;
+  border-radius: 2px;
+}
+/* done：实心深蓝 + 白勾，作为时间轴的"已完成锚点" */
+.ta-task--done .ta-task__dot {
+  background: var(--ta-blue);
+  border-color: var(--ta-blue);
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 17, 255, 0.12);
+}
+/* current：白底 + 蓝环 + 中心脉冲点，强调"进行中" */
+.ta-task--current .ta-task__dot {
+  background: #fff;
+  border-color: var(--ta-blue);
+  box-shadow:
+    0 0 0 2px rgba(0, 17, 255, 0.14),
+    0 0 0 5px rgba(0, 17, 255, 0.06);
+}
+.ta-task__dot-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ta-blue);
+  animation: ta-pulse 1.4s ease-in-out infinite;
+}
+.ta-task--upcoming .ta-task__dot {
+  border-color: #c7d0e0;
+  box-shadow: none;
+}
+.ta-task--upcoming .ta-task__dot-num {
+  display: none;
+}
+@keyframes ta-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.7); opacity: 0.6; }
+}
+.ta-task__body {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-top: 1px;
+}
+.ta-task__title {
+  margin: 0 0 2px;
+  font-size: var(--t-14);
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.ta-task--done .ta-task__title {
+  color: var(--ink-mid);
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-faint);
+}
+.ta-task--upcoming .ta-task__title {
+  color: var(--ink-soft);
+  font-weight: var(--w-medium);
+}
+.ta-task__sub {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+.ta-task__highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 4px 8px;
+  background: var(--bg-surface-mute, #f0f1f4);
+  color: var(--ink-mid);
+  border-radius: var(--r-sm);
+  font-size: var(--t-12);
+  line-height: 1.4;
+}
+.ta-task__highlight svg {
+  flex: 0 0 auto;
+  color: var(--ta-blue);
+}
+.ta-task--family .ta-task__highlight svg {
+  color: var(--ta-family);
+}
+
+/* ---------- 总览图（复用 flipbook） ---------- */
+.ta-overview {
+  margin: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+/* ---------- 服务推荐 ---------- */
+.ta-services {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ta-svc {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--ta-card-bg);
+  border: 1px solid var(--ta-card-border);
+  border-radius: var(--r-md);
+  box-shadow: var(--elev-1);
+}
+.ta-svc__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ebeef3;
+  border: 1px solid var(--hairline);
+  color: var(--ta-blue);
+  box-sizing: border-box;
+}
+.ta-svc--family .ta-svc__icon {
+  background: #ebeef3;
+  color: #000;
+}
+.ta-svc__family-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  background: transparent;
+  color: var(--ink-mid);
+  font-size: var(--t-11);
+  font-weight: var(--w-medium);
+  border-radius: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.ta-svc__family-tag-text {
+  white-space: nowrap;
+}
+.ta-svc__family-tag svg {
+  flex-shrink: 0;
+  color: var(--ta-family);
+}
+.ta-svc__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ta-svc__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin-bottom: 2px;
+}
+.ta-svc__title {
+  margin: 0;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--t-14);
+  font-weight: 600;
+  color: var(--ink);
+}
+.ta-svc__tags {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+.ta-svc__tag {
+  padding: 2px 6px;
+  background: var(--ta-blue-soft);
+  color: var(--ta-blue);
+  font-size: var(--t-11);
+  font-weight: var(--w-medium);
+  border-radius: var(--r-pill);
+  line-height: 1.2;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.ta-svc__sub {
+  margin: 0 0 4px;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+.ta-svc__note {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* ---------- 温馨提示 ---------- */
+.ta-section--tips {
+  padding-bottom: 0;
+}
+.ta-tips {
+  list-style: none;
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--ta-card-bg);
+  border: 1px solid var(--ta-card-border);
+  border-radius: var(--r-md);
+  box-shadow: var(--elev-1);
+}
+.ta-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  line-height: 1.6;
+}
+.ta-tip + .ta-tip {
+  border-top: 1px dashed var(--hairline);
+}
+.ta-tip__icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ebeef3;
+  border: 1px solid var(--hairline);
+  color: #000;
+  box-sizing: border-box;
+  margin-top: 0;
+}
+.ta-tip__icon svg {
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Transit Assistant v6 - 全屏地图 + 浮层 sheet + 常驻 composer
+   ============================================================ */
+
+.ta-screen {
+  /* 与 .composer 一致：pt8 + bar48 + disclaimer(pt4 + ~15 行文高) + pb(safe-4)；paragraph 默认 margin 已在 components 归零 */
+  --composer-h: calc(
+    8px + 48px + 4px + 20px + (var(--safe-bottom) - 4px)
+  );
+  --ta-sheet-top-gap: 96px;
+  --ta-sheet-h-list: calc(100% - var(--ta-sheet-top-gap) - var(--composer-h));
+  --ta-sheet-h-half: calc(55% - var(--composer-h) * 0.4);
+  --ta-sheet-h-peek: 200px;
+  --ta-sheet-h: var(--ta-sheet-h-half);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #f7f8fa;
+  overflow: hidden;
+}
+
+.ta-screen[data-sheet-mode="list"] { --ta-sheet-h: var(--ta-sheet-h-list); }
+.ta-screen[data-sheet-mode="half"] { --ta-sheet-h: var(--ta-sheet-h-half); }
+.ta-screen[data-sheet-mode="map"]  { --ta-sheet-h: var(--ta-sheet-h-peek); }
+
+/* map 档：横滑卡 + 标题即可，勿用固定超高留白 —— 高度随内容收紧 */
+.ta-screen[data-sheet-mode="map"] .ta-sheet {
+  height: auto;
+}
+
+/* half / list 档：高度随内容自适应，不超过最大值时不留空白 */
+.ta-screen[data-sheet-mode="half"] .ta-sheet,
+.ta-screen[data-sheet-mode="list"] .ta-sheet {
+  height: auto;
+  max-height: var(--ta-sheet-h);
+  transition: max-height 360ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- 全屏地图舞台 ---------- */
+.ta-stage {
+  position: absolute;
+  inset: 0 0 var(--composer-h) 0;
+  background: #f7f8fa;
+  z-index: 1;
+  overflow: hidden;
+}
+.ta-stage .airport-flipbook {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+.ta-stage .afp-stage {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  margin: 0;
+  background: #f7f8fa;
+}
+.ta-stage .airport-flipbook > .airport-card__body-section {
+  display: none;
+}
+.ta-stage .afp-image,
+.ta-stage .afp-incoming {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+/* ---------- 全局/局部 视角切换 segmented ---------- */
+.ta-scope-toggle {
+  position: absolute;
+  top: 19px;
+  right: 16px;
+  z-index: 6;
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--elev-2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  gap: 2px;
+}
+.ta-scope-toggle__btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--ink-mid, #5a6070);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease;
+  font-family: inherit;
+  line-height: 1;
+}
+.ta-scope-toggle__btn.is-active {
+  background: var(--accent-primary, #0011ff);
+  color: #fff;
+}
+.ta-scope-toggle__btn:not(.is-active):active {
+  background: rgba(15, 17, 22, 0.06);
+}
+
+/* ---------- 浮动返回按钮 ---------- */
+.ta-screen__back {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  box-shadow: var(--elev-2);
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.ta-screen__back:active {
+  transform: scale(0.94);
+}
+
+/* ---------- 浮层 sheet ---------- */
+.ta-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* 与 composer 之间留 8px 视觉缝隙，避免 rail-card 被输入框压住 */
+  bottom: calc(var(--composer-h) + 8px);
+  max-height: var(--ta-sheet-h);
+  background: var(--bg-surface);
+  border-top-left-radius: var(--r-xl);
+  border-top-right-radius: var(--r-xl);
+  box-shadow: var(--elev-sheet);
+  display: flex;
+  flex-direction: column;
+  transition: max-height 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 5;
+  overflow: hidden;
+}
+.ta-sheet.is-dragging {
+  transition: none;
+}
+
+.ta-sheet__handle {
+  flex: 0 0 auto;
+  width: 100%;
+  padding: 8px 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+}
+.ta-sheet__handle:active { cursor: grabbing; }
+.ta-sheet__handle-bar {
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ink-faint);
+}
+
+.ta-sheet__head {
+  flex: 0 0 auto;
+  padding: 6px 16px 12px;
+  cursor: grab;
+  touch-action: none;
+  border-bottom: 0;
+}
+.ta-sheet__head:active { cursor: grabbing; }
+/* 标题 + 场景标签同一行：标签紧跟标题右侧 12px，无前置圆点 */
+.ta-sheet-head__top {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 12px;
+  min-width: 0;
+}
+.ta-sheet-head__title {
+  margin: 0;
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: var(--t-17);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    font-size var(--dur-emph) var(--ease-out-soft),
+    line-height var(--dur-emph) var(--ease-out-soft);
+}
+/* 收起最短档（map）：顶栏标题用小字；其它档位与大标题层级一致 */
+.ta-screen[data-sheet-mode="map"] .ta-sheet-head__title {
+  font-size: var(--t-15);
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ta-sheet-head__chip {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.ta-sheet-head__chip::before {
+  display: none;
+  content: none;
+}
+.ta-sheet-head__chip > span {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+.ta-sheet__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px 16px 8px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.ta-sheet__body::-webkit-scrollbar {
+  width: 4px;
+}
+.ta-sheet__body::-webkit-scrollbar-thumb {
+  background: var(--hairline-strong);
+  border-radius: 4px;
+}
+
+/* map 模式：隐藏 body（竖向列表），显示横滑卡片 */
+.ta-screen[data-sheet-mode="map"] .ta-sheet__body {
+  display: none;
+}
+
+/* half / list 模式：隐藏横滑卡片，显示竖向列表 */
+.ta-rail {
+  flex: 0 0 auto;
+  padding: 8px 16px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ta-rail::-webkit-scrollbar { display: none; }
+/* half / list 模式隐藏横滑卡片（提升特异性，确保覆盖 .ta-rail.route-rail） */
+.ta-screen[data-sheet-mode="half"] .ta-rail,
+.ta-screen[data-sheet-mode="half"] .ta-rail.route-rail,
+.ta-screen[data-sheet-mode="list"] .ta-rail,
+.ta-screen[data-sheet-mode="list"] .ta-rail.route-rail {
+  display: none;
+}
+
+/* ---------- 横滑步骤卡片（.rail-card） ---------- */
+.ta-rail.route-rail {
+  display: flex;
+  gap: 10px;
+  /* 正常小留白，首张卡天然贴左 16px；右边露出下一张卡的一截暗示可继续滑 */
+  padding: 8px 16px 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  /* mandatory：每次滑动结束必定吸附到一张卡 */
+  scroll-snap-type: x mandatory;
+  /* 配合 snap-align: start 和 scrollIntoView({inline:'start'})，被选中的卡贴左 16px 吸附 */
+  scroll-padding-inline: 16px;
+  /* 勿设 nowrap：会继承到卡片内，压住步骤文案折行 */
+}
+.ta-rail.route-rail .rail-card {
+  /* start：滑动停下时，被选中的卡左侧贴齐容器（按 scroll-padding-inline 让出 16px） */
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.ta-rail.route-rail::-webkit-scrollbar {
+  display: none;
+}
+.rail-card {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  box-sizing: border-box;
+  /* 宽度与 snap 以 components.css .rail-card / .route-rail 为准 */
+  padding: 10px 14px;
+  background: var(--ta-card-bg, #fff);
+  border: 1px solid var(--ta-card-border, rgba(15,17,22,0.08));
+  border-radius: var(--r-md, 10px);
+  box-shadow: var(--elev-1, 0 1px 3px rgba(0,0,0,0.06));
+  cursor: pointer;
+  text-align: left;
+  white-space: normal;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+  font-family: inherit;
+  color: inherit;
+}
+.rail-card:active {
+  border-color: rgba(0, 17, 255, 0.4);
+  box-shadow: 0 0 0 1px rgba(0, 17, 255, 0.2);
+}
+.rail-card.is-map-active {
+  border-color: #7780f7;
+  box-shadow: 0 0 0 1px rgba(119, 128, 247, 0.45);
+}
+.rail-card__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ta-blue, var(--accent-primary, #0011ff));
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.rail-card__time {
+  font-size: var(--t-16, 16px);
+  font-weight: 700;
+  color: var(--ink, #0f131a);
+  line-height: 1.25;
+}
+.rail-card__route {
+  font-size: var(--t-13, 13px);
+  color: var(--ink-mid, #5a6070);
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+/* ---------- composer 在中转管家屏的固定定位 ---------- */
+.ta-screen .composer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 6;
+  background: var(--bg-page);
+  border-top: 0;
+}
+
+/* ---------- hero 在 sheet 内的微调 ---------- */
+.ta-sheet__body .ta-hero {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  margin-bottom: 4px;
+}
+.ta-sheet__body .ta-hero__tagline {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.ta-sheet__body > .ta-section:first-child,
+.ta-sheet__body > .ta-hero + .ta-section {
+  margin-top: 14px;
+}
+
+/* 中转竖向步骤列表：合法 ol>li + display:contents，不影响行程页 route-timeline */
+.ta-route-timeline > li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: contents;
+}
+.ta-route-gap {
+  /* 与 route-leg 左侧轴 + gap 对齐正文左缘（18 + 12） */
+  padding: 0 0 4px calc(18px + 12px);
+}
+.ta-route-gap__label {
+  display: block;
+  font-size: var(--t-11);
+  color: var(--ink-mid);
+  line-height: 1.35;
+}
+
+/* ============================================================
+   步骤 ↔ 地图联动交互样式
+   ============================================================ */
+/* 中转路径内的 route-leg 地图联动交互 */
+.ta-route-timeline .route-leg[data-map-target] {
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-os);
+}
+.ta-route-timeline .route-leg[data-map-target]:active .route-leg__card {
+  border-color: rgba(0, 17, 255, 0.45);
+  background: #f5f7ff;
+}
+
+/* 当前步骤与地图联动高亮 */
+.ta-route-timeline .route-leg.is-map-active .route-leg__card {
+  border-color: var(--ta-anchor, #0011ff);
+  background: var(--ta-anchor-faint, #f5f7ff);
+  box-shadow: 0 2px 8px rgba(0, 17, 255, 0.10);
+}
+.ta-route-timeline .route-leg.is-map-active .route-leg__index span {
+  background: var(--ta-anchor, #0011ff);
+  color: #fff;
+}
+.ta-route-timeline .route-leg.is-map-active .route-leg__main h3 {
+  color: var(--ta-anchor, #0011ff);
+}
+
+/* 横滑 rail-card 选中高亮 */
+.ta-rail .rail-card.is-selected {
+  border-color: var(--ta-anchor, #0011ff);
+  background: var(--ta-anchor-faint, #f0f2ff);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 17, 255, 0.12);
+}
+.ta-rail .rail-card.is-selected .rail-card__route {
+  color: var(--ta-anchor, #0011ff);
+}
+
+/* ============================================================
+   Composer 编辑模式（点击步骤卡片后激活）
+   ============================================================ */
+
+/* 编辑模式：增大 --composer-h，让 sheet 上移为 edit-context 行腾出空间。
+   实测 composer 高度变化（编辑态 vs 默认态）：
+   - edit-context 行高 ≈ 26px（11px 字 × 1.3 行高 + padding 6×2 = 28px）
+   - .composer__bar 的 row-gap: 6px
+   - .composer__bar 自身 padding 8px 10px（编辑态从 0 6 0 6 变成 8 10 8 10），多出上下 16px
+   合计需要额外腾出 ≈ 50px 才能完全不遮挡（留 4px 缓冲）。 */
+.ta-screen:has(.composer--editing) {
+  --composer-h: calc(
+    8px + 48px + 4px + 20px + (var(--safe-bottom) - 4px) + 50px
+  );
+}
+
+.composer--editing {
+  border-top: none;
+}
+.composer--editing .composer__bar {
+  height: auto;
+  min-height: 48px;
+  border-radius: 24px;
+  flex-wrap: wrap;
+  row-gap: 6px;
+  column-gap: 8px;
+  padding: 8px 10px;
+}
+.composer__edit-context {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 6px 8px;
+  background: rgba(15, 17, 22, 0.05);
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--ink-muted, #888);
+  line-height: 1.3;
+}
+.composer--editing .composer__edit-context {
+  display: flex;
+  order: 1;
+}
+.composer--editing .composer__bar > :not(.composer__edit-context) {
+  order: 2;
+}
+.composer__edit-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  background: var(--ta-anchor, #0011ff);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.composer__edit-hint {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.composer__edit-close {
+  flex: 0 0 auto;
+  width: 20px; height: 20px;
+  border: none; background: none;
+  cursor: pointer; color: var(--ink-muted, #888);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  font-size: 14px; line-height: 1;
+}
+.composer__edit-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+.composer--editing .composer__input {
+  height: 32px;
+}

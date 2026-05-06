@@ -1,52 +1,64 @@
-# JourneyKit
+# 行程规划项目文件索引
 
-JourneyKit 是一个点对点综合交通方案项目。当前本地项目用于 `case1_hongkong` 的初始化、原型迁移、资产沉淀和后续真实图像 API 接入实验。
+这个仓库当前由两条主线并行组成：
 
-## 当前状态
+- `case1_hongkong`：JourneyKit 香港行程原型线（`main-demo-v5`、历史迁移、资产沉淀）。
+- `case2_hongkong`：Qwen 高舱推荐 / 对话流 H5 线（含航司数据库、PPT、发布配置）。
 
-- 已迁移旧 `chat-demo2` 为独立静态原型：`prototypes/chat-demo2-legacy/index.html`。
-- 已整理香港机场、风格参考、交互示意、flipbook 参考视频和 image2 生成资产。
-- 已建立 `data/case1_hongkong/` 数据入口，后续用于主行程 UI、机场无限画布节点和图像生成服务。
-- 已接入完整串联 demo v5：`prototypes/main-demo-v5/`，覆盖首页、问答、方案、行程定制、下单、支付、行前准备和 HK 机场展开页。
-- 旧 FlyAI Flipbook Lab 仅作为素材来源，不是 JourneyKit 运行依赖。
-- 当前仓库是初版协作 demo，不是最终稿。详细状态见 `docs/DEMO_STATUS.md`。
+同时，根目录还保留了一套与 `case1_hongkong` 高度相似的 `prototypes/`、`public/`、`docs/` 目录，主要用于演示与过渡。
 
-## 本地预览
+## 建议你优先使用的入口
+
+- 维护 `case1_hongkong` 相关内容时：优先在 `case1_hongkong/` 下改动。
+- 维护 Qwen 高舱项目时：优先在 `case2_hongkong/` 下改动。
+- 根目录 `prototypes/` 与 `public/`：视为“工作台/兼容层”，新改动建议同步判断是否应沉淀到子 case。
+
+## 目录总览（按职责）
+
+```text
+case1_hongkong/                    香港行程规划主线（JourneyKit）
+  ├─ prototypes/main-demo-v5/      串联版主原型（首页到机场详情）
+  ├─ prototypes/chat-demo2-legacy/ 历史原型（参考用）
+  ├─ docs/                         case1 文档
+  └─ public/assets/                case1 静态资源
+
+case2_hongkong/                    Qwen 高舱推荐/对话流主线
+  ├─ 2 H5效果/                     主 H5 与子效果
+  ├─ 5 项目PPT/                    项目讲解页面与素材
+  ├─ 6 航司数据库/                 航司结构化数据
+  ├─ 7 上传Github/                 发布与对外说明
+  └─ 10 切图素材/                  共用切图资产
+
+prototypes/                        根目录原型（与 case1 存在重叠）
+public/assets/                     根目录资产（与 case1 存在重叠）
+docs/                              根目录项目文档（与 case1 存在重叠）
+```
+
+## 快速预览
+
+在仓库根目录启动静态服务：
 
 ```bash
-cd /Users/yunzhi/Workspace/03_Sandbox/JourneyKit
 python3 -m http.server 8899
 ```
 
-打开：
+常用页面：
 
-- `http://127.0.0.1:8899/prototypes/chat-demo2-legacy/index.html`
 - `http://127.0.0.1:8899/prototypes/main-demo-v5/index.html`
+- `http://127.0.0.1:8899/case1_hongkong/prototypes/main-demo-v5/index.html`
+- `http://127.0.0.1:8899/case2_hongkong/2%20H5效果/国泰Qwen-对话流.html`
 
-`main-demo-v5` 是当前可演示的完整串联 demo。`chat-demo2-legacy` 是旧原型迁移版，只用于参考“自由交通卡片展开 + playback2 转场”的交互骨架。
+## 文件整理规则（建议执行）
 
-## 协作与上传
+- 单一事实源：同一功能只保留一个“主维护目录”，其他目录只做镜像或归档。
+- 先标注再迁移：对重复目录先在 README 标注“主/备”，确认稳定后再清理。
+- 素材分类：`reference`（外部参考）、`generated`（AI 生成）、`runtime`（运行必需）分开存放。
+- 文档收口：同类文档尽量收敛到各自 case 的 `docs/`，根目录只留总索引与跨 case 约定。
+- 禁止提交敏感信息：`.env.local`、真实 API Key、超大原始媒体文件不入库。
 
-第一次把本地项目上传到空仓库时，按 `docs/UPLOAD_GUIDE.md` 操作。
+## 关联文档
 
-当前建议上传仓库结构、文档、数据、legacy demo 和必要 demo 资产；不要上传 `.env.local`、真实 API key、`资料备份/` 或大型本地原始视频。
-
-## 目录
-
-```text
-docs/                              项目计划、协作上下文、机场模块和资产流程
-prototypes/chat-demo2-legacy/       旧 chat-demo2 静态迁移原型
-prototypes/main-demo-v5/            当前完整串联 demo v5
-public/assets/reference/            机场、风格、交互、flipbook 参考资料
-public/assets/generated/image2-hkg/  网页端 ChatGPT Project / image2 生成资产
-public/assets/main-demo/             main-demo 静态图片资产
-public/assets/main-demo-v4/          main-demo HK 机场展开页图片和转场资产
-public/assets/prototype-legacy/      旧 playback2 图片和视频
-data/case1_hongkong/                香港 case 的结构化数据和生成落地目录
-```
-
-## API Key
-
-真实 key 只放 `.env.local`，不要提交。参考 `.env.example`。
-
-首版可支持 fal / Google / OpenAI image2 中的一个或多个 provider。无 key 时只能使用静态 fixture playback；有 key 后再启用本地 generation service 生成机场无限画布节点。
+- `case1_hongkong/README.md`
+- `case2_hongkong/README.md`
+- `docs/DEMO_STATUS.md`
+- `docs/UPLOAD_GUIDE.md`

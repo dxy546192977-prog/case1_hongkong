@@ -6,7 +6,7 @@
   --bg-surface-mute: #f2f3f5;
   --bg-chip: #ffffff; /* 首页 chip：Figma frame 01 是白底 + hairline */
   --bg-bubble-user-soft: #ebf5ff; /* Figma 取色：用户首条问句气泡（浅冷蓝白）*/
-  --bg-bubble-user-solid: #0044ff; /* Figma 取色：Q&A 答案与后续输入（实蓝白字）*/
+  --bg-bubble-user-solid: #0011ff; /* Figma 取色：Q&A 答案与后续输入（实蓝白字）*/
   --bg-dim: rgba(15, 17, 22, 0.34);
 
   /* ink — 取自 Figma 真实文字 fill */
@@ -21,8 +21,8 @@
   --hairline-strong: rgba(15, 17, 22, 0.10);
 
   /* accents — Figma 真实色 */
-  --accent-primary: #0044ff; /* 主蓝 Figma fill #0044ff */
-  --accent-primary-press: #0033cc;
+  --accent-primary: #0011ff; /* 主蓝统一为千问色 #0011FF */
+  --accent-primary-press: #000ee0;
   --accent-soft: #6666ff; /* 略亮按钮 Figma fill #6666ff（"立即预订"等）*/
   --accent-on-primary: #ffffff;
   --accent-blue-tint: #e5ecff; /* 次要标签 Figma fill #e5ecff */

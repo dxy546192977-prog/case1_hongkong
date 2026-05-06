@@ -60,16 +60,6 @@ export function renderAirportFlipbook(flipbook) {
         <div class="afp-hotspots" data-afp-hotspots data-show="true">
           ${hotspotsHtml}
         </div>
-        <button
-          type="button"
-          class="afp-reset"
-          data-afp-reset
-          aria-label="回到总览"
-          hidden
-        >
-          <span class="afp-reset__chev" aria-hidden="true"></span>
-          回到总览
-        </button>
       </figure>
 
       <div class="airport-card__body-section" data-afp-body>
@@ -93,7 +83,6 @@ export function attachAirportFlipbook(rootEl, flipbook) {
     incoming: rootEl.querySelector("[data-afp-incoming]"),
     video: rootEl.querySelector("[data-afp-video]"),
     hotspots: rootEl.querySelector("[data-afp-hotspots]"),
-    reset: rootEl.querySelector("[data-afp-reset]"),
     bodyTitle: rootEl.querySelector("[data-afp-body-title]"),
     bodyText: rootEl.querySelector("[data-afp-body-text]"),
     stage: rootEl.querySelector(".afp-stage"),
@@ -111,13 +100,6 @@ export function attachAirportFlipbook(rootEl, flipbook) {
 
   const setHotspotsVisible = (v) => {
     if (refs.hotspots) refs.hotspots.dataset.show = v ? "true" : "false";
-  };
-
-  const setResetVisible = (v) => {
-    if (refs.reset) {
-      if (v) refs.reset.removeAttribute("hidden");
-      else refs.reset.setAttribute("hidden", "");
-    }
   };
 
   const setBodyForNode = (nodeId) => {
@@ -227,8 +209,21 @@ export function attachAirportFlipbook(rootEl, flipbook) {
     refs.stage.classList.remove("afp-stage--fading");
   };
 
+  // pendingTarget：busy 期间最新的目标。busy 释放后立即补播一次，
+  // 避免高频外部调用（如 rail 横滑 IO 联动）被静默吞掉而看不到动画。
+  state.pendingTarget = null;
+
   const goTo = async (targetId, tap) => {
-    if (state.busy || targetId === state.currentId) return;
+    if (targetId === state.currentId) {
+      // 即便目标和当前一致，也清掉 pending（避免后续误补播）
+      state.pendingTarget = null;
+      return;
+    }
+    if (state.busy) {
+      // 把最新的目标记下来，等本次 busy 结束后再补播
+      state.pendingTarget = targetId;
+      return;
+    }
     const fromId = state.currentId;
     const toNode = nodesById.get(targetId);
     if (!toNode) return;
@@ -254,9 +249,15 @@ export function attachAirportFlipbook(rootEl, flipbook) {
       state.currentId = targetId;
       rootEl.dataset.current = targetId;
       setBodyForNode(targetId);
-      setResetVisible(targetId !== rootId);
     } finally {
       setBusy(false);
+      // 补播 pending：取出来 → 清掉 → 再调一次（如果还和当前不同）
+      const next = state.pendingTarget;
+      state.pendingTarget = null;
+      if (next && next !== state.currentId) {
+        // 用 microtask 让 busy=false 真正生效后再调
+        Promise.resolve().then(() => goTo(next, null));
+      }
     }
   };
 
@@ -269,7 +270,6 @@ export function attachAirportFlipbook(rootEl, flipbook) {
     rootEl.dataset.current = rootId;
     setBodyForNode(rootId);
     setHotspotsVisible(true);
-    setResetVisible(false);
   };
 
   // 光圈点击
@@ -279,8 +279,16 @@ export function attachAirportFlipbook(rootEl, flipbook) {
       (e) => {
         e.preventDefault();
         e.stopPropagation();
-        if (state.currentId !== rootId || state.busy) return;
         const targetId = btn.dataset.target;
+        if (!targetId) return;
+        // 先通知外部（hkg-push-demo）：用户主动点了一个 hotspot，需要联动滚 sheet 卡片。
+        // 这一步不受 flipbook 自身"只能从 overview 出发"的约束影响 —— 即使地图当前已经在
+        // 子节点视图（多个 hotspot 同框可见的状态），点其它 hotspot 也应让 sheet 跟着锚定。
+        if (typeof rootEl._afpOnHotspotTap === "function") {
+          rootEl._afpOnHotspotTap(targetId);
+        }
+        // 地图自身跳转：仍保留 flipbook 原有约束（仅 overview → 子节点；忙时丢弃）
+        if (state.currentId !== rootId || state.busy) return;
         const tap = { x: parseFloat(btn.dataset.x) || 0.5, y: parseFloat(btn.dataset.y) || 0.5 };
         goTo(targetId, tap);
       },
@@ -288,18 +296,14 @@ export function attachAirportFlipbook(rootEl, flipbook) {
     );
   });
 
-  if (refs.reset) {
-    refs.reset.addEventListener(
-      "click",
-      (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        reset();
-      },
-      { passive: false },
-    );
-  }
-
   // 初始：写一次 body 文案，确保和 currentId 一致
   setBodyForNode(state.currentId);
+
+  // 暴露外部 API：让 navigateMapTo / 编辑模式等外部调用方能直接节点 → 节点 跳转，
+  // 而不必"先 click reset 回 overview 再 click hotspot"那种 1→overview→2 的中转。
+  // 调用方约定：仅在 busy === false 时调；忙时可由调用方决定是否排队/丢弃。
+  rootEl._afpGoTo = (targetId) => goTo(targetId, null);
+  rootEl._afpReset = reset;
+  // 外部可以挂 onHotspotTap 回调，用于"地图 hotspot 点击 → 联动 sheet 卡片"
+  rootEl._afpOnHotspotTap = null;
 }

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#bac1d8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>子效果_H5折叠卡 · v5</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../styles/tokens.css?v=v5-1" />
+    <link rel="stylesheet" href="../styles/base.css?v=v5-1" />
+    <link rel="stylesheet" href="../styles/personas.css?v=v5-1" />
+    <link rel="stylesheet" href="../styles/components.css?v=v5-2" />
+    <style>
+      :root { --demo-bg: #bac1d8; }
+      body { background: var(--demo-bg); }
+      .stage { background: transparent; }
+
+      .persona-switcher {
+        position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 6px; padding: 6px 8px;
+        background: rgba(20, 20, 24, 0.88); backdrop-filter: blur(12px);
+        border-radius: 999px; z-index: 999;
+        font-family: -apple-system, "PingFang SC", sans-serif;
+      }
+      .persona-switcher button {
+        padding: 6px 12px; border: 0; border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08); color: #fff;
+        font-size: 12px; cursor: pointer;
+      }
+      .persona-switcher button[aria-current="true"] {
+        background: #fff; color: #0f131a;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="persona-switcher" id="personaSwitcher" role="group" aria-label="切换人群">
+      <button type="button" data-persona="default">默认</button>
+      <button type="button" data-persona="family" aria-current="true">亲子</button>
+      <button type="button" data-persona="business">商旅</button>
+    </div>
+
+    <script type="module">
+      import { mountShell } from "./_shell.js";
+      import { renderTransitCard } from "../src/views/transit-card.js";
+      import { buildPersonaDetail } from "./_personas.js";
+
+      const frame = mountShell({
+        activeKey: "card-kids",
+      });
+
+      const switcher = document.getElementById("personaSwitcher");
+
+      function readPersonaFromHash() {
+        const m = (location.hash || "").match(/persona=([a-z]+)/i);
+        return m ? m[1] : null;
+      }
+      let currentPersona = readPersonaFromHash() || "family";
+
+      function paint() {
+        const d = buildPersonaDetail(currentPersona);
+        const transit = d.transit;
+        frame.innerHTML = `
+          <header class="appbar">
+            <button class="appbar__icon" aria-label="返回">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="appbar__title">出行助手</div>
+            <button class="appbar__icon" aria-label="更多">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+            </button>
+          </header>
+
+          <div class="feed">
+            <div class="trip-detail trip-detail--plain">
+              <p class="trip-detail__lead">亲子中转已为你规划好，已优先串联婴儿车租借、育婴室和安静休息点，按路线走更省心。</p>
+              <h3 class="trip-detail__section-title">中转提示 · ${transit.modeLabel}</h3>
+              ${renderTransitCard(d, transit, currentPersona)}
+            </div>
+          </div>
+        `;
+      }
+
+      function syncSwitcher() {
+        switcher.querySelectorAll("button").forEach((b) => {
+          b.setAttribute("aria-current", b.dataset.persona === currentPersona ? "true" : "false");
+        });
+      }
+
+      switcher.addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-persona]");
+        if (!btn) return;
+        currentPersona = btn.dataset.persona;
+        syncSwitcher();
+        paint();
+      });
+
+      frame.addEventListener("click", (e) => {
+        const btn = e.target.closest('[data-action="expand-trip-card"]');
+        if (btn) {
+          window.location.href = `./子效果_H5沉浸式_亲子人群.html#persona=${currentPersona}`;
+        }
+      });
+
+      paint();
+      syncSwitcher();
+    </script>
+  </body>
+</html>

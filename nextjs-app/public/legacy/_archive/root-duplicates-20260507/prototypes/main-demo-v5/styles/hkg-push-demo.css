@@ -1,0 +1,714 @@
+/* ============================================================
+ * HKG 主动推送 demo 专用样式（v3 焕新：去渐变 + 复用原版组件）
+ * ============================================================ */
+
+.hkg-push-demo-body {
+  padding: 24px;
+  background: #ececee;
+}
+
+/* 顶部遮罩：状态栏（50px）所在区域 100% 白底保 9:41 / 5G 文字可读，
+   再向下延伸 30px 渐变到透明，避免硬白边 */
+.hkg-push-demo-body .statusbar {
+  background: transparent;
+}
+
+.hkg-push-demo-body .app::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 62%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+/* ---------- 共用 accent 变量（统一主蓝，覆盖 profile.accent 内联值） ---------- */
+.hkg-push-screen,
+.ta-screen {
+  --hkg-accent: var(--accent-primary, #0011ff) !important;
+  --hkg-accent-soft: var(--accent-blue-tint, #e5ecff) !important;
+}
+
+/* ============================================================
+ * 第一页 · chat 推送（思考 → 推送动画）
+ * ============================================================ */
+
+.hkg-push-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: #fff;
+}
+
+.hkg-push-feed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px 18px;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hkg-push-feed::-webkit-scrollbar {
+  display: none;
+}
+
+/* thinking 占位 */
+.hkg-push-thinking {
+  align-self: flex-start;
+  animation: hkg-fadein 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 推送时间徽标 */
+.hkg-push-pushtag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  font-size: var(--t-11);
+  font-weight: var(--w-medium);
+  color: var(--hkg-accent);
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--hkg-accent), transparent 84%);
+  border-radius: var(--r-pill);
+  box-shadow: var(--elev-1);
+}
+
+.hkg-push-pushtag__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--hkg-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--hkg-accent), transparent 84%);
+  animation: hkg-pushtag-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hkg-pushtag-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* trip-detail 容器（沿用原版） */
+.hkg-push-trip-detail {
+  margin-top: 4px;
+}
+
+.hkg-push-trip-detail .trip-detail__top {
+  margin: 0 0 8px;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+}
+
+/* 推送卡（基于原 .trip-card-detail 不要渐变） */
+.hkg-push-card.trip-card-detail {
+  position: relative;
+  display: block;
+  background: #fff;
+  border: 1px solid #e6e8ee;
+  border-radius: var(--r-lg, 22px);
+  padding: 16px 16px 14px;
+  box-shadow: 0 12px 28px -22px rgba(16, 32, 58, 0.18);
+}
+
+.hkg-push-card .trip-card-detail__time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  margin-bottom: 6px;
+}
+
+.hkg-push-card .trip-card-detail__headline {
+  margin: 0 0 6px;
+  font-size: var(--t-19);
+  line-height: 1.25;
+  font-weight: var(--w-semibold);
+  color: var(--ink, #161b24);
+  letter-spacing: 0;
+  text-align: left;
+}
+
+.hkg-push-card .trip-card-detail__lead {
+  margin: 0 0 10px;
+  font-size: var(--t-13);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.hkg-push-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+
+.hkg-push-card__chips span {
+  display: inline-flex;
+  padding: 3px 9px;
+  font-size: var(--t-11);
+  color: var(--hkg-accent);
+  background: color-mix(in srgb, var(--hkg-accent-soft), #fff 24%);
+  border: 1px solid color-mix(in srgb, var(--hkg-accent), transparent 80%);
+  border-radius: var(--r-pill);
+  font-weight: var(--w-medium);
+}
+
+/* ---------- 推送卡 · 行程 / 中转提示清单（融合图1 的分点结构） ---------- */
+.hkg-push-card__highlights {
+  margin: 4px 0 14px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.hkg-push-card__highlights-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 0;
+  padding: 2px 2px 10px;
+  border-bottom: 1px solid #e9edf3;
+}
+
+.hkg-push-card__highlights-title {
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink, #161b24);
+  letter-spacing: 0;
+}
+
+.hkg-push-card__highlights-meta {
+  font-size: var(--t-11);
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+}
+
+.hkg-push-card__highlights-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 行程时间轴：用小圆点 + 竖线串联各步骤，营造连续行程感 */
+/*
+  关键尺寸（保持一处变更、其余跟随）：
+  --tl-pad-x   : 容器左 padding（也是 icon 容器的起点）
+  --tl-icon-w  : icon 容器宽度
+  --tl-dot     : 圆点直径
+  圆点水平中心 = --tl-pad-x + --tl-icon-w / 2
+  竖线 left    = 圆点中心 - 竖线宽度 / 2
+*/
+.hkg-push-card__highlights-list {
+  --tl-pad-x: 2px;
+  --tl-icon-w: 16px;
+  --tl-dot: 8px;
+  --tl-line-w: 2px;
+}
+
+.hkg-push-card__highlight {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px var(--tl-pad-x);
+}
+
+/* 竖线：与圆点同轴居中，从当前 icon 容器底部延伸到下一项 icon 容器顶部 */
+.hkg-push-card__highlight::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--tl-pad-x) + var(--tl-icon-w) / 2 - var(--tl-line-w) / 2);
+  /* 起点：padding-top(10) + icon margin-top(2) + icon 高度(16) = 28 */
+  top: 28px;
+  /* 终点：延伸到下一项的 padding-top + icon margin-top = 12，加上当前 padding-bottom(10) = 0 (对齐下一项 icon 顶端) */
+  bottom: 0;
+  width: var(--tl-line-w);
+  background: #e3e7ef;
+  border-radius: 1px;
+}
+
+.hkg-push-card__highlight:last-child::before {
+  display: none;
+}
+
+/* 圆点：实心蓝色小圆，外围一圈白边强化与竖线的视觉分隔 */
+.hkg-push-card__highlight-icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  width: var(--tl-icon-w);
+  height: var(--tl-icon-w);
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hkg-push-card__highlight-icon::after {
+  content: "";
+  width: var(--tl-dot);
+  height: var(--tl-dot);
+  border-radius: 50%;
+  background: var(--hkg-accent);
+  box-shadow: 0 0 0 3px #fff;
+}
+
+.hkg-push-card__highlight-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.hkg-push-card__highlight-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink, #161b24);
+  line-height: 1.3;
+}
+
+.hkg-push-card__highlight-time {
+  font-style: normal;
+  font-size: var(--t-11);
+  font-weight: var(--w-medium);
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums;
+}
+
+.hkg-push-card__highlight-desc {
+  margin: 2px 0 0;
+  font-size: var(--t-12);
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* CTA 主按钮 */
+.hkg-push-card__cta.btn--primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  font-size: var(--t-14);
+  font-weight: var(--w-semibold);
+  color: #fff;
+  background: var(--hkg-accent);
+  border: 0;
+  border-radius: var(--r-md, 12px);
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 160ms ease;
+  box-shadow: 0 12px 22px -16px color-mix(in srgb, var(--hkg-accent), #000 22%);
+}
+
+.hkg-push-card__cta.btn--primary:active {
+  transform: scale(0.985);
+}
+
+/* push 动画时序 */
+.hkg-push-anim-step-1 { animation: hkg-rise 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: 40ms; }
+.hkg-push-anim-step-2 { animation: hkg-rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: 200ms; }
+.hkg-push-anim-step-3 { animation: hkg-cardin 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: 460ms; }
+
+@keyframes hkg-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hkg-cardin {
+  0% { opacity: 0; transform: translateY(20px) scale(0.985); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes hkg-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* push 屏 composer 紧贴底部 */
+.hkg-push-screen .composer {
+  position: relative;
+  padding-bottom: calc(var(--safe-bottom, 0) + 14px);
+}
+
+/* ============================================================
+ * 详情页 · 复用沉浸式 H5 皮肤（.ta-screen + airport-flipbook + .ta-sheet）
+ *
+ * 详情屏整体样式由 transit-assistant.css / personas.css 提供，本文件仅做：
+ *   1. 加急话术块（.hkg-talktracks）样式补充
+ *   2. push demo 特有的「ta-section--talktracks」头部留白微调
+ * ============================================================ */
+
+/* push demo 在 ta-sheet body 末尾追加的话术 section */
+.ta-sheet__body .ta-section--talktracks {
+  margin-top: 4px;
+}
+
+.hkg-detail-screen[data-mode="card1"] { --sheet-h: var(--sheet-h-card1); }
+
+/* card1 模式：露 1 张卡的 body，hide lede/total/cta */
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__lede,
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__total,
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__cta {
+  display: none;
+}
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__body {
+  display: block;
+  /* card1 模式下默认仅露 1 卡，但 body 内仍可上下滑动看其余卡 */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 路书地图：整体上移 50px（原 60px 偏高，下移 10px 后更平衡） */
+.hkg-detail-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ecf3fb;
+  transform: translateY(-50px);
+}
+
+.hkg-detail-map .hkg-route-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* 3 张总览图实际都是 1024×1536 (2:3)，stage 统一锁 2:3
+   覆盖 syncImageRatio 写入的 inline 变量 → 切换永不跳容器尺寸
+   节点 x/y % 才能正确映射到图上对应位置 */
+.hkg-detail-screen .hkg-route-map__stage {
+  --hkg-media-ratio: 2 / 3 !important;
+}
+
+.hkg-detail-map .hkg-route-map__stage {
+  width: 100%;
+  height: 100%;
+}
+
+.hkg-detail-map .hkg-route-map__image,
+.hkg-detail-map .hkg-route-map__incoming,
+.hkg-detail-map .hkg-route-map__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+}
+
+/* 视频转图片不再"一跳"：videoing 离场不渐变，立即让位给 image
+   原 components.css 的 transition 260ms 会留下视频残影叠在已显示的 image 上
+   覆盖为 0ms 立即切，配合 waitImagePainted 已先画好 image 实现无缝替换
+   同时把视频 aspect-ratio 与 stage 一致，避免视频底部露出图片像素 */
+.hkg-detail-map .hkg-route-map__video {
+  transition: opacity 0ms !important;
+  aspect-ratio: var(--hkg-media-ratio) !important;
+}
+
+/* 隐藏 hkg-route-map 内部的"回到总览"按钮（深蓝色）
+   只保留 appbar 右上角的白底浮动按钮 */
+.hkg-detail-map .hkg-route-map__reset {
+  display: none !important;
+}
+
+/* 节点圆点视觉：实色蓝边白心（参考附图样式）+ 外圈白色脉冲描边 */
+.hkg-detail-map .hkg-route-node {
+  width: 44px;
+  height: 44px;
+}
+
+/* 内圈：白底实色蓝粗边（中心白点缩小，蓝边加粗） */
+.hkg-detail-map .hkg-route-node__ring {
+  width: 14px;
+  height: 14px;
+  background: #fff !important;
+  border: 3px solid var(--accent-primary, #0044ff) !important;
+  box-shadow:
+    0 2px 8px rgba(0, 68, 255, 0.20),
+    0 0 0 2px rgba(255, 255, 255, 0.85) !important;
+}
+
+/* 外圈：白色脉冲描边，宽度稍宽（28px）保持之前的视觉范围 */
+.hkg-detail-map .hkg-route-node__ring--outer {
+  width: 28px !important;
+  height: 28px !important;
+  background: transparent !important;
+  border: 2.5px solid rgba(255, 255, 255, 0.92) !important;
+  box-shadow: none !important;
+  animation: hkg-node-pulse-white 2400ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* 去掉中心实心点（附图样式不需要） */
+.hkg-detail-map .hkg-route-node__dot {
+  display: none !important;
+}
+
+@keyframes hkg-node-pulse-white {
+  0%   { transform: scale(0.9); opacity: 0.85; }
+  70%  { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* 默认（含总览态）：translate(-50%, 40px) 不放大 */
+.hkg-detail-map .hkg-route-map__image,
+.hkg-detail-map .hkg-route-map__incoming,
+.hkg-detail-map .hkg-route-map__overlay {
+  transform: translate(-50%, 40px) !important;
+  transform-origin: center top;
+}
+
+/* video 始终带 scale 1.05（让视频结束 → image 同尺寸切换，避免容器尺寸跳变） */
+.hkg-detail-map .hkg-route-map__video {
+  transform: translate(-50%, 40px) scale(1.05) !important;
+  transform-origin: center top;
+}
+
+/* 各 profile 非 overview 节点：image + overlay scale 1.05 撑满消白边 + 单独 Y 偏移
+   transition transform 让 dataset.current 切换瞬间 scale 0→1.05 平滑过渡 */
+.hkg-detail-map .hkg-route-map__image,
+.hkg-detail-map .hkg-route-map__incoming {
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hkg-detail-screen[data-profile="family"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__image,
+.hkg-detail-screen[data-profile="family"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__incoming,
+.hkg-detail-screen[data-profile="family"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__overlay {
+  transform: translate(-50%, 34px) scale(1.05) !important; /* 上移 6px + 放大 */
+}
+
+.hkg-detail-screen[data-profile="business"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__image,
+.hkg-detail-screen[data-profile="business"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__incoming,
+.hkg-detail-screen[data-profile="business"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__overlay {
+  transform: translate(-50%, 28px) scale(1.05) !important; /* 上移 12px + 放大 */
+}
+
+.hkg-detail-screen[data-profile="transfer"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__image,
+.hkg-detail-screen[data-profile="transfer"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__incoming,
+.hkg-detail-screen[data-profile="transfer"] .hkg-route-map:not([data-current="overview"]) .hkg-route-map__overlay {
+  transform: translate(-50%, 48px) scale(1.05) !important; /* 下移 8px + 放大 */
+}
+
+/* image / video 都保持原 contain，不裁切 */
+
+/* 节点标签（shortLabel tag）改放圆点右侧水平位置；
+   接近右边缘的节点（x ≥ 70%）通过 data-label-side="left" 切到左侧 */
+.hkg-detail-map .hkg-route-node__tag {
+  top: 50% !important;
+  left: calc(50% + 18px) !important;
+  right: auto;
+  transform: translateY(-50%) !important;
+}
+
+.hkg-detail-map .hkg-route-node[data-label-side="left"] .hkg-route-node__tag {
+  left: auto !important;
+  right: calc(50% + 18px) !important;
+  transform: translateY(-50%) !important;
+}
+
+/* 浮动 appbar：放在地图上方 + safe-top 顶部 + 仅按钮可点 */
+.hkg-detail-screen .appbar.appbar--transparent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  padding: calc(var(--safe-top, 0px) + 8px) 12px 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+.hkg-detail-screen .appbar.appbar--transparent .appbar__icon--floating {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 22px -16px rgba(16, 32, 58, 0.6);
+}
+
+/* sheet body 不显示原 lede（我们移除了），第一张卡顶替 */
+.hkg-detail-sheet__body {
+  padding-top: 4px;
+}
+
+/* 节点卡片：复用原版 .route-timeline / .route-leg / .route-leg__index / .route-leg__card
+   只在 hkg- 范围内做最小补充：overview 节点圆点中性色、卡片 cursor、span 内的加粗 */
+.hkg-route-timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hkg-route-leg {
+  outline: none;
+}
+
+.hkg-route-leg:focus-visible .route-leg__card {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-primary), transparent 40%);
+}
+
+/* overview 节点用中性灰圆点（不抢主线） */
+.hkg-route-leg--overview .route-leg__index span {
+  background: #d2d5dc;
+  color: #fff;
+  font-size: 11px;
+  font-weight: var(--w-medium);
+}
+
+/* 卡片中的 summary 文本里的加粗 */
+.hkg-route-leg .route-leg__card span[data-md] strong {
+  color: var(--ink);
+  font-weight: var(--w-semibold);
+}
+
+/* 加急话术（中转 profile 专属） */
+.hkg-talktracks {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hkg-talktracks__title {
+  font-size: 11px;
+  font-weight: var(--w-semibold);
+  color: var(--ink-mid);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.hkg-talktracks button {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.42;
+  color: var(--ink);
+  background: #f5f6f9;
+  border: 1px solid #e6e8ee;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hkg-talktracks button[data-copied="true"] {
+  background: color-mix(in srgb, var(--hkg-accent-soft), #fff 32%);
+  border-color: color-mix(in srgb, var(--hkg-accent), transparent 70%);
+}
+
+/* ============================================================
+ * 屏幕外切换器
+ * ============================================================ */
+
+.hkg-demo-switcher {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: rgba(20, 20, 24, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.hkg-demo-switcher__label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.08em;
+  padding: 0 4px;
+  text-transform: uppercase;
+}
+
+.hkg-demo-switcher button {
+  --hkg-accent: var(--accent-primary, #0011ff);
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 11px;
+  font-weight: var(--w-medium);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease;
+}
+
+.hkg-demo-switcher button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.hkg-demo-switcher button.is-active {
+  background: var(--hkg-accent);
+  color: #fff;
+}
+
+.screen-enter {
+  animation: hkg-screen-enter 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes hkg-screen-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hkg-push-demo-body {
+    padding: 0;
+  }
+
+  .hkg-push-demo-body .stage {
+    width: 100vw;
+    min-height: 100vh;
+  }
+
+  .hkg-push-demo-body .device {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .hkg-push-demo-body .app {
+    border-radius: 0;
+  }
+
+  .hkg-push-demo-body .notch {
+    display: none;
+  }
+
+  .hkg-demo-switcher {
+    bottom: 6px;
+    transform: translateX(-50%) scale(0.92);
+    transform-origin: bottom center;
+  }
+}

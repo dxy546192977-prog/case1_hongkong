@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#bac1d8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>子效果_H5沉浸式_亲子人群 · v5</title>
+    <link rel="icon" href="data:," />
+    <!-- 与主 index.html 完全一致的样式加载顺序：tokens → base → components -->
+    <!-- components.css 内部已 @import 了 transit-card.css 和 transit-assistant.css，不再单独 link -->
+        <link rel="stylesheet" href="../styles/tokens.css?v=v5-1" />
+    <link rel="stylesheet" href="../styles/base.css?v=v5-1" />
+    <link rel="stylesheet" href="../styles/personas.css?v=v5-1" />
+    <link rel="stylesheet" href="../styles/components.css?v=v5-4" />
+    <style>
+      :root { --demo-bg: #bac1d8; }
+      body { background: var(--demo-bg); }
+      .stage { background: transparent; }
+
+      /* 底部居中：人群切换器（替代原 map/half/list） */
+      .persona-switcher {
+        position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 6px; padding: 6px 8px;
+        background: rgba(20, 20, 24, 0.88); backdrop-filter: blur(12px);
+        border-radius: 999px; z-index: 999;
+        font-family: -apple-system, "PingFang SC", sans-serif;
+      }
+      .persona-switcher button {
+        padding: 6px 12px; border: 0; border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08); color: #fff;
+        font-size: 12px; cursor: pointer;
+      }
+      .persona-switcher button[aria-current="true"] {
+        background: #fff; color: #0f131a;
+      }
+
+      /* 覆盖共享样式：本页路径箭头宽度改为 12px */
+      .route-arrow-ico {
+        width: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="persona-switcher" id="personaSwitcher" role="group" aria-label="切换人群">
+      <button type="button" data-persona="default">默认</button>
+      <button type="button" data-persona="family" aria-current="true">亲子</button>
+      <button type="button" data-persona="business">商旅</button>
+    </div>
+
+    <script type="module">
+      // 与主项目 import 同一份模块 —— 改模块两边同步
+      import { mountShell } from "./_shell.js";
+      import { renderTransitAssistantScreen, attachTransitSheetDrag, attachTransitStepMapSync, navigateMapTo, clearStepSelection } from "../src/views/transit-assistant.js";
+      import { attachAirportFlipbook } from "../src/views/airport-flipbook.js";
+      import { buildPersonaDetail } from "./_personas.js";
+
+      // 注入主 index.html 同款的真机外壳 + 右下 dock（不显示顶部 banner）
+      const frame = mountShell({
+        activeKey: "assistant-kids",
+      });
+
+      // 从 URL hash 读取人群（折叠卡页跳过来时会带上 #persona=xxx）
+      function readPersonaFromHash() {
+        const m = (location.hash || "").match(/persona=([a-z]+)/i);
+        return m ? m[1] : null;
+      }
+
+      const personaSwitcher = document.getElementById("personaSwitcher");
+
+      const state = {
+        transitSheetMode: "half",
+        persona: readPersonaFromHash() || "family",
+        selectedStepIdx: null,   // 当前选中的步骤索引（null = 未选中 / 非编辑模式）
+        selectedMapTarget: null, // 当前选中步骤的 mapTarget id
+      };
+
+      // composer 关键词 → flipbook 节点映射
+      const KEYWORD_MAP = {
+        "值机": "checkin", "办理": "checkin", "柜台": "checkin", "check-in": "checkin", "checkin": "checkin",
+        "安检": "security", "出境": "security", "通关": "security", "security": "security",
+        "免税": "spine", "商业": "spine", "购物": "spine", "DFS": "spine",
+        "登机口": "lounge", "登机": "lounge", "贵宾": "lounge", "休息室": "lounge", "gate": "lounge",
+        "总览": "overview", "地图": "overview", "全景": "overview",
+      };
+
+      function paint() {
+        const d = buildPersonaDetail(state.persona);
+        frame.innerHTML = renderTransitAssistantScreen(d, state);
+
+        // 与主项目 render.js 一致：挂 flipbook 控制器 + sheet 拖拽控制器
+        const fb = frame.querySelector("[data-airport-flipbook]");
+        if (fb) attachAirportFlipbook(fb, d.airportFlipbook);
+        attachTransitSheetDrag(frame, (mode) => {
+          state.transitSheetMode = mode;
+          const screen = frame.querySelector(".ta-screen");
+          if (screen) screen.setAttribute("data-sheet-mode", mode);
+        });
+
+        // 挂步骤 ↔ 地图联动控制器（含编辑模式回调）
+        attachTransitStepMapSync(frame, {
+          onStepSelect(segId, mapTarget) {
+            // 再次点击已选中的卡片 → 退出编辑模式
+            if (state.selectedStepIdx === segId) {
+              exitEditMode();
+              return;
+            }
+            enterEditMode(segId, mapTarget);
+          },
+        });
+
+        // 注入编辑上下文行到 composer（仅首次 paint 后注入）
+        const composer = frame.querySelector(".composer");
+        if (composer && !composer.querySelector(".composer__edit-context")) {
+          const composerBar = composer.querySelector(".composer__bar");
+          const ctx = document.createElement("div");
+          ctx.className = "composer__edit-context";
+          ctx.innerHTML = `<span class="composer__edit-badge" data-edit-badge></span>
+            <span class="composer__edit-hint" data-edit-hint>修改此步骤的途经点</span>
+            <button class="composer__edit-close" data-action="exit-edit" aria-label="退出编辑">&times;</button>`;
+          if (composerBar) composerBar.insertBefore(ctx, composerBar.firstChild);
+        }
+
+        // 如果 paint 后仍处于编辑模式（如切换人群后），恢复编辑态视觉
+        if (state.selectedStepIdx != null) {
+          syncEditModeUI();
+        }
+
+        // composer 输入联动（关键词 + 编辑模式发送）
+        const composerInput = frame.querySelector(".composer__input");
+        if (composerInput) {
+          composerInput.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter") return;
+            const text = composerInput.value.trim();
+            if (!text) return;
+            e.preventDefault();
+
+            // ---- 编辑模式：修改途经点 ----
+            if (state.selectedStepIdx != null) {
+              handleEditSend(text, composerInput);
+              return;
+            }
+
+            // ---- 常规模式：关键词地图联动 ----
+            let matched = null;
+            for (const [kw, target] of Object.entries(KEYWORD_MAP)) {
+              if (text.includes(kw)) { matched = target; break; }
+            }
+
+            if (matched) {
+              navigateMapTo(frame, matched);
+              frame.querySelectorAll(".route-leg.is-map-active").forEach((el) => el.classList.remove("is-map-active"));
+              const step = frame.querySelector(`.route-leg[data-map-target="${matched}"]`);
+              if (step) step.classList.add("is-map-active");
+              composerInput.value = "";
+              showToast(`已切换到：${matched === "overview" ? "总览" : text}`);
+            } else {
+              showToast("可以试试：值机、安检、登机口、免税、柜台…");
+            }
+          });
+        }
+      }
+
+      // ---- 编辑模式：进入 / 退出 / 发送 ----
+
+      // 编辑模式切换时，--composer-h 会增大约 26px，导致 sheet bottom 上移。
+      // 为保持选中卡片的视觉锚定，需要记录卡片相对视口的位置，在 DOM 变化后补偿 scrollTop。
+      const EDIT_MODE_OFFSET = 26; // 与 CSS 中编辑模式额外增加的高度一致
+
+      function enterEditMode(segId, mapTarget) {
+        state.selectedStepIdx = segId;
+        state.selectedMapTarget = mapTarget;
+
+        // 记录选中卡片相对视口的位置，用于补偿滚动
+        const selectedLeg = frame.querySelector(`.route-leg[data-seg-id="${segId}"]`);
+        const sheetBody = frame.querySelector(".ta-sheet__body");
+        const legRectBefore = selectedLeg ? selectedLeg.getBoundingClientRect() : null;
+
+        syncEditModeUI();
+
+        // 等 CSS 变量生效后补偿滚动，让卡片位置不跳
+        if (sheetBody && legRectBefore && selectedLeg) {
+          requestAnimationFrame(() => {
+            const legRectAfter = selectedLeg.getBoundingClientRect();
+            const drift = legRectAfter.top - legRectBefore.top;
+            if (Math.abs(drift) > 1) {
+              sheetBody.scrollTop += drift;
+            }
+          });
+        }
+
+        // 聚焦输入框
+        const input = frame.querySelector(".composer__input");
+        if (input) {
+          input.placeholder = "输入修改内容，如：改为途经免税店…";
+          input.focus();
+        }
+      }
+
+      function exitEditMode() {
+        // 记录当前可视区第一个卡片的位置，用于补偿滚动
+        const sheetBody = frame.querySelector(".ta-sheet__body");
+        const firstVisibleLeg = sheetBody ? sheetBody.querySelector(".route-leg") : null;
+        const legRectBefore = firstVisibleLeg ? firstVisibleLeg.getBoundingClientRect() : null;
+
+        state.selectedStepIdx = null;
+        state.selectedMapTarget = null;
+        clearStepSelection(frame);
+        const composer = frame.querySelector(".composer");
+        if (composer) composer.classList.remove("composer--editing");
+
+        // 补偿滚动
+        if (sheetBody && legRectBefore && firstVisibleLeg) {
+          requestAnimationFrame(() => {
+            const legRectAfter = firstVisibleLeg.getBoundingClientRect();
+            const drift = legRectAfter.top - legRectBefore.top;
+            if (Math.abs(drift) > 1) {
+              sheetBody.scrollTop += drift;
+            }
+          });
+        }
+
+        const input = frame.querySelector(".composer__input");
+        if (input) {
+          input.placeholder = "问问机场任何事…";
+          input.value = "";
+        }
+      }
+
+      function syncEditModeUI() {
+        const composer = frame.querySelector(".composer");
+        if (!composer) return;
+        composer.classList.add("composer--editing");
+        const badge = composer.querySelector("[data-edit-badge]");
+        const hint = composer.querySelector("[data-edit-hint]");
+        const stepNum = parseInt(state.selectedStepIdx, 10) + 1;
+        if (badge) badge.textContent = `修改步骤${stepNum}`;
+        if (hint) {
+          const leg = frame.querySelector(`.route-leg[data-seg-id="${state.selectedStepIdx}"] .route-leg__main h3`);
+          hint.textContent = leg ? leg.textContent : "修改此步骤的途经点";
+        }
+      }
+
+      function buildMockEditResult(segId, rawText) {
+        const text = String(rawText || "").trim();
+        const deleteHint = /(删除|删掉|去掉|移除).*(途经点|路径点|该点|这点|这一段|这个点)?/.test(text);
+        const avoidHint = /不想|不要|绕开|避开/.test(text);
+        const toDutyFree = /免税|商店|购物|DFS/.test(text);
+        const toPlayArea = /儿童|游乐|放电/.test(text);
+        const toNursery = /育婴|哺乳|换尿布/.test(text);
+
+        if (deleteHint) {
+          return {
+            action: "delete",
+            route: "",
+            reason: "已删除该途经点，并自动衔接前后路径",
+          };
+        }
+
+        let route = text;
+        let reason = "";
+
+        if (segId === "1") {
+          if (avoidHint) {
+            route = "沿主通道直行 → 中转安检家庭通道";
+            reason = "已避开商业区绕行段，改为更直接路线";
+          } else if (toDutyFree) {
+            route = "婴儿车租借点 → 免税商业区短停 → 中转安检";
+            reason = "已加入免税短停点，预计额外增加约 6 分钟";
+          } else if (toNursery) {
+            route = "婴儿车租借点 → 最近育婴室 → 中转安检";
+            reason = "已插入育婴室停留点，便于换尿布与温奶";
+          } else {
+            route = `婴儿车租借点 → ${text}`;
+            reason = "已按你的输入生成替代途经点";
+          }
+        } else if (segId === "2") {
+          if (avoidHint) {
+            route = "中转安检家庭通道 → 主脊直行 → 登机口";
+            reason = "已取消可选绕路点，优先保证准点到达";
+          } else if (toPlayArea) {
+            route = "中转安检家庭通道 → 儿童游乐区短停 → 登机口";
+            reason = "已加入儿童区停留，系统将按登机时间动态收紧";
+          } else {
+            route = `中转安检家庭通道 → ${text} → 登机口`;
+            reason = "已按你的输入更新后续路径";
+          }
+        } else {
+          route = text;
+          reason = "已更新当前步骤描述";
+        }
+
+        return { action: "update", route, reason };
+      }
+
+      function removeNearestGap(segId) {
+        const node = frame.querySelector(`.route-leg[data-seg-id="${segId}"]`)?.closest("li");
+        if (!node) return;
+        const prev = node.previousElementSibling;
+        const next = node.nextElementSibling;
+        if (prev && prev.querySelector(".ta-route-gap")) {
+          prev.remove();
+          return;
+        }
+        if (next && next.querySelector(".ta-route-gap")) {
+          next.remove();
+        }
+      }
+
+      function reindexSteps() {
+        const legs = Array.from(frame.querySelectorAll(".route-leg[data-seg-id]"));
+        legs.forEach((leg, idx) => {
+          leg.dataset.segId = String(idx);
+          const idxEl = leg.querySelector(".route-leg__index span");
+          if (idxEl) idxEl.textContent = String(idx + 1);
+        });
+        const rails = Array.from(frame.querySelectorAll(".rail-card[data-seg-id]"));
+        rails.forEach((rail, idx) => {
+          rail.dataset.segId = String(idx);
+        });
+      }
+
+      function handleEditSend(text, inputEl) {
+        const segId = state.selectedStepIdx;
+        const stepNum = parseInt(segId, 10) + 1;
+        const mock = buildMockEditResult(segId, text);
+
+        if (mock.action === "delete") {
+          removeNearestGap(segId);
+          const legItem = frame.querySelector(`.route-leg[data-seg-id="${segId}"]`)?.closest("li");
+          if (legItem) legItem.remove();
+          const railItem = frame.querySelector(`.rail-card[data-seg-id="${segId}"]`);
+          if (railItem) railItem.remove();
+          reindexSteps();
+
+          inputEl.value = "";
+          showToast(`已删除步骤${stepNum}途经点，已自动重排路线`);
+          setTimeout(() => exitEditMode(), 500);
+          return;
+        }
+
+        // 更新对应卡片的路线文案（DOM 直接修改）
+        const leg = frame.querySelector(`.route-leg[data-seg-id="${segId}"] .route-leg__main h3`);
+        if (leg) {
+          leg.textContent = mock.route;
+          // 同步更新横滑 rail-card 文案
+          const rail = frame.querySelector(`.rail-card[data-seg-id="${segId}"] .rail-card__route`);
+          if (rail) rail.textContent = mock.route;
+        }
+
+        // 同步更新步骤原因文案（mock 反馈）
+        const reasonEl = frame.querySelector(`.route-leg[data-seg-id="${segId}"] .route-leg__card em`);
+        if (reasonEl && mock.reason) {
+          reasonEl.textContent = mock.reason;
+        }
+
+        inputEl.value = "";
+        showToast(`已重算步骤${stepNum}：${mock.reason || "路线已更新"}`);
+
+        // 短暂保持编辑态让用户看到反馈，再自动退出
+        setTimeout(() => exitEditMode(), 800);
+      }
+
+      function showToast(msg) {
+        const toast = document.getElementById("toast");
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.dataset.show = "true";
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => { toast.dataset.show = "false"; }, 2500);
+      }
+
+      function syncPersonaSwitcher() {
+        personaSwitcher.querySelectorAll("button").forEach((b) => {
+          b.setAttribute("aria-current", b.dataset.persona === state.persona ? "true" : "false");
+        });
+      }
+
+      personaSwitcher.addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-persona]");
+        if (!btn) return;
+        state.persona = btn.dataset.persona;
+        history.replaceState(null, "", `#persona=${state.persona}`);
+        syncPersonaSwitcher();
+        paint();
+      });
+
+      // 返回按钮 → 回折叠卡预览，把人群一并带回
+      // 退出编辑按钮 / 点击空白区域 → 退出编辑模式
+      frame.addEventListener("click", (e) => {
+        const back = e.target.closest('[data-action="collapse-trip-card"]');
+        if (back) {
+          window.location.href = `./子效果_H5折叠卡.html#persona=${state.persona}`;
+          return;
+        }
+
+        // 编辑上下文行的关闭按钮
+        const exitBtn = e.target.closest('[data-action="exit-edit"]');
+        if (exitBtn) {
+          exitEditMode();
+          return;
+        }
+
+        // 点击空白区域退出编辑模式（排除卡片、composer、按钮本身）
+        if (state.selectedStepIdx != null) {
+          const isCard = e.target.closest(".route-leg[data-map-target], .rail-card[data-map-target]");
+          const isComposer = e.target.closest(".composer");
+          if (!isCard && !isComposer) {
+            exitEditMode();
+          }
+        }
+      });
+
+      paint();
+      syncPersonaSwitcher();
+    </script>
+  </body>
+</html>

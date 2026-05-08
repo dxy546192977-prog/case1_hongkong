@@ -1,0 +1,70 @@
+/* ============================================================
+   3 类人群主题变量（--persona-*）
+   ------------------------------------------------------------
+   通过根节点 [data-persona="<key>"] 切换。transit-card.css /
+   transit-assistant.css 内所有"强调色 / icon 底色 / tag 配色"都
+   走这套变量，单点切换即可整套主题变化。
+
+   切换边界：[data-persona] 既挂在折叠卡的根 .transit-card 上，
+   也挂在全屏管家屏的根 .ta-screen 上，避免与 .transit-card 共
+   存时互相打架。
+
+   token 命名规则：
+     --persona-accent          主强调色（蓝/粉/金）
+     --persona-accent-press    主色按下态
+     --persona-accent-soft     主色淡底（chip / hint 背景）
+     --persona-accent-tint     主色更淡（hover / divider）
+     --persona-tag-bg          tag 底色
+     --persona-tag-fg          tag 文字
+     --persona-icon-bg         service icon 圆底
+     --persona-icon-fg         service icon 描边色
+     --persona-task-line       任务时间轴线段色
+     --persona-highlight-bg    任务 highlight 块底
+     --persona-highlight-fg    任务 highlight 文字
+   ============================================================ */
+
+/* 默认（与 tokens.css 的 --accent-primary 港航蓝一致） */
+:root,
+[data-persona="default"] {
+  --persona-accent: #0011ff;
+  --persona-accent-press: #000ee0;
+  --persona-accent-soft: #e5ecff;
+  --persona-accent-tint: #f3f6ff;
+  --persona-tag-bg: #e5ecff;
+  --persona-tag-fg: #0011ff;
+  --persona-icon-bg: #ebeef3;
+  --persona-icon-fg: #0011ff;
+  --persona-task-line: #d8dde6;
+  --persona-highlight-bg: #f0f1f4;
+  --persona-highlight-fg: #5b6068;
+}
+
+/* 亲子：暖粉 + 米色，少棱角、温度感 */
+[data-persona="family"] {
+  --persona-accent: #ff4d8d;
+  --persona-accent-press: #e5407e;
+  --persona-accent-soft: #ffe6ee;
+  --persona-accent-tint: #fff3f7;
+  --persona-tag-bg: #ffe6ee;
+  --persona-tag-fg: #c43670;
+  --persona-icon-bg: #ffeef4;
+  --persona-icon-fg: #ff4d8d;
+  --persona-task-line: #f1d4de;
+  --persona-highlight-bg: #fff3f7;
+  --persona-highlight-fg: #b73767;
+}
+
+/* 商旅：墨蓝深底 + 金色提示，极简高效 */
+[data-persona="business"] {
+  --persona-accent: #0a2540;
+  --persona-accent-press: #061a2e;
+  --persona-accent-soft: #eef2f7;
+  --persona-accent-tint: #f5efe1;
+  --persona-tag-bg: #f5efe1;
+  --persona-tag-fg: #8a6a23;
+  --persona-icon-bg: #eef2f7;
+  --persona-icon-fg: #0a2540;
+  --persona-task-line: #c8cfdb;
+  --persona-highlight-bg: #f5efe1;
+  --persona-highlight-fg: #8a6a23;
+}

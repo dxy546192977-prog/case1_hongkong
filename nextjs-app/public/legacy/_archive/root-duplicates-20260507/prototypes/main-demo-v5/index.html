@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f7f7f8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>JourneyKit · 香港线路 demo · v5</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./styles/tokens.css?v=v5-1" />
+    <link rel="stylesheet" href="./styles/base.css?v=v5-1" />
+    <link rel="stylesheet" href="./styles/components.css?v=v5-1" />
+    <style>
+      /* v5：dev-tabs 强制单行 + 横向滚动（窄视口不再换行）*/
+      .dev-tabs {
+        position: fixed;
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        z-index: 999;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 2px;
+        padding: 5px 8px;
+        max-width: 96vw;
+        overflow-x: auto;
+        scrollbar-width: none;
+        background: rgba(20, 20, 24, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      }
+      .dev-tabs::-webkit-scrollbar { display: none; }
+      .dev-tabs__group {
+        display: flex;
+        gap: 2px;
+        padding: 0 2px;
+        align-items: center;
+        flex: 0 0 auto;
+      }
+      .dev-tabs__group + .dev-tabs__group {
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        margin-left: 2px;
+        padding-left: 6px;
+      }
+      .dev-tabs button {
+        flex: 0 0 auto;
+        padding: 5px 9px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 120ms ease, transform 80ms ease;
+      }
+      .dev-tabs button:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .dev-tabs button:active {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0.96);
+      }
+      .dev-tabs__label {
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 10px;
+        padding: 0 2px;
+        letter-spacing: 0.04em;
+        flex: 0 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="device" role="presentation">
+        <div class="app" id="app">
+          <div class="notch" aria-hidden="true"></div>
+          <div class="statusbar" aria-hidden="true">
+            <span>9:41</span>
+            <span class="right">5G · 100%</span>
+          </div>
+          <div class="app-frame" id="frame"></div>
+          <div class="sheet-root" id="sheet-root" data-open="false">
+            <div class="sheet-dim" data-action="close-sheet"></div>
+            <div class="sheet" id="sheet"></div>
+          </div>
+          <div class="toast" id="toast" data-show="false"></div>
+        </div>
+      </div>
+    </div>
+    <nav class="dev-tabs" aria-label="Demo 跳转 (手机框外)">
+      <div class="dev-tabs__group">
+        <span class="dev-tabs__label">订单前</span>
+        <button data-jump="home">首页</button>
+        <button data-jump="qa">问答</button>
+        <button data-jump="plans">方案</button>
+      </div>
+      <div class="dev-tabs__group">
+        <span class="dev-tabs__label">行程</span>
+        <button data-jump="itin-half">半屏</button>
+        <button data-jump="itin-list">列表</button>
+        <button data-jump="itin-map">地图</button>
+      </div>
+      <div class="dev-tabs__group">
+        <span class="dev-tabs__label">下单</span>
+        <button data-jump="passengers">乘机人</button>
+        <button data-jump="order">订单</button>
+        <button data-jump="pay">支付</button>
+      </div>
+      <div class="dev-tabs__group">
+        <span class="dev-tabs__label">订单后</span>
+        <button data-jump="prep">行前</button>
+        <button data-jump="hkg-family">HK亲子</button>
+        <button data-jump="hkg-business">HK商务</button>
+        <button data-jump="hkg-transfer">HK中转</button>
+      </div>
+    </nav>
+
+    <script type="module" src="./src/main.js?v=v5-1"></script>
+    <script type="module">
+      // dev-tabs：手机框外的跳转 tab，方便演示直达。
+      import { setState } from "./src/state.js";
+      import { bootChat, viewItinerary, setItineraryMode, setAirportProfile } from "./src/actions.js";
+
+      const PLAN = "balanced";
+      const PAX = [
+        { id: "p1", name: "李雷", self: true, idNo: "310107 19990909 9999", selected: true },
+      ];
+
+      const handlers = {
+        home: () => bootChat(),
+        qa: () => {
+          setState({
+            screen: "chat",
+            sheet: null,
+            conversation: [
+              { type: "greeting" },
+              { type: "user", text: "6月1号一早从东莞出发，怎么飞吉隆坡最便宜？", tone: "solid" },
+              { type: "assistant", text: "为了更好的给你推荐行程方案，还需要回答几个问题，告诉我你的诉求：" },
+              { type: "qa", qid: "q1" },
+            ],
+            intakeAnswers: {},
+          });
+        },
+        plans: () => {
+          setState({
+            screen: "chat",
+            sheet: null,
+            conversation: [
+              { type: "user", text: "6月1号一早从东莞出发", tone: "solid" },
+              { type: "plans-intro", text: "为你找到以下 3 种方案，供你选择" },
+              { type: "plans" },
+            ],
+          });
+        },
+        "itin-half": () => { viewItinerary(PLAN); setItineraryMode("half"); },
+        "itin-list": () => { viewItinerary(PLAN); setItineraryMode("list"); },
+        "itin-map":  () => { viewItinerary(PLAN); setItineraryMode("map"); },
+        passengers: () => {
+          setState({
+            screen: "chat",
+            selectedPlanId: PLAN,
+            sheet: "passenger-pick",
+            passengers: PAX,
+          });
+        },
+        order: () => {
+          setState({
+            screen: "chat",
+            selectedPlanId: PLAN,
+            sheet: "order-confirm",
+            orderProgress: 100,
+            passengers: PAX,
+          });
+        },
+        pay: () => {
+          setState({
+            screen: "chat",
+            selectedPlanId: PLAN,
+            sheet: "pay-pad",
+            payPadFilled: 3,
+            paymentStatus: "pending",
+          });
+        },
+        prep: () => {
+          setState({
+            screen: "prep",
+            sheet: null,
+            selectedPlanId: PLAN,
+            paymentStatus: "paid",
+          });
+        },
+        "hkg-family": () => {
+          setAirportProfile("family");
+          setState({ selectedPlanId: PLAN, paymentStatus: "paid" });
+        },
+        "hkg-business": () => {
+          setAirportProfile("business");
+          setState({ selectedPlanId: PLAN, paymentStatus: "paid" });
+        },
+        "hkg-transfer": () => {
+          setAirportProfile("transfer");
+          setState({ selectedPlanId: PLAN, paymentStatus: "paid" });
+        },
+      };
+
+      document.querySelectorAll(".dev-tabs button[data-jump]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const fn = handlers[btn.dataset.jump];
+          if (fn) fn();
+        });
+      });
+    </script>
+  </body>
+</html>

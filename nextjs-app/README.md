@@ -1,6 +1,6 @@
-# JourneyKit 香港行程规划 - Next.js 版本
+# JourneyKit 行程规划 H5 - Next.js 版本
 
-基于原 vanilla JS 原型重构的 Next.js (App Router) 项目。
+当前目录是从原静态 H5 Demo 整理出的 Next.js App Router 版本。原型交互逻辑保留在 `src/legacy/main-demo-v5`，Next 页面通过一个客户端外壳组件统一承载，后续可以逐步把 legacy 视图拆成 React 组件。
 
 ## 启动
 
@@ -8,64 +8,59 @@
 cd nextjs-app
 npm install
 npm run dev
-# 访问 http://localhost:3000
 ```
+
+默认访问 `http://127.0.0.1:3000`。
 
 ## 页面路由
 
 | 路由 | 对应原页面 | 说明 |
-|------|-----------|------|
-| `/` | `正向支付链路.html` | 主 demo：咨询 → 方案 → 行程 → 下单 → 支付 → 行前 |
-| `/refund` | `退改链路.html` | 航变退改：影响识别 → 替代方案 → 全额退款 |
-| `/flipbook` | `订详FLipbook效果.html` | 机场平面图点击式导航 |
+| --- | --- | --- |
+| `/` | `正向支付链路.html` | 咨询、方案、行程、下单、支付、行前页主链路 |
+| `/payment` | `正向支付链路.html` | 同主链路，便于明确访问 |
+| `/refund` | `退改链路.html` | 航变退改保障主链路 |
+| `/flipbook` | `订详FLipbook效果.html` | 香港机场中转订详 Flipbook |
 
-## 项目结构
+## `public/*.html` 与 `src/app/*` 的关系
 
-```
+这三组页面（`flipbook` / `payment` / `refund`）目前是“壳路由 + 真实静态页”的双层结构：
+
+- `src/app/flipbook/page.tsx`、`src/app/payment/page.tsx`、`src/app/refund/page.tsx`
+  - 作用：Next.js 路由入口（访问 `/flipbook`、`/payment`、`/refund` 时先命中这里）
+  - 行为：页面加载后立即 `window.location.replace("/xxx.html")`
+- `public/flipbook.html`、`public/payment.html`、`public/refund.html`
+  - 作用：真实业务演示内容（包含 legacy 的 HTML/CSS/JS）
+  - 访问方式：可直接访问 `/flipbook.html`、`/payment.html`、`/refund.html`
+
+可按下面理解：
+
+- 访问 `/payment` -> 命中 `src/app/payment/page.tsx` -> 跳转到 `/payment.html` -> 显示 `public/payment.html`
+- 访问 `/refund`、`/flipbook` 同理
+
+### 为什么 `out/flipbook.html` 看起来只有一行
+
+项目启用了 `next.config.ts` 的 `output: "export"`，构建后 `out/` 中会生成静态导出结果。  
+因此你在 `out/flipbook.html`、`out/payment.html`、`out/refund.html` 看到的是 Next 导出的路由页（壳页），不是 `public/*.html` 的原始源码文件。
+
+这就是“开发时看起来是跳到静态页、导出后 `out/*.html` 又像壳页”的根本原因。
+
+## 目录结构
+
+```text
 nextjs-app/
 ├── src/
 │   ├── app/                    # Next.js App Router 页面
-│   │   ├── layout.tsx          # 根布局（引入全局样式）
-│   │   ├── page.tsx            # 首页（正向支付链路）
-│   │   ├── refund/page.tsx     # 退改链路
-│   │   └── flipbook/page.tsx   # Flipbook 效果
-│   ├── lib/
-│   │   ├── data.ts             # 数据层（方案/行程/乘客/权益等）
-│   │   ├── store.ts            # Zustand 状态管理（替代原 state+actions）
-│   │   └── motion.ts           # 动效工具
-│   ├── components/
-│   │   ├── Icons.tsx           # Lucide 图标 React 组件
-│   │   ├── ScreenRouter.tsx    # 屏幕路由调度
-│   │   ├── ui/                 # 通用 UI 组件
-│   │   │   ├── DeviceShell.tsx # 手机设备外壳
-│   │   │   ├── DemoStageDock.tsx # 右下角快捷导航
-│   │   │   └── Composer.tsx    # 输入框组件
-│   │   └── views/              # 业务视图组件
-│   │       ├── ChatView.tsx    # 咨询对话
-│   │       ├── PlanCarousel.tsx # 方案卡片轮播
-│   │       ├── ItineraryView.tsx # 行程详情
-│   │       ├── PrepView.tsx    # 行前准备
-│   │       ├── RefundView.tsx  # 退改链路
-│   │       ├── TripView.tsx    # 行程卡片
-│   │       ├── TripExpandedView.tsx # 中转管家全屏
-│   │       ├── FlipbookView.tsx # 机场 Flipbook
-│   │       └── MyTripsControl.tsx # 我的行程控制
-│   └── styles/                 # 原生 CSS 设计系统
-│       ├── tokens.css          # 设计 token
-│       ├── base.css            # 基础样式
-│       ├── components.css      # 组件样式
-│       ├── personas.css        # 人设样式
-│       ├── transit-card.css    # 中转卡片
-│       ├── transit-assistant.css # 中转管家
-│       ├── hkg-push-demo.css   # 推送 demo
-│       └── globals.css         # 全局样式
-└── public/assets/              # 静态资源（图片/视频）
+│   ├── components/DeviceShell.tsx
+│   │                           # 统一挂载旧 H5 渲染与 action 分发
+│   ├── legacy/                 # 从原 H5 迁移来的 JS 数据、视图和状态逻辑
+│   └── styles/                 # 原设计系统 CSS
+└── public/assets/              # 图片、视频等静态资源
 ```
 
-## 技术栈
+## 构建
 
-- **Next.js 15** (App Router, Static Export)
-- **React 19**
-- **TypeScript**
-- **Zustand 5** (状态管理)
-- **原生 CSS** (复用已有设计系统)
+```bash
+npm run build
+```
+
+项目路径包含中文目录，Next 16 的 Turbopack 在该路径下会触发内部路径编码问题，所以当前 `dev` 和 `build` 脚本显式使用 webpack。

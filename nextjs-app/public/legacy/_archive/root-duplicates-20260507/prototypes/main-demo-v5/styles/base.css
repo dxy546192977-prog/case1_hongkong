@@ -1,0 +1,194 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--t-15);
+  color: var(--ink);
+  background: #ececee;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 底部加 100px 给 dev-tabs 留位 */
+  padding: 24px 24px 100px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  margin: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* Stage: desktop hosts a phone-shaped device */
+.stage {
+  width: min(100vw - 48px, 1200px);
+  min-height: calc(var(--device-h) + 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.device {
+  position: relative;
+  width: var(--device-w);
+  height: var(--device-h);
+  border-radius: var(--device-radius);
+  background: #16181c;
+  padding: 10px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.08) inset,
+    0 30px 80px rgba(17, 19, 24, 0.18),
+    0 8px 24px rgba(17, 19, 24, 0.10);
+}
+
+.app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: calc(var(--device-radius) - 10px);
+  background: var(--bg-page);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* iPhone-style notch */
+.notch {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 28px;
+  border-radius: 16px;
+  background: #0c0d10;
+  z-index: 10;
+}
+
+/* Status bar */
+.statusbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  height: 50px;
+  padding: 16px 28px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--t-14);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  background: var(--bg-page);
+  pointer-events: none;
+}
+
+/* itinerary 屏幕地图模式时 statusbar 可半透明 */
+.app:has(.itin-screen[data-mode="map"]) .statusbar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.0));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* HK 机场展开屏：statusbar 完全透明，让浅蓝底直接透上来 */
+.app:has(.airport-screen) .statusbar {
+  background: transparent;
+}
+
+.app:has(.hkg-profile-detail) .statusbar {
+  background: transparent;
+  color: #10203a;
+}
+
+.statusbar .right {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-12);
+}
+
+/* Layout regions */
+.app-frame {
+  position: absolute;
+  inset: 0;
+  padding-top: var(--safe-top);
+  display: flex;
+  flex-direction: column;
+}
+
+.feed {
+  flex: 1;
+  min-height: 0;
+  position: relative; /* 让 children 的 offsetTop 基于 feed，scroll 计算可靠 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 20px 24px;
+  scroll-behavior: auto;
+}
+
+.feed::-webkit-scrollbar {
+  display: none;
+}
+
+.feed {
+  scrollbar-width: none;
+}
+
+/* Screen-level enter animation */
+@keyframes screen-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.app-frame.screen-enter > * {
+  animation: screen-fade-up var(--dur-emph) var(--ease-os) both;
+}

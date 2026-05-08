@@ -944,6 +944,20 @@
   background: var(--bg-surface-mute);
 }
 
+.mt-card[data-kind="disruption"] {
+  background: var(--accent-blue-soft);
+  border-color: rgba(0, 17, 255, 0.14);
+}
+
+.mt-card[data-kind="disruption"] .mt-card__top,
+.mt-card[data-kind="disruption"] .mt-card__sub {
+  color: #42518a;
+}
+
+.mt-card[data-kind="disruption"] .mt-card__title {
+  color: var(--accent-primary);
+}
+
 .mt-card__top {
   font-size: var(--t-11);
   color: var(--ink-muted);
@@ -2166,6 +2180,15 @@
   background: #f5f7fb;
 }
 
+.refund-fact-lead {
+  margin: 0 0 18px;
+  color: #222;
+  font-size: var(--t-17);
+  line-height: 1.6;
+  font-weight: var(--w-regular);
+  letter-spacing: 0;
+}
+
 .bubble--refund-user {
   margin-left: auto;
   margin-right: 0;
@@ -2181,6 +2204,10 @@
 
 .refund-assistant {
   margin-top: 14px;
+}
+
+.refund-fact-lead + .refund-assistant {
+  margin-top: 0;
 }
 
 .refund-assistant__meta {
@@ -3459,6 +3486,11 @@
   border: 1px solid rgba(0, 68, 255, 0.18);
 }
 
+.success-card[data-replanned="true"] {
+  background: linear-gradient(180deg, #eef3ff 0%, var(--bg-surface) 72%);
+  border-color: rgba(0, 17, 255, 0.22);
+}
+
 .pretrip-card {
   background: var(--bg-surface);
   border-radius: 16px;
@@ -3468,33 +3500,12 @@
 }
 
 .success-card__head h3,
-.disruption-prep-card h3,
 .pretrip-card h3 {
   margin: 8px 0 0;
   font-size: var(--t-16);
   font-weight: var(--w-semibold);
   color: var(--ink);
   line-height: 1.45;
-}
-
-.disruption-prep-card {
-  background: linear-gradient(180deg, #eef3ff 0%, #ffffff 74%);
-  border-radius: 16px;
-  padding: 18px 18px 16px;
-  box-shadow: 0 8px 24px rgba(0, 17, 255, 0.08);
-  border: 1px solid rgba(0, 17, 255, 0.10);
-}
-
-.disruption-prep-card .card-kicker {
-  background: var(--accent-blue-tint);
-  color: var(--accent-primary);
-}
-
-.disruption-prep-card p {
-  margin: 10px 0 14px;
-  color: var(--ink-mid);
-  font-size: var(--t-13);
-  line-height: 1.55;
 }
 
 .success-summary {

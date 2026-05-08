@@ -1,22 +1,25 @@
 "use client";
 
-import { DeviceShell } from "@/components/ui/DeviceShell";
-import { DemoStageDock } from "@/components/ui/DemoStageDock";
-import { FlipbookView } from "@/components/views/FlipbookView";
+import { useEffect } from "react";
 
-/** 订详 Flipbook 效果页面 */
 export default function FlipbookPage() {
+  useEffect(() => {
+    window.location.replace("/flipbook.html");
+  }, []);
+
   return (
-    <>
-      <DeviceShell>
-        <FlipbookView />
-      </DeviceShell>
-      <DemoStageDock
-        links={[
-          { href: "/", label: "正向支付链路" },
-          { href: "/refund", label: "退改链路" },
-        ]}
-      />
-    </>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "system-ui, sans-serif",
+        background: "#bac1d8",
+        color: "#1a1a2e",
+      }}
+    >
+      <p>正在加载订详 Flipbook demo...</p>
+    </main>
   );
 }

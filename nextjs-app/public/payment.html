@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#bac1d8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>正向支付链路 · JourneyKit 香港线路 demo</title>
+    <!--
+      中转管家（trip-hkg-airport）五类能力由数据 + 视图模块渲染，非本页静态 HTML：
+      1 登机牌状态识别 2 中转柜台导览 3 安检/登机口连续路径 4 登机倒计时与策略 5 异常提醒
+      → src/data.js（transit 字段）、src/views/transit-helpers.js、transit-card.js、transit-assistant.js、styles/transit-*.css
+    -->
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/legacy/hongkong_journey/prototypes/main-demo-v5/styles/tokens.css?v=v5-1" />
+    <link rel="stylesheet" href="/legacy/hongkong_journey/prototypes/main-demo-v5/styles/base.css?v=v5-1" />
+    <link rel="stylesheet" href="/legacy/hongkong_journey/prototypes/main-demo-v5/styles/personas.css?v=v5-1" />
+    <!-- components.css 内部已 @import 了 personas.css / transit-card.css / transit-assistant.css，
+         主 index 再 link 一次 personas.css 确保 :root fallback 生效（重复 @import 无副作用）。 -->
+    <link rel="stylesheet" href="/legacy/hongkong_journey/prototypes/main-demo-v5/styles/components.css?v=v5-3" />
+    <style>
+      /* 浅色 demo 舞台主题（参考 港航Qwen-对话流.html 的 --demo-bg） */
+      :root {
+        --demo-bg: #bac1d8;
+      }
+
+      body {
+        background: var(--demo-bg);
+      }
+
+      .stage {
+        background: transparent;
+      }
+
+      /* v5：dev-tabs 强制单行 + 横向滚动（窄视口不再换行）*/
+      .dev-tabs {
+        position: fixed;
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+        z-index: 999;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        gap: 2px;
+        padding: 5px 8px;
+        max-width: 96vw;
+        overflow-x: auto;
+        scrollbar-width: none;
+        background: rgba(20, 20, 24, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+      }
+      .dev-tabs::-webkit-scrollbar { display: none; }
+      .dev-tabs__group {
+        display: flex;
+        gap: 2px;
+        padding: 0 2px;
+        align-items: center;
+        flex: 0 0 auto;
+      }
+      .dev-tabs__group + .dev-tabs__group {
+        border-left: 1px solid rgba(255, 255, 255, 0.12);
+        margin-left: 2px;
+        padding-left: 6px;
+      }
+      .dev-tabs button {
+        flex: 0 0 auto;
+        padding: 5px 9px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 120ms ease, transform 80ms ease;
+      }
+      .dev-tabs button:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .dev-tabs button:active {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0.96);
+      }
+      .dev-tabs__label {
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 10px;
+        padding: 0 2px;
+        letter-spacing: 0.04em;
+        flex: 0 0 auto;
+      }
+
+      /* 手机框下方：人群切换（与 standalone/子效果_H5沉浸式.html 一致） */
+      .persona-switcher {
+        position: fixed;
+        bottom: max(12px, env(safe-area-inset-bottom, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        padding: 6px 8px;
+        background: rgba(20, 20, 24, 0.88);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-radius: 999px;
+        z-index: 999;
+        font-family: -apple-system, "PingFang SC", sans-serif;
+      }
+      .persona-switcher button {
+        padding: 6px 12px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 12px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .persona-switcher button[aria-current="true"] {
+        background: #fff;
+        color: #0f131a;
+      }
+
+      /* 路径分隔箭头：在默认 16px 基础上等比缩小 2px */
+      .route-arrow-ico {
+        width: 14px;
+        height: 14px;
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="device" role="presentation">
+        <div class="app" id="app">
+          <div class="notch" aria-hidden="true"></div>
+          <div class="statusbar" aria-hidden="true">
+            <span>9:41</span>
+            <span class="right">5G · 100%</span>
+          </div>
+          <div class="app-frame" id="frame"></div>
+          <div class="sheet-root" id="sheet-root" data-open="false">
+            <div class="sheet-dim" data-action="close-sheet"></div>
+            <div class="sheet" id="sheet"></div>
+          </div>
+          <div class="toast" id="toast" data-show="false"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="persona-switcher" id="personaSwitcher" role="group" aria-label="切换人群" hidden>
+      <button type="button" data-persona="default">默认</button>
+      <button type="button" data-persona="family" aria-current="true">亲子</button>
+      <button type="button" data-persona="business">商旅</button>
+    </div>
+
+    <!-- portabled-demo-stage-dock begin -->
+    <style id="demo-stage-dock-style">
+      .demo-stage-dock-root { position: fixed; right: max(14px, env(safe-area-inset-right, 0px)); bottom: max(14px, env(safe-area-inset-bottom, 0px)); z-index: 100000; font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+      .demo-stage-dock-fab { width: 52px; height: 52px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #000; box-shadow: 0 6px 20px rgba(15, 19, 26, 0.35); transition: all 0.2s ease; }
+      .demo-stage-dock-fab:hover { transform: scale(1.05); box-shadow: 0 8px 24px rgba(15, 19, 26, 0.45); }
+      .demo-stage-dock-fab:active { transform: scale(0.96); }
+      .demo-stage-dock-fab svg { width: 24px; height: 24px; fill: #fff; }
+      .demo-stage-dock-panel { display: none; position: absolute; right: 0; bottom: 60px; flex-direction: column; gap: 4px; min-width: 220px; max-height: 70vh; overflow-y: auto; padding: 12px; background: rgba(15, 19, 26, 0.96); border-radius: 20px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.32); backdrop-filter: blur(12px); }
+      .demo-stage-dock-root.open .demo-stage-dock-panel { display: flex; }
+      .demo-stage-dock-group-label { padding: 8px 10px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: rgba(255, 255, 255, 0.4); text-transform: uppercase; }
+      .demo-stage-dock-group-label:not(:first-child) { margin-top: 4px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 10px; }
+      .demo-stage-dock-item { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0; padding: 10px 12px; border: 0; border-radius: 10px; text-align: left; font-size: 13px; line-height: 1.4; color: #e8eaf0; background: rgba(255, 255, 255, 0.04); cursor: pointer; transition: all 0.15s ease; }
+      .demo-stage-dock-item:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(-2px); }
+      .demo-stage-dock-item svg { width: 18px; height: 18px; fill: currentColor; opacity: 0.85; flex-shrink: 0; }
+      .demo-stage-dock-item:hover svg { opacity: 1; }
+      .demo-stage-dock-panel::-webkit-scrollbar { width: 4px; }
+      .demo-stage-dock-panel::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 4px; }
+      @media (prefers-reduced-motion: reduce) {
+        .demo-stage-dock-fab, .demo-stage-dock-item { transition: none; }
+      }
+    </style>
+    <div id="demoStageDockRoot" class="demo-stage-dock-root">
+      <button type="button" class="demo-stage-dock-fab" id="demoStageDockFab" aria-haspopup="true" aria-expanded="false" aria-controls="demoStageDockPanel" title="演示阶段定位">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#ffffff" d="M12 14.5a2.5 2.5 0 1 1 2.5-2.5a2.5 2.5 0 0 1-2.5 2.5m0-4a1.5 1.5 0 1 0 1.5 1.5a1.5 1.5 0 0 0-1.5-1.5"/><path fill="#ffffff" d="M21.435 11.505h-1.46a7.98 7.98 0 0 0-7.48-7.48v-1.46a.51.51 0 0 0-.5-.5a.515.515 0 0 0-.5.5v1.46a8 8 0 0 0-7.48 7.48h-1.45a.5.5 0 1 0 0 1h1.45a8.01 8.01 0 0 0 7.48 7.48v1.45a.51.51 0 0 0 .5.5a.5.5 0 0 0 .5-.5v-1.45a8 8 0 0 0 7.48-7.48h1.46a.5.5 0 0 0 0-1M12 19.005a7 7 0 1 1 7-7a7.02 7.02 0 0 1-7 7"/></svg>
+      </button>
+      <div class="demo-stage-dock-panel" id="demoStageDockPanel" role="menu" aria-label="快速滚动">
+        <div class="demo-stage-dock-group-label">咨询</div>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="home">
+          <!-- yesicon: material-symbols:home-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 19h3v-5q0-.425.288-.712T10 13h4q.425 0 .713.288T15 14v5h3v-9l-6-4.5L6 10zm-2 0v-9q0-.475.213-.9t.587-.7l6-4.5q.525-.4 1.2-.4t1.2.4l6 4.5q.375.275.588.7T20 10v9q0 .825-.587 1.413T18 21h-4q-.425 0-.712-.288T13 20v-5h-2v5q0 .425-.288.713T10 21H6q-.825 0-1.412-.587T4 19m8-6.75"/></svg>
+          <span>首页</span>
+        </button>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="qa">
+          <!-- yesicon: material-symbols:quiz-outline-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.95 18q.525 0 .888-.363t.362-.887t-.362-.888t-.888-.362t-.887.363t-.363.887t.363.888t.887.362m-.9-3.85h1.85q0-.825.188-1.3t1.062-1.3q.65-.65 1.025-1.238T15.55 8.9q0-1.4-1.025-2.15T12.1 6q-1.425 0-2.312.75T8.55 8.55l1.65.65q.125-.45.563-.975T12.1 7.7q.8 0 1.2.438t.4.962q0 .5-.3.938t-.75.812q-1.1.975-1.35 1.475t-.25 1.825M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm0-2h14V5H5zM5 5v14z"/></svg>
+          <span>意图问答</span>
+        </button>
+
+        <div class="demo-stage-dock-group-label">方案</div>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="plans">
+          <!-- yesicon: material-symbols:dashboard-outline-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 13q-.825 0-1.412-.587T3 11V5q0-.825.588-1.412T5 3h6q.825 0 1.413.588T13 5v6q0 .825-.587 1.413T11 13zm0 8q-.825 0-1.412-.587T3 19v-2q0-.825.588-1.412T5 15h6q.825 0 1.413.588T13 17v2q0 .825-.587 1.413T11 21zm8-12V7q0-.825.588-1.412T15 5h4q.825 0 1.413.588T21 7v2q0 .825-.587 1.413T19 11h-4q-.825 0-1.412-.587T13 9m0 10v-6q0-.825.588-1.412T15 11h4q.825 0 1.413.588T21 13v6q0 .825-.587 1.413T19 21h-4q-.825 0-1.412-.587T13 19M5 11h6V5H5zm10 8h4v-6h-4zm0-10h4V7h-4zM5 19h6v-2H5zm6-8"/></svg>
+          <span>方案列表</span>
+        </button>
+
+        <div class="demo-stage-dock-group-label">行程</div>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="itin-half">
+          <!-- yesicon: material-symbols:vertical-split-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 21q-.425 0-.712-.288T13 20V4q0-.425.288-.712T14 3h5q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zM4 9q-.425 0-.712-.288T3 8t.288-.712T4 7h6q.425 0 .713.288T11 8t-.288.713T10 9zm0 4q-.425 0-.712-.288T3 12t.288-.712T4 11h6q.425 0 .713.288T11 12t-.288.713T10 13zm0 4q-.425 0-.712-.288T3 16t.288-.712T4 15h6q.425 0 .713.288T11 16t-.288.713T10 17z"/></svg>
+          <span>行程·半屏</span>
+        </button>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="itin-list">
+          <!-- yesicon: material-symbols:format-list-bulleted-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 18.5q-.625 0-1.062-.437T3.5 17t.438-1.062T5 15.5t1.063.438T6.5 17t-.437 1.063T5 18.5m0-5q-.625 0-1.062-.437T3.5 12t.438-1.062T5 10.5t1.063.438T6.5 12t-.437 1.063T5 13.5m0-5q-.625 0-1.062-.437T3.5 7t.438-1.062T5 5.5t1.063.438T6.5 7t-.437 1.063T5 8.5M10 18q-.425 0-.712-.288T9 17t.288-.712T10 16h10q.425 0 .713.288T21 17t-.288.713T20 18zm0-5q-.425 0-.712-.288T9 12t.288-.712T10 11h10q.425 0 .713.288T21 12t-.288.713T20 13zm0-5q-.425 0-.712-.288T9 7t.288-.712T10 6h10q.425 0 .713.288T21 7t-.288.713T20 8z"/></svg>
+          <span>行程·列表</span>
+        </button>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="itin-map">
+          <!-- yesicon: material-symbols:map-outline-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.65 20.5L9 18.55l-4.65 1.8q-.5.2-.925-.112T3 19.4V5.4q0-.325.188-.575t.487-.375L9 2.5l5.65 1.95L19.3 2.6q.5-.2.925.113T20.65 3.6v14q0 .35-.213.6t-.537.375zM14 18.55V6.15l-4-1.4v12.4zM10 17.15v-12.4zm6 .8l3-1V5.7l-3 1.15zM5 18.3l3-1.15V4.75l-3 1zM16 6.85v11.1zm-11-.3v11.1z"/></svg>
+          <span>行程·地图</span>
+        </button>
+
+        <div class="demo-stage-dock-group-label">下单</div>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="passengers">
+          <!-- yesicon: material-symbols:group-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M2 20v-2.8q0-.85.438-1.562T3.6 14.55q1.55-.775 3.15-1.162T10 13t3.25.388t3.15 1.162q.725.375 1.163 1.088T18 17.2V20zm19 0v-3q0-1.1-.612-2.112t-1.738-1.738q1.275.15 2.4.512t2.1.888q.9.5 1.375 1.112T25 17v3zM10 12q-1.65 0-2.825-1.175T6 8t1.175-2.825T10 4t2.825 1.175T14 8t-1.175 2.825T10 12m9-4q0 1.65-1.175 2.825T15 12q-.275 0-.7-.062t-.7-.138q.675-.8 1.038-1.775T15 8t-.363-2.025T13.6 4.2q.35-.125.7-.163T15 4q1.65 0 2.825 1.175T19 8M4 18h12v-.8q0-.275-.137-.5t-.363-.35q-1.35-.675-2.725-1.012T10 15t-2.775.338T4.5 16.35q-.225.125-.363.35T4 17.2zm6-8q.825 0 1.413-.587T12 8t-.587-1.412T10 6t-1.412.588T8 8t.588 1.413T10 10m0 8"/></svg>
+          <span>出行人</span>
+        </button>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="order">
+          <!-- yesicon: material-symbols:receipt-long-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 22q-1.25 0-2.125-.875T16 19V5H5V3h15v16q0 .425.288.713T21 20t.713-.288T22 19v-9h2v9q0 1.25-.875 2.125T21 22zM7 17v-2h7v2zm0-4v-2h7v2zM9 9V7h2v2zm3 0V7h2v2zm-3 4V11h2v2zm3 0V11h2v2zM4 22q-.825 0-1.412-.587T2 20v-3h12v3q0 .825-.587 1.413T12 22z"/></svg>
+          <span>订单确认</span>
+        </button>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="pay">
+          <!-- yesicon: material-symbols:payments-outline-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 13q1.25 0 2.125-.875T17 10t-.875-2.125T14 7t-2.125.875T11 10t.875 2.125T14 13m-9 5q-.825 0-1.412-.587T2 16V4q0-.825.588-1.412T4 2h20q.825 0 1.413.588T26 4v12q0 .825-.587 1.413T24 18zm3-2h14q0-.825.588-1.412T24 14V6q-.825 0-1.412-.587T22 4H8q0 .825-.587 1.413T6 6v8q.825 0 1.413.588T8 16m13 6H4q-.825 0-1.412-.587T2 20V7q0-.425.288-.712T3 6t.713.288T4 7v13h17q.425 0 .713.288T22 21t-.288.713T21 22M4 16V4z"/></svg>
+          <span>支付</span>
+        </button>
+
+        <div class="demo-stage-dock-group-label">打包退票</div>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="refund-disruption">
+          <!-- yesicon: material-symbols:flight-cancel -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22M5 19v-2h2V9q0-1.85 1.125-3.263T11 3.9V3q0-.425.288-.712T12 2t.713.288T13 3v.9q1.75.425 2.875 1.838T17 9v8h2v2zm7-6q.425 0 .713-.288T13 12V7q0-.425-.288-.712T12 6t-.712.288T11 7v5q0 .425.288.713T12 13m0 3q.425 0 .713-.288T13 15t-.288-.712T12 14t-.712.288T11 15t.288.713T12 16"/></svg>
+          <span>航变退票</span>
+        </button>
+        <a class="demo-stage-dock-item" role="menuitem" href="refund.html?refund=disruption" target="_top" style="text-decoration:none;">
+          <!-- yesicon: material-symbols:open-in-new-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6q.425 0 .713.288T12 4t-.288.713T11 5H5v14h14v-6q0-.425.288-.712T20 12t.713.288T21 13v6q0 .825-.587 1.413T19 21zm4.7-5.3q-.275-.275-.275-.7t.275-.7L17.6 5H15q-.425 0-.712-.288T14 4t.288-.712T15 3h5q.425 0 .713.288T21 4v5q0 .425-.288.713T20 10t-.712-.288T19 9V6.4l-7.9 7.9q-.275.275-.7.275t-.7-.275"/></svg>
+          <span>航变退票（独立页）</span>
+        </a>
+
+        <div class="demo-stage-dock-group-label">行中</div>
+        <a class="demo-stage-dock-item" role="menuitem" href="flipbook.html" target="_top" style="text-decoration:none;">
+          <!-- yesicon: material-symbols:luggage-outline-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 17.5q.425 0 .713-.288T10.5 16.5v-7q0-.425-.288-.712T9.5 8.5t-.712.288T8.5 9.5v7q0 .425.288.713t.712.287m5 0q.425 0 .713-.288t.287-.712v-7q0-.425-.288-.712T14.5 8.5t-.712.288T13.5 9.5v7q0 .425.288.713t.712.287M7 21q-.825 0-1.412-.587T5 19v-1q-.825 0-1.412-.587T3 16V8q0-.825.588-1.412T5 6h2V4q0-.425.288-.712T8 3h8q.425 0 .713.288T17 4v2h2q.825 0 1.413.588T21 8v8q0 .825-.587 1.413T19 18v1q0 .825-.587 1.413T17 21t-1.412-.587T15 19h-6q0 .825-.587 1.413T7 21M9 6h6V5H9zM5 16h14V8H5z"/></svg>
+          <span>出行准备</span>
+        </a>
+
+        <div class="demo-stage-dock-group-label">跨链路</div>
+        <a class="demo-stage-dock-item" role="menuitem" href="payment.html" target="_top" style="text-decoration:none;">
+          <!-- yesicon: material-symbols:payments-outline-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 13q1.25 0 2.125-.875T17 10t-.875-2.125T14 7t-2.125.875T11 10t.875 2.125T14 13m-9 5q-.825 0-1.412-.587T2 16V4q0-.825.588-1.412T4 2h20q.825 0 1.413.588T26 4v12q0 .825-.587 1.413T24 18zm3-2h14q0-.825.588-1.412T24 14V6q-.825 0-1.412-.587T22 4H8q0 .825-.587 1.413T6 6v8q.825 0 1.413.588T8 16m13 6H4q-.825 0-1.412-.587T2 20V7q0-.425.288-.712T3 6t.713.288T4 7v13h17q.425 0 .713.288T22 21t-.288.713T21 22M4 16V4z"/></svg>
+          <span>正向支付链路（主演示）</span>
+        </a>
+        <a class="demo-stage-dock-item" role="menuitem" href="refund.html?refund=disruption" target="_top" style="text-decoration:none;">
+          <!-- yesicon: material-symbols:flight-cancel -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22M5 19v-2h2V9q0-1.85 1.125-3.263T11 3.9V3q0-.425.288-.712T12 2t.713.288T13 3v.9q1.75.425 2.875 1.838T17 9v8h2v2zm7-6q.425 0 .713-.288T13 12V7q0-.425-.288-.712T12 6t-.712.288T11 7v5q0 .425.288.713T12 13m0 3q.425 0 .713-.288T13 15t-.288-.712T12 14t-.712.288T11 15t.288.713T12 16"/></svg>
+          <span>航变退票（独立页）</span>
+        </a>
+        <a class="demo-stage-dock-item" role="menuitem" href="flipbook.html" target="_top" style="text-decoration:none;">
+          <!-- yesicon: material-symbols:menu-book-outline-rounded -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5c-1.95 0-4.05.4-5.5 1.5c-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5c.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5c1.35-.85 3.8-1.5 5.5-1.5c1.65 0 3.35.3 4.75 1.05c.1.05.15.05.25.05c.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1m0 13.5c-1.1-.35-2.3-.5-3.5-.5c-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5c1.2 0 2.4.15 3.5.5z"/></svg>
+          <span>订详 Flipbook</span>
+        </a>
+
+      </div>
+    </div>
+    <script id="demo-stage-dock-script">
+      (function () {
+        var root = document.getElementById("demoStageDockRoot");
+        var fab = document.getElementById("demoStageDockFab");
+        var panel = document.getElementById("demoStageDockPanel");
+        if (!root || !fab || !panel) return;
+
+        function setOpen(open) {
+          root.classList.toggle("open", open);
+          fab.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+
+        fab.addEventListener("click", function (e) {
+          e.stopPropagation();
+          setOpen(!root.classList.contains("open"));
+        });
+
+        document.addEventListener("click", function () {
+          setOpen(false);
+        });
+        root.addEventListener("click", function (e) {
+          e.stopPropagation();
+        });
+
+        // 直接为每个导航项绑定点击事件
+        var items = panel.querySelectorAll(".demo-stage-dock-item");
+        items.forEach(function(item) {
+          item.addEventListener("click", function(e) {
+            e.stopPropagation();
+            var key = this.getAttribute("data-demo-stage");
+            
+            // 触发原有的 handlers
+            var fn = window._demoHandlers && window._demoHandlers[key];
+            if (fn) fn();
+            
+            setOpen(false);
+          });
+        });
+      })();
+    </script>
+    <!-- portabled-demo-stage-dock end -->
+
+    <script type="module" src="/legacy/hongkong_journey/prototypes/main-demo-v5/src/main.js?v=v5-3"></script>
+    <script type="module">
+      // dev-tabs：手机框外的跳转 tab，方便演示直达。
+      import { setState, subscribe, getState } from "/legacy/hongkong_journey/prototypes/main-demo-v5/src/state.js";
+      import { bootChat, viewItinerary, setItineraryMode, startRefundFlow, confirmReplan, chooseFullRefund } from "/legacy/hongkong_journey/prototypes/main-demo-v5/src/actions.js";
+
+      function readPersonaFromHash() {
+        const m = (location.hash || "").match(/persona=([a-z]+)/i);
+        return m ? m[1] : null;
+      }
+
+      const personaSwitcher = document.getElementById("personaSwitcher");
+      const hashPersona = readPersonaFromHash();
+      if (hashPersona) setState({ persona: hashPersona });
+
+      /** 与侧栏「中转提示 (HKG)」「沉浸式 H5」一致：仅这两路需切人群 */
+      function shouldShowPersonaSwitcher(s) {
+        const hkg = s.selectedTripCardId === "trip-hkg-airport";
+        return hkg && (s.screen === "trip" || s.screen === "trip-expanded");
+      }
+
+      function updatePersonaSwitcherVisibility() {
+        if (!personaSwitcher) return;
+        personaSwitcher.hidden = !shouldShowPersonaSwitcher(getState());
+      }
+
+      function syncPersonaSwitcher() {
+        if (!personaSwitcher) return;
+        const p = getState().persona || "family";
+        personaSwitcher.querySelectorAll("button[data-persona]").forEach((b) => {
+          b.setAttribute("aria-current", b.dataset.persona === p ? "true" : "false");
+        });
+      }
+
+      personaSwitcher?.addEventListener("click", (e) => {
+        const btn = e.target.closest("button[data-persona]");
+        if (!btn) return;
+        setState({ persona: btn.dataset.persona });
+        history.replaceState(null, "", `#persona=${btn.dataset.persona}`);
+      });
+
+      function onPersonaSwitcherState() {
+        syncPersonaSwitcher();
+        updatePersonaSwitcherVisibility();
+      }
+
+      subscribe(onPersonaSwitcherState);
+      onPersonaSwitcherState();
+
+      const PLAN = "balanced";
+      const PAX = [
+        { id: "p1", name: "李雷", self: true, idNo: "310107 19990909 9999", selected: true },
+      ];
+
+      const handlers = {
+        home: () => bootChat(),
+        qa: () => {
+          setState({
+            screen: "chat",
+            sheet: null,
+            conversation: [
+              { type: "greeting" },
+              { type: "user", text: "6月1号从东莞去吉隆坡，怎么走最划算？", tone: "solid" },
+              { type: "assistant", text: "为了更好的给你推荐行程方案，还需要回答几个问题，告诉我你的诉求：" },
+              { type: "qa", qid: "q1" },
+            ],
+            intakeAnswers: {},
+          });
+        },
+        plans: () => {
+          setState({
+            screen: "chat",
+            sheet: null,
+            conversation: [
+              { type: "user", text: "6月1号从东莞去吉隆坡", tone: "solid" },
+              { type: "plans-intro", text: "为你找到以下 3 种方案，供你选择" },
+              { type: "plans" },
+            ],
+          });
+        },
+        "itin-half": () => { viewItinerary(PLAN); setItineraryMode("half"); },
+        "itin-list": () => { viewItinerary(PLAN); setItineraryMode("list"); },
+        "itin-map":  () => { viewItinerary(PLAN); setItineraryMode("map"); },
+        passengers: () => {
+          setState({
+            screen: "chat",
+            selectedPlanId: PLAN,
+            sheet: "passenger-pick",
+            passengers: PAX,
+          });
+        },
+        order: () => {
+          setState({
+            screen: "chat",
+            selectedPlanId: PLAN,
+            sheet: "order-confirm",
+            orderProgress: 100,
+            passengers: PAX,
+          });
+        },
+        pay: () => {
+          setState({
+            screen: "chat",
+            selectedPlanId: PLAN,
+            sheet: "pay-pad",
+            payPadFilled: 3,
+            paymentStatus: "pending",
+          });
+        },
+        "refund-disruption": () => startRefundFlow("disruption"),
+        "refund-replan-confirm": () => startRefundFlow("replan-confirm"),
+        "refund-replan-processing": () => confirmReplan(),
+        "refund-replan-success": () => startRefundFlow("replan-success"),
+        "refund-all-processing": () => chooseFullRefund(),
+        "refund-all-success": () => startRefundFlow("refund-all-success"),
+        "refund-free": () => startRefundFlow("free"),
+        "refund-fee": () => startRefundFlow("fee"),
+        "refund-status": () => startRefundFlow("status"),
+        "refund-blocked": () => startRefundFlow("blocked"),
+        prep: () => {
+          setState({
+            screen: "prep",
+            sheet: null,
+            selectedPlanId: PLAN,
+            paymentStatus: "paid",
+          });
+        },
+        hkg: () => {
+          setState({
+            screen: "trip",
+            sheet: null,
+            selectedTripCardId: "trip-hkg-airport",
+            selectedPlanId: PLAN,
+            paymentStatus: "paid",
+          });
+        },
+        // 沉浸式 H5：直接进入 trip-expanded（地图最大化 + 底部 peek sheet）
+        h5: () => {
+          setState({
+            screen: "trip-expanded",
+            sheet: null,
+            selectedTripCardId: "trip-hkg-airport",
+            selectedPlanId: PLAN,
+            paymentStatus: "paid",
+            transitSheetMode: "map",
+          });
+        },
+      };
+
+      // 暴露 handlers 给 Demo Stage Dock 使用（保留全部多阶段节点）
+      window._demoHandlers = {
+        home: handlers.home,
+        qa: handlers.qa,
+        plans: handlers.plans,
+        "itin-half": handlers["itin-half"],
+        "itin-list": handlers["itin-list"],
+        "itin-map": handlers["itin-map"],
+        passengers: handlers.passengers,
+        order: handlers.order,
+        pay: handlers.pay,
+        "refund-disruption": handlers["refund-disruption"],
+        "refund-replan-confirm": handlers["refund-replan-confirm"],
+        "refund-replan-processing": handlers["refund-replan-processing"],
+        "refund-replan-success": handlers["refund-replan-success"],
+        "refund-all-processing": handlers["refund-all-processing"],
+        "refund-all-success": handlers["refund-all-success"],
+        "refund-free": handlers["refund-free"],
+        "refund-fee": handlers["refund-fee"],
+        "refund-status": handlers["refund-status"],
+        "refund-blocked": handlers["refund-blocked"],
+        prep: handlers.prep,
+        hkg: handlers.hkg,
+        h5: handlers.h5,
+      };
+
+      document.querySelectorAll(".dev-tabs button[data-jump]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const fn = handlers[btn.dataset.jump];
+          if (fn) fn();
+        });
+      });
+
+      // 支持通过 ?stage=xxx 直达某个 demo 阶段（用于跨页 dock 跳转：
+      // 如 refund.html 的"出行助手（行前页）"链接 → /payment.html?stage=prep）
+      (function () {
+        const stage = new URL(window.location.href).searchParams.get("stage");
+        if (stage && handlers[stage]) handlers[stage]();
+      })();
+    </script>
+  </body>
+</html>

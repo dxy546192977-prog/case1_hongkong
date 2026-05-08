@@ -1,0 +1,15 @@
+{
+  "id": "overview_to_desk",
+  "label": "Transfer overview to airline transit / boarding-pass desk",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019dfce8-7223-7550-806f-412e56d47f78",
+  "remote_url": "https://v3b.fal.media/files/b/0a991c8e/nFE2lNEM0yHVPM__pNdq9_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "prompt": "Create a smooth 5 second continuous camera glide from the full Hong Kong airport transfer-route overview into the airline Transit / Transfer Desk frame where passengers can collect an onward boarding pass. The camera should travel from the overview into the desk cluster as if the airport map is one continuous canvas, keeping the blue route, soft glass architecture and counter rows stable. Suggest a calm staffed desk with a small queue, but do not write specific airline names or letter codes. clean HKIA-style isometric airport route map, mobile 9:16, white and pale-blue architecture, dark blue dotted passenger route, numbered route markers, premium travel assistant look. Do not invent flight times, fixed gate numbers, retail brands, airline logos, extra signs, or dense text. End exactly on the destination frame composition.",
+  "start_image": "public/assets/main-demo-v5/airport/transfer/overview.png",
+  "end_image": "public/assets/main-demo-v5/airport/transfer/desk.png",
+  "completed_at": "2026-05-06T10:55:55.641Z"
+}

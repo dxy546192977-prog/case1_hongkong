@@ -1,0 +1,524 @@
+/* ============================================================
+ * HKG 主动推送 demo 专用样式（v3 焕新：去渐变 + 复用原版组件）
+ * ============================================================ */
+
+.hkg-push-demo-body {
+  padding: 24px;
+  background: #ececee;
+}
+
+/* 顶部遮罩：状态栏（50px）所在区域 100% 白底保 9:41 / 5G 文字可读，
+   再向下延伸 30px 渐变到透明，避免硬白边 */
+.hkg-push-demo-body .statusbar {
+  background: transparent;
+}
+
+.hkg-push-demo-body .app::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  z-index: 5;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 62%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+/* ---------- 共用 accent 变量（统一主蓝，覆盖 profile.accent 内联值） ---------- */
+.hkg-push-screen,
+.hkg-detail-screen {
+  --hkg-accent: var(--accent-primary, #0011ff) !important;
+  --hkg-accent-soft: var(--accent-blue-tint, #e5ecff) !important;
+}
+
+/* ============================================================
+ * 第一页 · chat 推送（思考 → 推送动画）
+ * ============================================================ */
+
+.hkg-push-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: #fff;
+}
+
+.hkg-push-feed {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 16px 18px;
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hkg-push-feed::-webkit-scrollbar {
+  display: none;
+}
+
+/* thinking 占位 */
+.hkg-push-thinking {
+  align-self: flex-start;
+  animation: hkg-fadein 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 推送时间徽标 */
+.hkg-push-pushtag {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  font-size: var(--t-11);
+  font-weight: var(--w-medium);
+  color: var(--hkg-accent);
+  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--hkg-accent), transparent 84%);
+  border-radius: var(--r-pill);
+  box-shadow: var(--elev-1);
+}
+
+.hkg-push-pushtag__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--hkg-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--hkg-accent), transparent 84%);
+  animation: hkg-pushtag-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hkg-pushtag-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* trip-detail 容器（沿用原版） */
+.hkg-push-trip-detail {
+  margin-top: 4px;
+}
+
+.hkg-push-trip-detail .trip-detail__top {
+  margin: 0 0 8px;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+}
+
+/* 推送卡（基于原 .trip-card-detail 不要渐变） */
+.hkg-push-card.trip-card-detail {
+  position: relative;
+  display: block;
+  background: #fff;
+  border: 1px solid #e6e8ee;
+  border-radius: var(--r-lg, 22px);
+  padding: 16px 16px 14px;
+  box-shadow: 0 12px 28px -22px rgba(16, 32, 58, 0.18);
+}
+
+.hkg-push-card .trip-card-detail__time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--t-12);
+  color: var(--ink-mid);
+  margin-bottom: 6px;
+}
+
+.hkg-push-card .trip-card-detail__headline {
+  margin: 0 0 6px;
+  font-size: var(--t-19);
+  line-height: 1.25;
+  font-weight: var(--w-semibold);
+  color: var(--ink, #161b24);
+  letter-spacing: 0;
+}
+
+.hkg-push-card .trip-card-detail__lead {
+  margin: 0 0 10px;
+  font-size: var(--t-13);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+.hkg-push-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 14px;
+}
+
+.hkg-push-card__chips span {
+  display: inline-flex;
+  padding: 3px 9px;
+  font-size: var(--t-11);
+  color: var(--hkg-accent);
+  background: color-mix(in srgb, var(--hkg-accent-soft), #fff 24%);
+  border: 1px solid color-mix(in srgb, var(--hkg-accent), transparent 80%);
+  border-radius: var(--r-pill);
+  font-weight: var(--w-medium);
+}
+
+/* CTA 主按钮 */
+.hkg-push-card__cta.btn--primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 40px;
+  font-size: var(--t-14);
+  font-weight: var(--w-semibold);
+  color: #fff;
+  background: var(--hkg-accent);
+  border: 0;
+  border-radius: var(--r-md, 12px);
+  cursor: pointer;
+  transition: transform 100ms ease, box-shadow 160ms ease;
+  box-shadow: 0 12px 22px -16px color-mix(in srgb, var(--hkg-accent), #000 22%);
+}
+
+.hkg-push-card__cta.btn--primary:active {
+  transform: scale(0.985);
+}
+
+/* push 动画时序 */
+.hkg-push-anim-step-1 { animation: hkg-rise 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: 40ms; }
+.hkg-push-anim-step-2 { animation: hkg-rise 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: 200ms; }
+.hkg-push-anim-step-3 { animation: hkg-cardin 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: 460ms; }
+
+@keyframes hkg-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes hkg-cardin {
+  0% { opacity: 0; transform: translateY(20px) scale(0.985); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes hkg-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* push 屏 composer 紧贴底部 */
+.hkg-push-screen .composer {
+  position: relative;
+  padding-bottom: calc(var(--safe-bottom, 0) + 14px);
+}
+
+/* ============================================================
+ * 详情页 · 复用 .itin-screen / .appbar--transparent / .itin-sheet
+ * ============================================================ */
+
+.hkg-detail-screen {
+  /* composer-h 改成 bare 高度，消除底 bar 上方灰带 */
+  background: #ecf3fb;
+  --composer-h: var(--composer-bare-h, 105px);
+
+  /* 新档位：card1 = 默认露 1 张完整卡（handle + 1 卡 + 留白 ≈ 182px） */
+  --sheet-h-card1: 182px;
+}
+
+.hkg-detail-screen[data-mode="card1"] { --sheet-h: var(--sheet-h-card1); }
+
+/* card1 模式：露 1 张卡的 body，hide lede/total/cta */
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__lede,
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__total,
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__cta {
+  display: none;
+}
+.hkg-detail-screen[data-mode="card1"] .itin-sheet__body {
+  display: block;
+  /* card1 模式下默认仅露 1 卡，但 body 内仍可上下滑动看其余卡 */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 路书地图：整体上移 50px（原 60px 偏高，下移 10px 后更平衡） */
+.hkg-detail-map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #ecf3fb;
+  transform: translateY(-50px);
+}
+
+.hkg-detail-map .hkg-route-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* 按 profile 设 stage 实际比例（family/transfer 2:3、business 3:4）
+   覆盖 syncImageRatio 写入的 inline 变量 → 切换永不跳容器尺寸 */
+.hkg-detail-screen[data-profile="family"] .hkg-route-map__stage,
+.hkg-detail-screen[data-profile="transfer"] .hkg-route-map__stage {
+  --hkg-media-ratio: 2 / 3 !important;
+}
+.hkg-detail-screen[data-profile="business"] .hkg-route-map__stage {
+  --hkg-media-ratio: 3 / 4 !important;
+}
+
+.hkg-detail-map .hkg-route-map__stage {
+  width: 100%;
+  height: 100%;
+}
+
+.hkg-detail-map .hkg-route-map__image,
+.hkg-detail-map .hkg-route-map__incoming,
+.hkg-detail-map .hkg-route-map__video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+}
+
+/* 视频转图片不再"一跳"：videoing 离场不渐变，立即让位给 image
+   原 components.css 的 transition 260ms 会留下视频残影叠在已显示的 image 上
+   覆盖为 0ms 立即切，配合 waitImagePainted 已先画好 image 实现无缝替换 */
+.hkg-detail-map .hkg-route-map__video {
+  transition: opacity 0ms !important;
+}
+
+/* 隐藏 hkg-route-map 内部的"回到总览"按钮（深蓝色）
+   只保留 appbar 右上角的白底浮动按钮 */
+.hkg-detail-map .hkg-route-map__reset {
+  display: none !important;
+}
+
+/* 节点圆点视觉：实色蓝边白心（参考附图样式）+ 外圈白色脉冲描边 */
+.hkg-detail-map .hkg-route-node {
+  width: 44px;
+  height: 44px;
+}
+
+/* 内圈：白底实色蓝粗边（中心白点缩小，蓝边加粗） */
+.hkg-detail-map .hkg-route-node__ring {
+  width: 14px;
+  height: 14px;
+  background: #fff !important;
+  border: 3px solid var(--accent-primary, #0011ff) !important;
+  box-shadow:
+    0 2px 8px rgba(0, 17, 255, 0.20),
+    0 0 0 2px rgba(255, 255, 255, 0.85) !important;
+}
+
+/* 外圈：白色脉冲描边，宽度稍宽（28px）保持之前的视觉范围 */
+.hkg-detail-map .hkg-route-node__ring--outer {
+  width: 28px !important;
+  height: 28px !important;
+  background: transparent !important;
+  border: 2.5px solid rgba(255, 255, 255, 0.92) !important;
+  box-shadow: none !important;
+  animation: hkg-node-pulse-white 2400ms cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+/* 去掉中心实心点（附图样式不需要） */
+.hkg-detail-map .hkg-route-node__dot {
+  display: none !important;
+}
+
+@keyframes hkg-node-pulse-white {
+  0%   { transform: scale(0.9); opacity: 0.85; }
+  70%  { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+/* 切换节点时图片保持 contain 居中，不再做 scale 变形（之前 scale 1.06 导致位置跑偏） */
+
+/* 浮动 appbar：放在地图上方 + safe-top 顶部 + 仅按钮可点 */
+.hkg-detail-screen .appbar.appbar--transparent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  padding: calc(var(--safe-top, 0px) + 8px) 12px 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+.hkg-detail-screen .appbar.appbar--transparent .appbar__icon--floating {
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 8px 22px -16px rgba(16, 32, 58, 0.6);
+}
+
+/* sheet body 不显示原 lede（我们移除了），第一张卡顶替 */
+.hkg-detail-sheet__body {
+  padding-top: 4px;
+}
+
+/* 节点卡片：复用原版 .route-timeline / .route-leg / .route-leg__index / .route-leg__card
+   只在 hkg- 范围内做最小补充：overview 节点圆点中性色、卡片 cursor、span 内的加粗 */
+.hkg-route-timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hkg-route-leg {
+  outline: none;
+}
+
+.hkg-route-leg:focus-visible .route-leg__card {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-primary), transparent 40%);
+}
+
+/* overview 节点用中性灰圆点（不抢主线） */
+.hkg-route-leg--overview .route-leg__index span {
+  background: #d2d5dc;
+  color: #fff;
+  font-size: 11px;
+  font-weight: var(--w-medium);
+}
+
+/* 卡片中的 summary 文本里的加粗 */
+.hkg-route-leg .route-leg__card span[data-md] strong {
+  color: var(--ink);
+  font-weight: var(--w-semibold);
+}
+
+/* 加急话术（中转） */
+.hkg-talktracks {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hkg-talktracks__title {
+  font-size: 11px;
+  font-weight: var(--w-semibold);
+  color: var(--ink-mid);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.hkg-talktracks button {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.42;
+  color: var(--ink);
+  background: #f5f6f9;
+  border: 1px solid #e6e8ee;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.hkg-talktracks button[data-copied="true"] {
+  background: color-mix(in srgb, var(--hkg-accent-soft), #fff 32%);
+  border-color: color-mix(in srgb, var(--hkg-accent), transparent 70%);
+}
+
+/* ============================================================
+ * 屏幕外切换器
+ * ============================================================ */
+
+.hkg-demo-switcher {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: rgba(20, 20, 24, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+}
+
+.hkg-demo-switcher__label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 10px;
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.08em;
+  padding: 0 4px;
+  text-transform: uppercase;
+}
+
+.hkg-demo-switcher button {
+  --hkg-accent: var(--accent-primary, #0011ff);
+  padding: 5px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 11px;
+  font-weight: var(--w-medium);
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms ease;
+}
+
+.hkg-demo-switcher button:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.hkg-demo-switcher button.is-active {
+  background: var(--hkg-accent);
+  color: #fff;
+}
+
+.screen-enter {
+  animation: hkg-screen-enter 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes hkg-screen-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hkg-push-demo-body {
+    padding: 0;
+  }
+
+  .hkg-push-demo-body .stage {
+    width: 100vw;
+    min-height: 100vh;
+  }
+
+  .hkg-push-demo-body .device {
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .hkg-push-demo-body .app {
+    border-radius: 0;
+  }
+
+  .hkg-push-demo-body .notch {
+    display: none;
+  }
+
+  .hkg-demo-switcher {
+    bottom: 6px;
+    transform: translateX(-50%) scale(0.92);
+    transform-origin: bottom center;
+  }
+}

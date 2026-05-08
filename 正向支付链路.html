@@ -243,6 +243,13 @@
           <span>支付</span>
         </button>
 
+        <div class="demo-stage-dock-group-label">打包退票</div>
+        <button type="button" class="demo-stage-dock-item" role="menuitem" data-demo-stage="refund-disruption">
+          <!-- yesicon: material-symbols:flight-cancel -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 22q-.825 0-1.412-.587T10 20h4q0 .825-.587 1.413T12 22M5 19v-2h2V9q0-1.85 1.125-3.263T11 3.9V3q0-.425.288-.712T12 2t.713.288T13 3v.9q1.75.425 2.875 1.838T17 9v8h2v2zm7-6q.425 0 .713-.288T13 12V7q0-.425-.288-.712T12 6t-.712.288T11 7v5q0 .425.288.713T12 13m0 3q.425 0 .713-.288T13 15t-.288-.712T12 14t-.712.288T11 15t.288.713T12 16"/></svg>
+          <span>航变退票</span>
+        </button>
+
         <div class="demo-stage-dock-group-label">行中</div>
         <a class="demo-stage-dock-item" role="menuitem" href="/订详FLipbook效果.html" target="_top" style="text-decoration:none;">
           <!-- yesicon: material-symbols:luggage-outline-rounded -->
@@ -298,7 +305,7 @@
     <script type="module">
       // dev-tabs：手机框外的跳转 tab，方便演示直达。
       import { setState, subscribe, getState } from "./hongkong_journey/prototypes/main-demo-v5/src/state.js";
-      import { bootChat, viewItinerary, setItineraryMode } from "./hongkong_journey/prototypes/main-demo-v5/src/actions.js";
+      import { bootChat, viewItinerary, setItineraryMode, startRefundFlow, confirmReplan, chooseFullRefund } from "./hongkong_journey/prototypes/main-demo-v5/src/actions.js";
 
       function readPersonaFromHash() {
         const m = (location.hash || "").match(/persona=([a-z]+)/i);
@@ -403,6 +410,16 @@
             paymentStatus: "pending",
           });
         },
+        "refund-disruption": () => startRefundFlow("disruption"),
+        "refund-replan-confirm": () => startRefundFlow("replan-confirm"),
+        "refund-replan-processing": () => confirmReplan(),
+        "refund-replan-success": () => startRefundFlow("replan-success"),
+        "refund-all-processing": () => chooseFullRefund(),
+        "refund-all-success": () => startRefundFlow("refund-all-success"),
+        "refund-free": () => startRefundFlow("free"),
+        "refund-fee": () => startRefundFlow("fee"),
+        "refund-status": () => startRefundFlow("status"),
+        "refund-blocked": () => startRefundFlow("blocked"),
         prep: () => {
           setState({
             screen: "prep",
@@ -444,6 +461,16 @@
         passengers: handlers.passengers,
         order: handlers.order,
         pay: handlers.pay,
+        "refund-disruption": handlers["refund-disruption"],
+        "refund-replan-confirm": handlers["refund-replan-confirm"],
+        "refund-replan-processing": handlers["refund-replan-processing"],
+        "refund-replan-success": handlers["refund-replan-success"],
+        "refund-all-processing": handlers["refund-all-processing"],
+        "refund-all-success": handlers["refund-all-success"],
+        "refund-free": handlers["refund-free"],
+        "refund-fee": handlers["refund-fee"],
+        "refund-status": handlers["refund-status"],
+        "refund-blocked": handlers["refund-blocked"],
         prep: handlers.prep,
         hkg: handlers.hkg,
         h5: handlers.h5,

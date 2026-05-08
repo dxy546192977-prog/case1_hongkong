@@ -1,0 +1,15 @@
+{
+  "id": "lounge",
+  "label": "L6 Airside Lounge cluster (Cathay + Plaza Premium West Hall)",
+  "model": "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
+  "queue_request_id": "019df7c9-8b65-7ea2-ab09-ad844464b008",
+  "remote_url": "https://v3b.fal.media/files/b/0a98fb02/urGNY2GjoCu9geQtKJdJU_output.mp4",
+  "duration_seconds": 5,
+  "aspect_ratio": "9:16",
+  "cfg_scale": 0.45,
+  "negative_prompt": "hard cuts, heavy blur, low quality, distorted text, invented signs, fake QR code, new gate numbers, extra signage, warped illustration, jitter",
+  "start_image": "public/assets/main-demo-v4/airport/overview.png",
+  "end_image": "public/assets/main-demo-v4/airport/frame_lounge.png",
+  "completed_at": "2026-05-05T11:39:54Z",
+  "note": "downloaded via proxy http://127.0.0.1:8118; prompt see scripts/gen-hkg-transitions.mjs"
+}

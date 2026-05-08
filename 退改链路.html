@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#bac1d8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <title>退改链路 · JourneyKit 香港线路 demo</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/tokens.css?v=v5-refund-1" />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/base.css?v=v5-refund-1" />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/personas.css?v=v5-refund-1" />
+    <link rel="stylesheet" href="./hongkong_journey/prototypes/main-demo-v5/styles/components.css?v=v5-refund-1" />
+    <style>
+      :root {
+        --demo-bg: #bac1d8;
+      }
+
+      html,
+      body {
+        background: var(--demo-bg);
+      }
+
+      .stage {
+        background: transparent;
+      }
+
+      .demo-stage-dock-root {
+        position: fixed;
+        right: max(14px, env(safe-area-inset-right, 0px));
+        bottom: max(14px, env(safe-area-inset-bottom, 0px));
+        z-index: 100000;
+        font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      .demo-stage-dock-fab {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        border: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #000;
+        box-shadow: 0 6px 20px rgba(15, 19, 26, 0.35);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .demo-stage-dock-fab:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 24px rgba(15, 19, 26, 0.45);
+      }
+
+      .demo-stage-dock-fab:active {
+        transform: scale(0.96);
+      }
+
+      .demo-stage-dock-fab svg {
+        width: 24px;
+        height: 24px;
+        fill: #fff;
+      }
+
+      .demo-stage-dock-panel {
+        display: none;
+        position: absolute;
+        right: 0;
+        bottom: 60px;
+        min-width: 224px;
+        padding: 10px;
+        background: rgba(15, 19, 26, 0.96);
+        border-radius: 14px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      .demo-stage-dock-root.open .demo-stage-dock-panel {
+        display: grid;
+        gap: 6px;
+      }
+
+      .demo-stage-dock-item {
+        display: block;
+        width: 100%;
+        margin: 0;
+        padding: 10px 12px;
+        border: 0;
+        border-radius: 10px;
+        text-align: left;
+        font-size: 13px;
+        line-height: 1.4;
+        color: #e8eaf0;
+        background: rgba(255, 255, 255, 0.07);
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      .demo-stage-dock-item:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+    </style>
+    <script>
+      (function () {
+        var url = new URL(window.location.href);
+        if (!url.searchParams.has("refund")) {
+          url.searchParams.set("refund", "disruption");
+          window.history.replaceState(null, "", url.href);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="stage">
+      <div class="device" role="presentation">
+        <div class="app" id="app">
+          <div class="notch" aria-hidden="true"></div>
+          <div class="statusbar" aria-hidden="true">
+            <span>9:41</span>
+            <span class="right">5G · 100%</span>
+          </div>
+          <div class="app-frame" id="frame"></div>
+          <div class="sheet-root" id="sheet-root" data-open="false">
+            <div class="sheet-dim" data-action="close-sheet"></div>
+            <div class="sheet" id="sheet"></div>
+          </div>
+          <div class="toast" id="toast" data-show="false"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="demoStageDockRoot" class="demo-stage-dock-root">
+      <button type="button" class="demo-stage-dock-fab" id="demoStageDockFab" aria-haspopup="true" aria-expanded="false" aria-controls="demoStageDockPanel" title="演示阶段定位">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 14.5a2.5 2.5 0 1 1 2.5-2.5a2.5 2.5 0 0 1-2.5 2.5m0-4a1.5 1.5 0 1 0 1.5 1.5a1.5 1.5 0 0 0-1.5-1.5"/><path d="M21.435 11.505h-1.46a7.98 7.98 0 0 0-7.48-7.48v-1.46a.51.51 0 0 0-.5-.5a.515.515 0 0 0-.5.5v1.46a8 8 0 0 0-7.48 7.48h-1.45a.5.5 0 1 0 0 1h1.45a8.01 8.01 0 0 0 7.48 7.48v1.45a.51.51 0 0 0 .5.5a.5.5 0 0 0 .5-.5v-1.45a8 8 0 0 0 7.48-7.48h1.46a.5.5 0 0 0 0-1M12 19.005a7 7 0 1 1 7-7a7.02 7.02 0 0 1-7 7"/></svg>
+      </button>
+      <div class="demo-stage-dock-panel" id="demoStageDockPanel" role="menu" aria-label="快速定位">
+        <a class="demo-stage-dock-item" role="menuitem" href="./正向支付链路.html">正向支付链路</a>
+        <a class="demo-stage-dock-item" role="menuitem" href="./订详FLipbook效果.html">订详 Flipbook</a>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        var root = document.getElementById("demoStageDockRoot");
+        var fab = document.getElementById("demoStageDockFab");
+        if (!root || !fab) return;
+        function setOpen(open) {
+          root.classList.toggle("open", open);
+          fab.setAttribute("aria-expanded", open ? "true" : "false");
+        }
+        fab.addEventListener("click", function (e) {
+          e.stopPropagation();
+          setOpen(!root.classList.contains("open"));
+        });
+        document.addEventListener("click", function () {
+          setOpen(false);
+        });
+        root.addEventListener("click", function (e) {
+          e.stopPropagation();
+        });
+      })();
+    </script>
+    <script type="module" src="./hongkong_journey/prototypes/main-demo-v5/src/main.js?v=v5-refund-1"></script>
+  </body>
+</html>

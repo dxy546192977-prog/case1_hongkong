@@ -1,0 +1,595 @@
+/* ============================================================
+   香港机场中转 · 折叠卡样式（.transit-card）
+   ------------------------------------------------------------
+   独立模块。主项目通过 components.css 的 @import 引入；独立预览
+   页（standalone/子效果_H5折叠卡.html）也直接 link 这个文件。
+   改这里就两边都改。
+
+   依赖的 CSS 变量（base.css / tokens.css 提供）：
+     --bg-surface / --bg-surface-soft
+     --hairline / --hairline-strong
+     --ink / --ink-mid / --ink-muted / --ink-faint
+     --accent-primary / --accent-blue-tint / --accent-blue-soft
+     --t-12 / --t-13 / --t-19 / --w-semibold
+     --r-md
+     --dur-fast / --ease-os
+   ============================================================ */
+
+/* token：v6 收敛为白底 + hairline + 黑灰文字。
+ * 这一组 token 同样会出现在 transit-assistant.css 里（共用），
+ * 单独引入本文件也能正常工作。
+ *
+ * 3 类人群差异化：--ta-blue / --ta-blue-soft 走 --persona-accent / --persona-accent-soft
+ * （由 styles/personas.css 在 [data-persona] 上定义；未挂 persona 时
+ *  fallback 到原港航蓝，保持向后兼容）。
+ */
+.transit-card {
+  --ta-blue: var(--persona-accent, var(--accent-primary));
+  --ta-blue-soft: var(--persona-accent-soft, var(--accent-blue-tint));
+  --ta-card-bg: #ffffff;
+  --ta-card-border: rgba(15, 17, 22, 0.08);
+}
+
+/* 折叠卡按下态：统一蓝色系淡底 */
+.transit-card[data-persona]:active {
+  background: var(--accent-blue-soft);
+}
+
+/* 折叠卡 √ 图标：统一蓝色 */
+.transit-card[data-persona] .transit-card__hint-icon {
+  color: var(--accent-primary);
+}
+
+/* 折叠卡 CTA：统一蓝色 */
+.transit-card[data-persona] .transit-card__detail-cta {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* ---------- 折叠卡（中转提示 v6：figma 极简风） ---------- */
+.transit-card {
+  display: block;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  text-align: left;
+  font-family: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: none;
+  transition: background-color var(--dur-fast) var(--ease-os),
+    border-color var(--dur-fast) var(--ease-os);
+}
+.transit-card:active {
+  background: var(--bg-surface-soft);
+  border-color: var(--hairline-strong);
+}
+
+/* 顶部 meta 行：日期/时刻段 + 右侧 chev */
+.transit-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.transit-card__meta {
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+.transit-card__chev {
+  display: inline-flex;
+  color: var(--ink-faint);
+  flex: 0 0 auto;
+}
+
+.transit-card__headline {
+  margin: 0 0 4px;
+  font-size: var(--t-19);
+  font-weight: var(--w-semibold);
+  line-height: 1.3;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.transit-card__sub {
+  margin: 0 0 12px;
+  font-size: var(--t-13);
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+/* 登机牌 + 亲子提示：顶部 hairline 下多行 √ 结构 */
+.transit-card__hint-stack {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+.transit-card__hint-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.transit-card__hint-row + .transit-card__hint-row {
+  margin-top: 10px;
+}
+.transit-card__hint-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--ink);
+}
+.transit-card__hint-body {
+  flex: 1;
+  min-width: 0;
+}
+.transit-card__hint-title {
+  margin: 0 0 2px;
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  line-height: 1.4;
+}
+.transit-card__hint-tip {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+/* 与整张卡同一按钮，仅作视觉 CTA；点击仍冒泡触发展开 */
+.transit-card__detail-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-pill);
+  box-sizing: border-box;
+  font-size: var(--t-13);
+  font-weight: var(--w-medium);
+  color: var(--ink);
+  background: var(--bg-surface);
+  pointer-events: none;
+}
+
+/* ---------- 折叠卡简化首屏：单层信息带，无小节标题、无内嵌灰卡 ---------- */
+.transit-card__simple-stack {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.transit-card__bp-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.transit-card__bp-strip-body {
+  flex: 1;
+  min-width: 0;
+}
+.transit-card__bp-strip-title {
+  margin: 0;
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  line-height: 1.35;
+}
+.transit-card__bp-strip-tip {
+  margin: 4px 0 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.transit-card__counter-inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+}
+.transit-card__counter-inline-airline {
+  font-size: var(--t-12);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  line-height: 1.35;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.transit-card__counter-inline-next {
+  width: 100%;
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.transit-card__path-inline {
+  margin: 0;
+  font-size: var(--t-12);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+.transit-card__path-inline .route-arrow-wrap {
+  margin: 0 3px;
+  vertical-align: -0.14em;
+}
+
+.transit-card__cd-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.4;
+}
+.transit-card__cd-inline-ico {
+  flex-shrink: 0;
+  display: inline-flex;
+  color: var(--ta-blue);
+}
+.transit-card__cd-inline-tx {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+}
+
+.transit-card__note-dots {
+  margin: 0;
+  padding: 0 0 0 1.1em;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+.transit-card__note-dots-item {
+  margin: 0 0 4px;
+}
+.transit-card__note-dots-item:last-child {
+  margin-bottom: 0;
+}
+.transit-card__note-dots-item--warn {
+  color: #9a5b00;
+}
+
+/* 一屏高密度：含图2五项能力 + 价值；极高小屏时卡片内可微滚动 */
+.transit-card--one-screen {
+  box-sizing: border-box;
+  max-height: min(78dvh, 640px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 11px 12px 12px;
+  scrollbar-gutter: stable;
+}
+.transit-card--one-screen::-webkit-scrollbar {
+  width: 4px;
+}
+.transit-card--one-screen::-webkit-scrollbar-thumb {
+  background: rgba(15, 17, 22, 0.12);
+  border-radius: 4px;
+}
+
+.transit-card--one-screen .transit-card__top {
+  margin-bottom: 6px;
+}
+.transit-card--one-screen .transit-card__headline {
+  margin-bottom: 2px;
+  font-size: clamp(17px, 4.3vw, var(--t-19));
+}
+.transit-card--one-screen .transit-card__sub {
+  margin-bottom: 4px;
+  font-size: var(--t-12);
+  line-height: 1.4;
+}
+
+.transit-card__region-lbl {
+  margin: 6px 0 2px;
+  font-size: var(--t-11);
+  font-weight: var(--w-semibold);
+  color: var(--ink-muted);
+  letter-spacing: 0.02em;
+}
+
+.transit-card--one-screen .transit-card__simple-stack {
+  padding-top: 8px;
+  gap: 8px;
+}
+
+.transit-card__anomaly-inline {
+  margin: 0;
+  font-size: var(--t-11);
+  line-height: 1.35;
+  color: var(--ink-muted);
+}
+
+.transit-card__family-teaser {
+  margin: 6px 0 0;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: rgba(236, 72, 153, 0.08);
+  font-size: var(--t-11);
+  line-height: 1.35;
+  color: var(--ink-muted);
+}
+
+.transit-card__capability {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--hairline);
+}
+.transit-card__capability > .transit-card__region-lbl {
+  margin-top: 0;
+  margin-bottom: 3px;
+}
+
+.transit-card__cap-ol {
+  margin: 0;
+  padding-left: 1.35em;
+  font-size: var(--t-11);
+  line-height: 1.32;
+  color: var(--ink-muted);
+}
+.transit-card__cap-li {
+  margin: 0 0 3px;
+}
+.transit-card__cap-li:last-child {
+  margin-bottom: 0;
+}
+.transit-card__cap-t {
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+}
+.transit-card__cap-value {
+  margin: 6px 0 0;
+  font-size: var(--t-11);
+  line-height: 1.38;
+  color: var(--ink);
+}
+.transit-card__cap-value-k {
+  display: inline-block;
+  margin: 0 6px 0 0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(15, 17, 22, 0.06);
+  font-size: 10px;
+  font-weight: var(--w-semibold);
+  color: var(--ink-muted);
+  vertical-align: 0.08em;
+}
+
+.transit-card--one-screen .transit-card__detail-cta {
+  margin-top: 8px;
+  padding: 8px 14px;
+  font-size: var(--t-12);
+}
+
+/* ---------- 五类能力（旧版嵌套卡，全屏 sheet / 历史样式仍可能引用） ---------- */
+.transit-card__feature-stack {
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--hairline);
+}
+.transit-card__feature {
+  margin-top: 14px;
+}
+.transit-card__feature:first-child {
+  margin-top: 0;
+}
+.transit-card__feature-label {
+  margin: 0 0 8px;
+  font-size: var(--t-11);
+  font-weight: var(--w-semibold);
+  color: var(--ink-muted);
+  letter-spacing: 0.02em;
+}
+.transit-card__hint-row--tight {
+  margin-top: 0;
+}
+.transit-card__bp-action {
+  margin: 8px 0 0;
+  font-size: var(--t-12);
+  font-weight: var(--w-medium);
+  color: var(--ink);
+  line-height: 1.45;
+}
+
+.tc-route {
+  width: 100%;
+  overflow: hidden;
+}
+/* 路径箭头（与 transit-helpers routeArrowImgHtml 配套） */
+.route-arrow-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+  margin: 0 4px;
+  line-height: 0;
+}
+.route-arrow-ico {
+  display: block;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  pointer-events: none;
+}
+.tc-route__track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 6px 4px;
+}
+.tc-route__arr {
+  align-self: center;
+  margin: 0 2px;
+  padding: 0;
+  line-height: 0;
+}
+.tc-route__seg {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--r-sm);
+  background: #f2f4f7;
+  border: 1px solid rgba(15, 17, 22, 0.06);
+}
+.tc-route__seg--skip {
+  background: rgba(31, 157, 85, 0.08);
+  border-color: rgba(31, 157, 85, 0.2);
+}
+.tc-route__seg--apm {
+  background: rgba(59, 130, 246, 0.09);
+  border-color: rgba(59, 130, 246, 0.22);
+}
+.tc-route__seg-label {
+  font-size: var(--t-12);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  line-height: 1.25;
+}
+.tc-route__seg-sub {
+  margin-top: 2px;
+  font-size: var(--t-11);
+  color: var(--ink-muted);
+  line-height: 1.35;
+}
+
+.transit-card__feature .transit-card__counter {
+  margin: 0;
+  padding: 10px 12px;
+  background: #fafbfc;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-sm);
+}
+.transit-card__counter-head {
+  margin-bottom: 2px;
+}
+.transit-card__counter-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  font-size: var(--t-11);
+  font-weight: var(--w-semibold);
+  background: #e8f5ee;
+  color: #166a3a;
+}
+.transit-card__counter-tag[data-need="yes"] {
+  background: #fff3df;
+  color: #9a5b00;
+}
+.transit-card__counter-airline {
+  margin: 8px 0 4px;
+  font-size: var(--t-12);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  line-height: 1.35;
+}
+.transit-card__counter-sum,
+.transit-card__counter-next {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+.transit-card__counter-next {
+  margin-top: 6px;
+  color: var(--ink);
+}
+
+.transit-card__cd {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--hairline);
+  background: #f7f8fa;
+}
+.transit-card__cd-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--ta-blue);
+}
+.transit-card__cd-body {
+  flex: 1;
+  min-width: 0;
+}
+.transit-card__cd-title {
+  margin: 0 0 4px;
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  line-height: 1.35;
+}
+.transit-card__cd-strat {
+  margin: 0;
+  font-size: var(--t-12);
+  color: var(--ink-muted);
+  line-height: 1.45;
+}
+
+.transit-card__alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.transit-card__alerts-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--hairline);
+  background: var(--bg-surface);
+}
+.transit-card__alerts-item--warn {
+  border-color: rgba(214, 138, 26, 0.4);
+  background: rgba(214, 138, 26, 0.09);
+}
+.transit-card__alerts-item--info {
+  background: #f7f8fa;
+}
+.transit-card__alerts-ico {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--ink-muted);
+}
+.transit-card__alerts-item--warn .transit-card__alerts-ico {
+  color: #c27803;
+}
+.transit-card__alerts-body {
+  flex: 1;
+  min-width: 0;
+}
+.transit-card__alerts-ti {
+  margin: 0 0 4px;
+  font-size: var(--t-12);
+  font-weight: var(--w-semibold);
+  color: var(--ink);
+  line-height: 1.3;
+}
+.transit-card__alerts-tx {
+  margin: 0;
+  font-size: var(--t-11);
+  color: var(--ink-muted);
+  line-height: 1.45;
+}

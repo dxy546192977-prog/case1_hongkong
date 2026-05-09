@@ -2,13 +2,14 @@
 
 import { renderChat } from "./views/chat.js";
 import { renderItinerary, attachItinSheetDrag } from "./views/itinerary-detail.js";
+import { renderOrderDetail } from "./views/order-detail.js";
 import { renderPrep } from "./views/prep.js";
 import { renderRefund } from "./views/refund.js";
 import { renderTrip, renderTripExpanded, attachTransitSheetDrag } from "./views/trip-detail.js";
 import { renderSheet } from "./views/order-sheet.js";
 import { attachAirportFlipbook } from "./views/airport-flipbook.js";
 import { attachTransitStepMapSync, clearStepSelection, navigateMapTo } from "./views/transit-assistant.js";
-import { myTrips } from "./data.js";
+import { myTrips } from "./data-source.js";
 import { getState, setState } from "./state.js";
 import {
   setItineraryMode,
@@ -31,6 +32,7 @@ const screens = {
   chat: renderChat,
   itinerary: renderItinerary,
   prep: renderPrep,
+  "order-detail": renderOrderDetail,
   trip: renderTrip,
   "trip-expanded": renderTripExpanded,
   refund: renderRefund,

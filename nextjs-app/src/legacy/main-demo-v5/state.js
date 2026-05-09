@@ -2,7 +2,7 @@
 // Render 只读 state，永不直接改 state。所有改动经 actions。
 
 const initialState = {
-  screen: "chat", // 'chat' | 'plans' | 'itinerary' | 'order' | 'prep' | 'trip' | 'trip-expanded' | 'refund'
+  screen: "chat", // 'chat' | 'plans' | 'itinerary' | 'order' | 'prep' | 'order-detail' | 'trip' | 'trip-expanded' | 'refund'
   conversation: [], // [{type, payload}] 见 actions.js 注释
   intakeAnswers: {}, // q-id → option-id
   selectedPlanId: null,

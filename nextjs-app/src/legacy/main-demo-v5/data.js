@@ -347,6 +347,101 @@ export function buildDisruption(plan) {
   };
 }
 
+export function buildOrderSnapshot(plan, state = {}) {
+  const disruption = buildDisruption(plan);
+  const legs = plan?.fullLegs || [];
+  const flightLeg = disruption.originalFlight || legs.find((l) => l.mode === "飞机") || {};
+  const pickupLeg = legs.find((l) => l.mode === "接机") || {};
+  const firstLeg = legs[0] || {};
+  const isReplanned = Boolean(state.replanApplied);
+  const routeText = plan?.routeMeta?.mapPins?.join(" → ") || plan?.title || "东莞 → 香港 → 吉隆坡";
+
+  return {
+    title: plan?.title || "东莞经香港，飞吉隆坡",
+    status: isReplanned ? "新行程已生效" : "出票成功",
+    statusSub: isReplanned ? "航变保障已完成联动调整" : "航变保障已开启",
+    paidAt: "2026/05/07 09:41",
+    departDate: TRIP_DATE,
+    route: routeText,
+    totalPrice: plan?.totalPrice || 0,
+    departTime: isReplanned ? "10:10" : plan?.routeMeta?.depart || firstLeg.time || "06:20",
+    flight: {
+      code: isReplanned ? disruption.alternative.code : flightLeg.code || disruption.alternative.oldCode,
+      time: isReplanned ? disruption.alternative.time : flightLeg.time || disruption.alternative.oldTime,
+      route: flightLeg.route || "香港机场 T1 → 吉隆坡 KUL T1",
+      luggage: flightLeg.luggage || "托运行李20公斤 ｜ 手提行李1件",
+    },
+    pickup: {
+      time: isReplanned ? disruption.newPickupTime : pickupLeg.time || "18:00",
+      route: pickupLeg.route || "吉隆坡 KUL T1 → 雪邦黄金海岸安凡尼度假酒店",
+    },
+    feeDelta: 0,
+    disruption,
+  };
+}
+
+export function buildOrderHistory(plan, state = {}) {
+  const snapshot = buildOrderSnapshot(plan, state);
+  const disruption = snapshot.disruption;
+  const isReplanned = Boolean(state.replanApplied);
+
+  const history = [
+    {
+      id: "paid",
+      kind: "paid",
+      title: "下单成功",
+      time: snapshot.paidAt,
+      status: "已完成",
+      rows: [
+        ["打包行程", snapshot.route],
+        ["支付金额", `¥${snapshot.totalPrice.toLocaleString()}`],
+        ["主要航班", `${disruption.alternative.oldCode} ${disruption.alternative.oldTime}`],
+        ["接驳安排", `出发 ${plan?.routeMeta?.depart || "06:20"}，接机 ${buildOrderSnapshot(plan, { replanApplied: false }).pickup.time}`],
+      ],
+    },
+    {
+      id: "prep",
+      kind: "prep",
+      title: "出行前提示",
+      time: "2026/05/25 10:30",
+      status: "已推送",
+      summary: "证件、入境、行李和出发提醒已整理到订单下方，出发前会继续同步关键变化。",
+      tags: ["护照有效期", "马来西亚入境", "托运行李", "出发提醒"],
+    },
+    {
+      id: "disruption",
+      kind: "disruption",
+      title: "航变提醒",
+      time: "2026/05/31 18:20",
+      status: isReplanned ? "已处理" : "待处理",
+      summary: `${disruption.reason}，${disruption.alternative.oldCode} 已取消，后续接驳与接机需要联动调整。`,
+      rows: [
+        ["影响范围", `${disruption.affected.length} 段行程`],
+        ["平台保障", "全程已为你重排，费用变化 ¥0"],
+      ],
+      action: !isReplanned,
+    },
+  ];
+
+  if (isReplanned) {
+    history.push({
+      id: "replan",
+      kind: "replan",
+      title: "方案调整记录",
+      time: "2026/05/31 18:23",
+      status: "调整成功",
+      summary: "替代方案已生效，机票、跨境接驳和接机时间已同步更新。",
+      rows: [
+        ["新航班", `${snapshot.flight.code} ${snapshot.flight.time}`],
+        ["新接机", `${snapshot.pickup.time} ${snapshot.pickup.route}`],
+        ["费用变化", "¥0，平台已兜底差价"],
+      ],
+    });
+  }
+
+  return history;
+}
+
 export const replanProcessSteps = [
   "确认航司保护规则",
   "锁定替代航班与接驳",

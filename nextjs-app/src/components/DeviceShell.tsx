@@ -13,9 +13,12 @@ import {
   collapseTripCard,
   confirmPassengers,
   confirmReplan,
+  backToOrderDetail,
   exitStepEditMode,
   expandTripCard,
   focusComposer,
+  openAlternativeFromOrder,
+  openOrderDetail,
   openPayPad,
   pressPayKey,
   refreshRefundStatus,
@@ -44,7 +47,7 @@ import {
 import { render } from "@/legacy/main-demo-v5/render.js";
 import { getState, resetState, setState, subscribe } from "@/legacy/main-demo-v5/state.js";
 
-type DemoMode = "payment" | "refund" | "flipbook";
+type DemoMode = "payment" | "refund" | "flipbook" | "order-detail";
 
 type DeviceShellProps = {
   mode: DemoMode;
@@ -142,15 +145,14 @@ const handlers: Record<string, (element: HTMLElement) => void> = {
   "toggle-mytrips": () => toggleMyTrips(),
   "open-trip-card": (el) => {
     const cardId = el.dataset.cardId;
-    if (cardId === "trip-hkg-airport") {
-      window.location.href = "/flipbook";
-      return;
-    }
     openTripCard(cardId);
   },
   "expand-trip-card": () => expandTripCard(),
   "collapse-trip-card": () => collapseTripCard(),
   "back-to-prep": () => backToPrep(),
+  "open-order-detail": () => openOrderDetail(),
+  "open-alternative-from-order": () => openAlternativeFromOrder(),
+  "back-to-order-detail": () => backToOrderDetail(),
   "back-to-chat": () => backToChat(),
   "toggle-agreement": () => toggleAgreement(),
   "start-refund": (el) => startRefundFlow(el.dataset.flow || "free"),
@@ -170,6 +172,11 @@ const handlers: Record<string, (element: HTMLElement) => void> = {
 function bootMode(mode: DemoMode) {
   if (mode === "refund") {
     startRefundFlow("disruption");
+    return;
+  }
+
+  if (mode === "order-detail") {
+    openOrderDetail();
     return;
   }
 

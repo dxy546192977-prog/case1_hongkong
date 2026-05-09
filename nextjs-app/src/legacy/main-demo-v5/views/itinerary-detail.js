@@ -2,8 +2,8 @@
 // composer 上方常驻一条「推荐修改标签」chips bar + composer 吸底。
 // 段卡总是展开（不收起），按 cat/mode 显示对应详情结构。
 
-import { plans } from "../data.js";
-import { renderComposer } from "./chat.js";
+import { plans } from "../data-source.js";
+import { renderComposer, renderSuggestionRail } from "./bottom-composer.js";
 import { ICON } from "../icons.js";
 
 export function renderItinerary(state) {
@@ -61,13 +61,7 @@ export function renderItinerary(state) {
 function renderSmartSuggestions(plan, state) {
   const suggestions = currentSuggestions(plan, state);
   if (!suggestions.length) return "";
-  return `
-    <div class="smart-suggestions" aria-label="智能建议">
-      ${suggestions
-        .map((label) => `<button class="smart-suggestion-chip" data-action="suggest-chip" data-text="${escapeHtml(label)}">${escapeHtml(label)}</button>`)
-        .join("")}
-    </div>
-  `;
+  return renderSuggestionRail({ items: suggestions });
 }
 
 function currentSuggestions(plan, state) {

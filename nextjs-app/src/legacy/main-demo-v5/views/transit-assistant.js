@@ -12,12 +12,12 @@
 // 依赖：
 //   - ICON                 ../icons.js
 //   - renderAirportFlipbook ./airport-flipbook.js
-//   - renderComposer       ./chat.js
+//   - renderComposer       ./bottom-composer.js
 // ============================================================
 
 import { ICON } from "../icons.js";
 import { renderAirportFlipbook } from "./airport-flipbook.js";
-import { renderComposer } from "./chat.js";
+import { renderComposer } from "./bottom-composer.js";
 import {
   renderRouteChain,
   renderCounterGuidanceBlock,

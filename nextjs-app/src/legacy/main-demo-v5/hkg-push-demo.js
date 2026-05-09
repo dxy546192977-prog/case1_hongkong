@@ -6,7 +6,7 @@
 
 import { HKG_PROFILE_KEYS, getHkgProfile } from "./data/hkg-profiles.js";
 import { ICON } from "./icons.js";
-import { renderComposer } from "./views/chat.js";
+import { renderComposer } from "./views/bottom-composer.js";
 import { attachItinSheetDrag } from "./views/itinerary-detail.js";
 import { attachHkgRouteMap, renderHkgRouteMap } from "./views/hkg-route-map.js";
 

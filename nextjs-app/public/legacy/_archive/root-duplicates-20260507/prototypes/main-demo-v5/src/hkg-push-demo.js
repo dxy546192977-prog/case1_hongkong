@@ -11,6 +11,8 @@ import { HKG_PROFILE_KEYS, getHkgProfile } from "./data/hkg-profiles.js";
 import { ICON } from "./icons.js";
 import { renderComposer } from "./views/chat.js";
 import { attachAirportFlipbook } from "./views/airport-flipbook.js";
+import { renderHkgRouteMap, attachHkgRouteMap } from "./views/hkg-route-map.js";
+import { renderHkgDrawer, attachHkgDrawer } from "./views/hkg-drawer.js";
 import {
   renderTransitAssistantScreen,
   attachTransitSheetDrag,
@@ -367,17 +369,29 @@ function renderTalkTracksBlock(talkTracks) {
 //   浮动返回按钮：原 .ta-screen__back 的 data-action 是 collapse-trip-card，我们额外加一个
 //   data-demo-back 让 push demo 的 click handler（state.screen = "push"）能直接捕获。
 export function renderDetailScreen(profile) {
-  const d = adaptHkgProfileToTransitDetail(profile);
-  // sheetMode 默认走 map 档（跟沉浸式 H5 一致：进来先看大地图，下方只露 head + rail）
-  const state = { transitSheetMode: "map", persona: d._persona };
-  const baseHtml = renderTransitAssistantScreen(d, state);
+  return `
+    <div
+      class="hkg-profile-detail hkg-detail-screen"
+      data-hkg-profile-detail
+      data-profile="${profile.id}"
+      style="--hkg-accent: ${profile.accent}; --hkg-accent-soft: ${profile.accentSoft}"
+    >
+      <header class="hkg-profile-detail__appbar">
+        <button class="hkg-profile-detail__back" type="button" data-demo-back aria-label="返回">
+          ${ICON.back(22)}
+        </button>
+      </header>
 
-  // 把返回按钮的 data-action 改成 data-demo-back（push demo 自己的返回事件）。
-  const html = baseHtml.replace(
-    'data-action="collapse-trip-card"',
-    'data-demo-back data-action="collapse-trip-card"',
-  );
-  return html;
+      <main class="hkg-profile-detail__main">
+        <div class="hkg-detail-map">
+          ${renderHkgRouteMap(profile)}
+        </div>
+      </main>
+
+      ${renderHkgDrawer(profile)}
+      ${renderComposer({ placeholder: "想去哪里", interactive: true, chips: false })}
+    </div>
+  `;
 }
 
 // =====================================================================
@@ -411,6 +425,13 @@ export function renderOffstageSwitcher(activeProfileId) {
 // =====================================================================
 
 function attachDetailSheet(rootFrame, profile) {
+  const hkg = rootFrame.querySelector("[data-hkg-profile-detail]");
+  if (hkg) {
+    attachHkgRouteMap(hkg, profile);
+    attachHkgDrawer(hkg);
+    return;
+  }
+
   const screen = rootFrame.querySelector(".ta-screen");
   if (!screen) return;
   const d = adaptHkgProfileToTransitDetail(profile);

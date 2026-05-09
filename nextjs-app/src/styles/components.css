@@ -646,6 +646,20 @@
 /* ============================================================
    Composer (4 icons)
    ============================================================ */
+.bottom-composer {
+  position: relative;
+  z-index: 7;
+  padding: 12px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0), var(--bg-page) 28%),
+    var(--bg-page);
+}
+
+.bottom-composer .composer {
+  padding-top: 0;
+  background: transparent;
+}
+
 .composer {
   position: relative;
   padding: 8px 16px calc(var(--safe-bottom) - 4px);
@@ -656,19 +670,26 @@
 .composer__bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: var(--bg-surface-soft);
-  border: 0;
+  gap: 10px;
+  background: var(--bg-surface);
+  border: 1px solid rgba(210, 212, 217, 0.9);
   border-radius: var(--r-pill);
-  padding: 6px 8px 6px 8px;
+  padding: 6px 12px 6px 14px;
   height: 48px;
-  transition: background var(--dur-fast) var(--ease-os);
+  box-shadow: 0 5px 28px rgba(211, 211, 211, 0.40);
+  transition:
+    background var(--dur-fast) var(--ease-os),
+    border-color var(--dur-fast) var(--ease-os),
+    box-shadow var(--dur-fast) var(--ease-os);
 }
 
 /* v3 step A·③d：active 态完整闭合 ring + 浅蓝高亮底 */
 .composer--active .composer__bar {
-  background: #ffffff;
-  box-shadow: 0 0 0 1.5px var(--accent-primary);
+  background: var(--bg-surface);
+  border-color: var(--accent-primary);
+  box-shadow:
+    0 0 0 1px var(--accent-primary),
+    0 8px 30px rgba(0, 17, 255, 0.10);
   border-radius: var(--r-pill);
 }
 
@@ -762,7 +783,7 @@
 
 .composer__input {
   flex: 1;
-  font-size: var(--t-14);
+  font-size: var(--t-15);
   color: var(--ink);
   height: 100%;
   min-width: 0;
@@ -775,8 +796,8 @@
 .composer__disclaimer {
   text-align: center;
   font-size: var(--t-11);
-  color: var(--ink-faint);
-  padding: 4px 0 0;
+  color: #c6c6c6;
+  padding: 6px 0 0;
   margin: 0;
   line-height: 1.35;
 }
@@ -1118,7 +1139,7 @@
   z-index: 7;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   padding: 0 16px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -1132,25 +1153,33 @@
 
 .smart-suggestion-chip {
   flex: 0 0 auto;
-  padding: 7px 14px;
-  border: 1px solid var(--hairline);
+  min-height: 32px;
+  padding: 6px 13px;
+  border: 1px solid rgba(15, 19, 26, 0.12);
   border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: var(--bg-surface);
   color: var(--ink);
   font-size: var(--t-13);
   font-weight: var(--w-regular);
+  line-height: 1.4;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(17, 19, 24, 0.06);
+  box-shadow: 0 2px 10px rgba(17, 19, 24, 0.04);
   cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-os),
+  transition:
+    background var(--dur-fast) var(--ease-os),
+    border-color var(--dur-fast) var(--ease-os),
     transform var(--dur-fast) var(--ease-os);
 }
 
 .smart-suggestion-chip:active {
-  background: rgba(0, 68, 255, 0.06);
+  background: var(--bg-surface-soft);
+  border-color: rgba(15, 19, 26, 0.18);
   transform: scale(0.98);
+}
+
+.smart-suggestions--docked {
+  position: static;
+  padding: 0 16px 12px;
 }
 
 /* v3 step B·②：chat 屏走 inline 流（不绝对定位） */
@@ -1165,9 +1194,13 @@
   gap: 4px;
 }
 
+.smart-suggestion-chip__icon,
 .smart-suggestion-chip--with-icon svg {
   width: 14px;
   height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* v5 R5：prep 卡片点击后 overlay */
@@ -2172,17 +2205,17 @@
 .app:has(.refund-feed) .appbar,
 .app:has(.refund-feed) .composer,
 .app:has(.refund-feed) {
-  background: #f5f7fb;
+  background: var(--bg-page);
 }
 
 .refund-feed {
   padding: 8px 18px 14px;
-  background: #f5f7fb;
+  background: var(--bg-page);
 }
 
 .refund-fact-lead {
-  margin: 0 0 18px;
-  color: #222;
+  margin: 0 8px 22px;
+  color: var(--ink);
   font-size: var(--t-17);
   line-height: 1.6;
   font-weight: var(--w-regular);
@@ -2193,12 +2226,11 @@
   margin-left: auto;
   margin-right: 0;
   max-width: 78%;
-  background: var(--bg-bubble-user-solid);
-  color: var(--accent-on-primary);
-  border-radius: 18px;
-  border-bottom-right-radius: 8px;
-  padding: 10px 16px;
-  font-size: var(--t-14);
+  background: var(--bg-bubble-user-soft);
+  color: var(--ink);
+  border-radius: 16px;
+  padding: 12px 16px;
+  font-size: var(--t-15);
   line-height: 1.55;
 }
 
@@ -2214,9 +2246,9 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: #11192d;
+  color: var(--ink-mid);
   font-size: var(--t-12);
-  margin-bottom: 8px;
+  margin: 0 8px 10px;
 }
 
 .refund-assistant__avatar {
@@ -2226,25 +2258,25 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-primary);
-  color: var(--accent-on-primary);
+  background: var(--accent-blue-tint);
+  color: var(--accent-primary);
   font-size: var(--t-13);
   font-weight: var(--w-semibold);
 }
 
 .refund-panel {
-  background: #fff;
-  border-radius: 8px;
-  padding: 14px 18px 16px;
-  color: #11192d;
-  border: 1px solid rgba(0, 17, 255, 0.06);
-  box-shadow: 0 6px 18px rgba(30, 48, 90, 0.05);
+  background: transparent;
+  border-radius: 0;
+  padding: 0 8px 8px;
+  color: var(--ink);
+  border: 0;
+  box-shadow: none;
 }
 
 .refund-panel p {
   margin: 0 0 12px;
-  font-size: var(--t-14);
-  line-height: 1.58;
+  font-size: var(--t-16);
+  line-height: 1.62;
 }
 
 .refund-panel p:last-child {
@@ -2264,7 +2296,7 @@
   align-items: baseline;
   gap: 8px 12px;
   padding-right: 74px;
-  color: #11192d;
+  color: var(--ink);
 }
 
 .refund-order-card__route strong,
@@ -2281,9 +2313,9 @@
   display: inline-flex;
   align-items: center;
   height: 22px;
-  border-radius: 7px;
+  border-radius: var(--r-pill);
   padding: 0 7px;
-  background: var(--accent-blue-tint);
+  background: var(--bg-surface-mute);
   color: var(--accent-primary);
   font-size: var(--t-11);
   font-style: normal;
@@ -2292,7 +2324,7 @@
 
 .refund-order-card__flight {
   font-size: var(--t-13);
-  color: #11192d;
+  color: var(--ink);
 }
 
 .refund-order-card__meta {
@@ -2329,7 +2361,7 @@
 }
 
 .refund-order-card__money span {
-  color: #11192d;
+  color: var(--ink);
   font-size: var(--t-16);
   font-weight: var(--w-semibold);
 }
@@ -2352,13 +2384,16 @@
 
 .refund-btn {
   height: 44px;
-  border-radius: 8px;
+  border-radius: 14px;
   font-size: var(--t-14);
   font-weight: var(--w-semibold);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform var(--dur-fast) var(--ease-os), background var(--dur-fast) var(--ease-os);
+  border: 1px solid var(--hairline-strong);
+  background: var(--bg-page);
+  color: var(--ink);
+  transition: transform var(--dur-fast) var(--ease-os), background var(--dur-fast) var(--ease-os), border-color var(--dur-fast) var(--ease-os);
 }
 
 .refund-btn:active {
@@ -2366,17 +2401,18 @@
 }
 
 .refund-btn--primary {
-  background: var(--accent-primary);
-  color: #fff;
+  background: var(--bg-page);
+  color: var(--accent-primary);
+  border-color: color-mix(in srgb, var(--accent-primary) 28%, var(--hairline-strong));
 }
 
 .refund-btn--ghost {
-  background: var(--accent-blue-soft);
-  color: var(--accent-primary);
+  background: var(--bg-page);
+  color: var(--ink);
 }
 
 .refund-order-hint {
-  color: #11192d;
+  color: var(--ink);
   margin-top: 2px;
 }
 
@@ -2393,10 +2429,10 @@
   align-items: center;
   gap: 12px;
   margin: 10px 0 14px;
-  padding: 12px 14px;
-  background: #f8fbff;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 17, 255, 0.06);
+  padding: 14px;
+  background: var(--bg-page);
+  border-radius: 16px;
+  border: 1px solid var(--hairline-strong);
   text-align: left;
 }
 
@@ -2404,7 +2440,7 @@
   width: 42px;
   height: 42px;
   border-radius: var(--r-pill);
-  background: var(--accent-blue-tint);
+  background: var(--bg-surface-mute);
   color: var(--accent-primary);
   display: inline-flex;
   align-items: center;
@@ -2419,7 +2455,7 @@
 .refund-blocked-card strong,
 .refund-failed-card strong {
   display: block;
-  color: #222;
+  color: var(--ink);
   font-size: var(--t-15);
   font-weight: var(--w-medium);
   line-height: 1.35;
@@ -2429,7 +2465,7 @@
 .refund-blocked-card small,
 .refund-failed-card small {
   display: block;
-  color: #4f5662;
+  color: var(--ink-muted);
   font-size: var(--t-12);
   line-height: 1.45;
   margin-top: 2px;
@@ -2450,9 +2486,9 @@
   align-items: start;
   margin: 12px 0 14px;
   padding: 14px;
-  border-radius: 8px;
-  background: #f8fbff;
-  border: 1px solid rgba(0, 17, 255, 0.10);
+  border-radius: 16px;
+  background: var(--bg-page);
+  border: 1px solid var(--hairline-strong);
 }
 
 .refund-blocked-card__icon,
@@ -2460,7 +2496,7 @@
   width: 32px;
   height: 32px;
   border-radius: var(--r-pill);
-  background: var(--accent-blue-tint);
+  background: var(--bg-surface-mute);
   color: var(--accent-primary);
   display: inline-flex;
   align-items: center;
@@ -2475,31 +2511,13 @@
 }
 
 .refund-failed-card {
-  background: #fff1f2;
-  border-color: rgba(255, 59, 48, 0.18);
+  background: var(--bg-page);
+  border-color: var(--hairline-strong);
 }
 
 .refund-failed-card > span {
-  background: #ffe4e6;
+  background: #fff1f2;
   color: #e11d48;
-}
-
-.refund-shortcuts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  padding: 8px 10px 0;
-  background: #f5f7fb;
-}
-
-.refund-shortcuts button {
-  height: 36px;
-  border-radius: 7px;
-  background: #fff;
-  border: 1px solid rgba(0, 17, 255, 0.08);
-  color: #1d2b4f;
-  font-size: var(--t-13);
-  box-shadow: 0 1px 1px rgba(30, 48, 90, 0.03);
 }
 
 .sheet-content.sheet--refund-warning {
@@ -2524,7 +2542,7 @@
 
 .refund-warning__body p {
   margin: 0;
-  color: #222;
+  color: var(--ink);
   font-size: var(--t-15);
   line-height: 1.65;
 }
@@ -2540,7 +2558,7 @@
 
 .refund-warning__foot .btn--primary {
   background: var(--accent-primary);
-  border-radius: 8px;
+  border-radius: 14px;
 }
 
 .disruption-alert,
@@ -2548,11 +2566,11 @@
 .refund-replan-compare,
 .refund-processing-card,
 .refund-success-card {
-  margin: 10px 0 12px;
-  border-radius: 12px;
-  background: #f8fbff;
-  border: 1px solid rgba(0, 17, 255, 0.08);
-  padding: 14px;
+  margin: 12px 0 14px;
+  border-radius: 18px;
+  background: var(--bg-page);
+  border: 1px solid var(--hairline-strong);
+  padding: 18px;
 }
 
 .disruption-alert__tag {
@@ -2572,9 +2590,9 @@
 .refund-replan-compare h3,
 .refund-processing-card h3,
 .refund-success-card h3 {
-  margin: 8px 0 12px;
-  color: #11192d;
-  font-size: var(--t-16);
+  margin: 10px 0 14px;
+  color: var(--ink);
+  font-size: var(--t-17);
   font-weight: var(--w-semibold);
   line-height: 1.4;
 }
@@ -2588,9 +2606,9 @@
 
 .disruption-alert__grid div {
   min-width: 0;
-  border-radius: 10px;
-  background: #ffffff;
-  padding: 10px;
+  border-radius: 14px;
+  background: var(--bg-surface-mute);
+  padding: 12px;
 }
 
 .disruption-alert__grid dt,
@@ -2599,13 +2617,13 @@
 }
 
 .disruption-alert__grid dt {
-  color: #7c889c;
-  font-size: var(--t-11);
+  color: var(--ink-muted);
+  font-size: var(--t-12);
   margin-bottom: 4px;
 }
 
 .disruption-alert__grid dd {
-  color: #11192d;
+  color: var(--ink);
   font-size: var(--t-13);
   font-weight: var(--w-semibold);
   line-height: 1.35;
@@ -2622,7 +2640,7 @@
   gap: 10px;
   align-items: start;
   padding: 10px 0;
-  border-top: 1px solid rgba(17, 25, 45, 0.06);
+  border-top: 1px solid var(--hairline);
 }
 
 .refund-impact-row:first-of-type {
@@ -2633,8 +2651,8 @@
   width: 28px;
   height: 28px;
   border-radius: var(--r-pill);
-  background: #edf2f7;
-  color: #667085;
+  background: var(--bg-surface-mute);
+  color: var(--ink-muted);
   font-size: var(--t-11);
   font-weight: var(--w-semibold);
   display: inline-flex;
@@ -2650,7 +2668,7 @@
 .refund-impact-row strong,
 .refund-replan-row span {
   display: block;
-  color: #11192d;
+  color: var(--ink);
   font-size: var(--t-13);
   font-weight: var(--w-semibold);
 }
@@ -2659,7 +2677,7 @@
 .refund-impact-row em,
 .refund-replan-row small {
   display: block;
-  color: #667085;
+  color: var(--ink-muted);
   font-size: var(--t-12);
   line-height: 1.45;
   font-style: normal;
@@ -2674,7 +2692,7 @@
 }
 
 .refund-impact-row[data-impacted="false"] b {
-  color: #7c889c;
+  color: var(--ink-muted);
 }
 
 .refund-replan-compare {
@@ -2686,14 +2704,14 @@
   display: grid;
   grid-template-columns: 56px 1fr;
   gap: 12px;
-  padding: 12px;
-  border-radius: 10px;
-  background: #ffffff;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--bg-surface-mute);
 }
 
 .refund-replan-row strong {
   display: block;
-  color: #11192d;
+  color: var(--ink);
   font-size: var(--t-13);
   font-weight: var(--w-semibold);
   line-height: 1.45;
@@ -2705,9 +2723,10 @@
   gap: 4px;
   margin: 10px 0 12px;
   padding: 12px 14px;
-  border-radius: 10px;
-  background: var(--accent-blue-soft);
-  color: #102a87;
+  border-radius: 14px;
+  background: var(--bg-surface-mute);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
 }
 
 .refund-shield-bar strong {
@@ -2721,10 +2740,10 @@
 }
 
 .refund-processing-card__bar {
-  height: 8px;
+  height: 6px;
   border-radius: var(--r-pill);
   overflow: hidden;
-  background: #e5eaf0;
+  background: var(--bg-surface-mute);
   margin-bottom: 12px;
 }
 
@@ -2732,7 +2751,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: var(--accent-primary);
+  background: color-mix(in srgb, var(--accent-primary) 62%, #ffffff);
   transition: width var(--dur-emph) var(--ease-os);
 }
 
@@ -2747,7 +2766,7 @@
 
 .refund-processing-card li,
 .refund-success-card li {
-  color: #4f5662;
+  color: var(--ink-mid);
   font-size: var(--t-13);
   line-height: 1.45;
   padding-left: 18px;
@@ -2763,7 +2782,7 @@
   width: 6px;
   height: 6px;
   border-radius: var(--r-pill);
-  background: #cbd5e1;
+  background: var(--hairline-strong);
 }
 
 .refund-processing-card li[data-done="true"]::before,
@@ -2773,7 +2792,7 @@
 
 .refund-success-card {
   text-align: left;
-  background: linear-gradient(180deg, #eef3ff 0%, #ffffff 78%);
+  background: var(--bg-page);
 }
 
 .refund-success-card__icon {
@@ -2783,8 +2802,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
-  background: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--accent-blue-tint);
 }
 
 .refund-success-card .refund-btn {
@@ -3551,6 +3570,314 @@
   display: flex;
   gap: 16px;
   align-items: center;
+}
+
+/* ============================================================
+   Order detail history
+   ============================================================ */
+.app:has(.order-detail-feed) .statusbar,
+.app:has(.order-detail-feed) .appbar,
+.app:has(.order-detail-feed) .composer,
+.app:has(.order-detail-feed) {
+  background: var(--bg-page);
+}
+
+.order-detail-feed {
+  padding: 10px 18px 124px;
+  background: var(--bg-page);
+}
+
+.order-detail-screen {
+  display: grid;
+  gap: 14px;
+}
+
+.order-summary-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-soft);
+}
+
+.order-summary-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.order-summary-card__head strong {
+  min-width: 0;
+  color: var(--ink-mid);
+  font-size: var(--t-12);
+  font-weight: var(--w-medium);
+  text-align: right;
+}
+
+.order-status-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  background: var(--accent-blue-tint);
+  color: var(--accent-primary);
+  font-size: var(--t-12);
+  font-weight: var(--w-semibold);
+  white-space: nowrap;
+}
+
+.order-summary-card[data-replanned="true"] .order-status-pill {
+  background: rgba(26, 166, 96, 0.12);
+  color: #168653;
+}
+
+.order-summary-card h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: var(--t-20);
+  line-height: 1.3;
+  font-weight: var(--w-semibold);
+  letter-spacing: 0;
+}
+
+.order-summary-card p {
+  margin: 6px 0 14px;
+  color: var(--ink-mid);
+  font-size: var(--t-13);
+  line-height: 1.45;
+}
+
+.order-current-list,
+.order-history-rows {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.order-current-list {
+  grid-template-columns: 1fr 1fr;
+}
+
+.order-current-list div,
+.order-history-rows div {
+  min-width: 0;
+}
+
+.order-current-list dt,
+.order-current-list dd,
+.order-history-rows dt,
+.order-history-rows dd {
+  margin: 0;
+}
+
+.order-current-list dt,
+.order-history-rows dt {
+  color: var(--ink-muted);
+  font-size: var(--t-12);
+  line-height: 1.35;
+}
+
+.order-current-list dd,
+.order-history-rows dd {
+  color: var(--ink);
+  font-size: var(--t-13);
+  font-weight: var(--w-semibold);
+  line-height: 1.4;
+  margin-top: 3px;
+}
+
+.order-guarantee-bar {
+  margin-top: 14px;
+  border-radius: 12px;
+  background: #fff7ee;
+  color: #9a4b00;
+  font-size: var(--t-13);
+  font-weight: var(--w-medium);
+  line-height: 1.45;
+  padding: 10px 12px;
+}
+
+.order-history {
+  display: grid;
+  gap: 0;
+}
+
+.order-history-item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+.order-history-item__rail {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  padding-top: 18px;
+}
+
+.order-history-item__rail::after {
+  content: "";
+  position: absolute;
+  top: 32px;
+  bottom: -4px;
+  width: 1px;
+  background: var(--hairline-strong);
+}
+
+.order-history-item:last-child .order-history-item__rail::after {
+  display: none;
+}
+
+.order-history-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--r-pill);
+  background: var(--bg-surface);
+  border: 3px solid var(--accent-primary);
+  position: relative;
+  z-index: 1;
+}
+
+.order-history-item[data-kind="disruption"] .order-history-dot {
+  border-color: #ff6200;
+}
+
+.order-history-item[data-kind="replan"] .order-history-dot {
+  border-color: #19a05f;
+}
+
+.order-history-card {
+  margin-bottom: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.order-history-card[data-kind="disruption"] {
+  background: #fff8f2;
+  border-color: rgba(255, 98, 0, 0.24);
+}
+
+.order-history-card[data-kind="replan"] {
+  border-color: rgba(25, 160, 95, 0.22);
+}
+
+.order-history-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.order-history-card__top span {
+  color: var(--ink-muted);
+  font-size: var(--t-12);
+}
+
+.order-history-card__top em {
+  color: var(--accent-primary);
+  font-size: var(--t-12);
+  font-style: normal;
+  font-weight: var(--w-semibold);
+  white-space: nowrap;
+}
+
+.order-history-card[data-kind="replan"] .order-history-card__top em {
+  color: #168653;
+}
+
+.order-history-card h3 {
+  margin: 0 0 8px;
+  color: var(--ink);
+  font-size: var(--t-16);
+  line-height: 1.35;
+  font-weight: var(--w-semibold);
+}
+
+.order-history-card p {
+  margin: 0 0 12px;
+  color: var(--ink-mid);
+  font-size: var(--t-13);
+  line-height: 1.55;
+}
+
+.order-history-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.order-history-tags span {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  border-radius: var(--r-pill);
+  background: var(--bg-surface-mute);
+  color: var(--ink-mid);
+  font-size: var(--t-12);
+  padding: 0 10px;
+}
+
+.order-history-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.order-service-entry {
+  width: 100%;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--bg-surface);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  color: var(--ink);
+  text-align: left;
+  box-shadow: var(--shadow-soft);
+}
+
+.order-service-entry__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-blue-tint);
+  color: var(--accent-primary);
+}
+
+.order-service-entry strong,
+.order-service-entry small {
+  display: block;
+}
+
+.order-service-entry strong {
+  font-size: var(--t-14);
+  line-height: 1.35;
+}
+
+.order-service-entry small {
+  margin-top: 3px;
+  color: var(--ink-muted);
+  font-size: var(--t-12);
+  line-height: 1.45;
+}
+
+.order-service-entry i {
+  display: inline-flex;
+  color: var(--ink-muted);
 }
 
 .pretrip-card .prep-list {

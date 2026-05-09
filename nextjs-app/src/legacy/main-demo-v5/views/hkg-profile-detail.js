@@ -1,6 +1,6 @@
 import { getHkgProfile } from "../data/hkg-profiles.js";
 import { ICON } from "../icons.js";
-import { renderComposer } from "./chat.js";
+import { renderComposer } from "./bottom-composer.js";
 import { renderHkgDrawer } from "./hkg-drawer.js";
 import { renderHkgRouteMap } from "./hkg-route-map.js";
 

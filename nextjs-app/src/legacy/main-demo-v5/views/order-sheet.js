@@ -1,6 +1,6 @@
 // 3 个 sheet：选乘机人 / 订单确认 / 飞猪式密码键盘（无 logo）。
 
-import { plans, order } from "../data.js";
+import { plans, order } from "../data-source.js";
 import { ICON } from "../icons.js";
 
 export function renderSheet(state) {

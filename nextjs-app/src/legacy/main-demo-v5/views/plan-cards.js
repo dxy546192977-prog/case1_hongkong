@@ -1,7 +1,7 @@
 // 横向轮播 3 方案卡 + 卡组下方的服务权益卡片（不再用图片）。
 // 卡内 mini-timeline：每行带 ¥价格 + 子说明。只有大交通飞机段 + 总价用红色，其余用 ink。
 
-import { perks } from "../data.js";
+import { perks } from "../data-source.js";
 import { ICON } from "../icons.js";
 
 export function renderPlanCarousel(plans) {

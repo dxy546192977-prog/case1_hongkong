@@ -1,7 +1,7 @@
 // 用户意图 → 状态变更。命名动作，不在 onclick 里写复杂逻辑。
 
 import { getState, setState, update } from "./state.js";
-import { plans, intakeQuestions, passengers as initialPassengers } from "./data.js";
+import { plans, intakeQuestions, passengers as initialPassengers } from "./data-source.js";
 
 // ---------- 启动 / chat ----------
 
@@ -287,6 +287,43 @@ export function startRefundFlow(flow = "free") {
     replanProgress: 0,
     replanApplied: current.replanApplied || flow === "replan-success",
     refundRefreshCount: 0,
+  });
+}
+
+export function openOrderDetail() {
+  const current = getState();
+  setState({
+    screen: "order-detail",
+    sheet: null,
+    selectedPlanId: current.selectedPlanId || "balanced",
+    paymentStatus: "paid",
+    myTripsExpanded: false,
+  });
+}
+
+export function openAlternativeFromOrder() {
+  const current = getState();
+  setState({
+    screen: "refund",
+    sheet: null,
+    selectedPlanId: current.selectedPlanId || "balanced",
+    paymentStatus: "paid",
+    refundFlow: "replan-confirm",
+    replanProgress: 0,
+    refundRefreshCount: 0,
+    myTripsExpanded: false,
+  });
+}
+
+export function backToOrderDetail() {
+  const current = getState();
+  setState({
+    screen: "order-detail",
+    sheet: null,
+    selectedPlanId: current.selectedPlanId || "balanced",
+    paymentStatus: "paid",
+    replanApplied: current.replanApplied || current.refundFlow === "replan-success",
+    myTripsExpanded: false,
   });
 }
 

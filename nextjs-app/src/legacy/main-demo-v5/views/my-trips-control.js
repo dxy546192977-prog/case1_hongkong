@@ -2,7 +2,7 @@
 // 折叠态：composer 上方左侧的 pill。
 // 展开态：横向卡组，每张点击进 detail。
 
-import { myTrips } from "../data.js";
+import { myTrips } from "../data-source.js";
 
 export function renderMyTripsControl(state) {
   if (state.myTripsExpanded) {

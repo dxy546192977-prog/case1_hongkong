@@ -2,10 +2,12 @@
 // 顶部 success-card（预订成功摘要）+ pretrip-card（行前注意事项 4 张卡）+
 // 浮动智能建议 chip 行 + composer。
 
-import { buildDisruption, prepCards, plans } from "../data.js";
+import { buildDisruption, prepCards, plans } from "../data-source.js";
 import { renderMyTripsControl } from "./my-trips-control.js";
-import { renderComposer } from "./chat.js";
+import { renderBottomComposer, renderComposer } from "./bottom-composer.js";
 import { ICON } from "../icons.js";
+
+const PREP_SUGGESTIONS = ["出发前要准备什么", "我几点出门", "司机到了吗", "到香港机场了"];
 
 export function renderPrep(state) {
   const plan = plans.find((p) => p.id === state.selectedPlanId) || plans[0];
@@ -43,7 +45,7 @@ export function renderPrep(state) {
             ${isReplanned ? `<div><dt>接机</dt><dd>${disruption.newPickupTime} 吉隆坡 KUL T1</dd></div>` : ""}
           </dl>
           <div class="success-card__actions">
-            <button class="success-detail-link" type="button">查看订单详情 ›</button>
+            <button class="success-detail-link" type="button" data-action="open-order-detail">查看订单详情 ›</button>
           </div>
         </article>
 
@@ -67,8 +69,16 @@ export function renderPrep(state) {
       </section>
     </div>
 
-    ${state.myTripsExpanded ? renderMyTripsControl(state) : renderPrepSmartSuggestions(state)}
-    ${renderComposer()}
+    ${state.myTripsExpanded
+      ? `${renderMyTripsControl(state)}${renderComposer()}`
+      : renderBottomComposer({
+          leadingShortcut: {
+            label: "我的行程",
+            action: "toggle-mytrips",
+            trailingIcon: "chevron",
+          },
+          suggestions: PREP_SUGGESTIONS,
+        })}
     ${renderPrepDetailOverlay(state)}
   `;
 }
@@ -98,18 +108,3 @@ function renderPrepDetailOverlay(state) {
   `;
 }
 
-// v5：合并「我的行程 pill」+ 智能建议 chip 到统一一行（不再重叠）
-function renderPrepSmartSuggestions(state) {
-  const list = ["出发前要准备什么", "我几点出门", "司机到了吗", "到香港机场了"];
-  return `
-    <div class="smart-suggestions" aria-label="智能建议">
-      <button class="smart-suggestion-chip smart-suggestion-chip--with-icon" data-action="toggle-mytrips">
-        <span>我的行程</span>
-        ${ICON.chevronRight(14)}
-      </button>
-      ${list
-        .map((label) => `<button class="smart-suggestion-chip" data-action="suggest-chip" data-text="${label}">${label}</button>`)
-        .join("")}
-    </div>
-  `;
-}

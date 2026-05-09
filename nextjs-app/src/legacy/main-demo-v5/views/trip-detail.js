@@ -10,10 +10,10 @@
 //   - ./transit-assistant.js   全屏地图屏 HTML + sheet 拖拽控制器
 // 改两个模块，主项目 + 独立预览页同步生效。
 
-import { myTrips, prepCards } from "../data.js";
+import { myTrips, prepCards } from "../data-source.js";
 import { applyPersonaToDetail } from "../../standalone/_personas.js";
 import { renderMyTripsControl } from "./my-trips-control.js";
-import { renderComposer } from "./chat.js";
+import { renderComposer } from "./bottom-composer.js";
 import { renderAirportFlipbook } from "./airport-flipbook.js";
 import { ICON } from "../icons.js";
 import { renderTransitCard } from "./transit-card.js";

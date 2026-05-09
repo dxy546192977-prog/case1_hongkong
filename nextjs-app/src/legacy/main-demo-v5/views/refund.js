@@ -1,6 +1,6 @@
 // 退改链路：从正向方案派生订单信息，航变免费退改为主链路。
 
-import { renderComposer } from "./chat.js";
+import { renderBottomComposer } from "./bottom-composer.js";
 import { ICON } from "../icons.js";
 import {
   buildDisruption,
@@ -8,7 +8,7 @@ import {
   plans,
   refundAllProcessSteps,
   replanProcessSteps,
-} from "../data.js";
+} from "../data-source.js";
 
 const NORMAL_FLOW = {
   free: {
@@ -93,8 +93,11 @@ export function renderRefund(state) {
       </div>
     </div>
 
-    ${renderRefundShortcuts()}
-    ${renderComposer({ placeholder: "输入问题或按住说话" })}
+    ${renderBottomComposer({
+      suggestions: refundShortcuts(),
+      composer: { placeholder: "输入问题或按住说话" },
+      ariaLabel: "退改快捷入口",
+    })}
   `;
 }
 
@@ -136,7 +139,7 @@ function renderRefundContent(state, order, disruption) {
         `新航班：${disruption.alternative.code} ${disruption.alternative.time}`,
         `接机时间：${disruption.newPickupTime}`,
         "费用变化：¥0，平台已兜底差价",
-      ]),
+      ], "back-to-order-detail", "返回订单详情"),
     };
   }
 
@@ -154,7 +157,7 @@ function renderRefundContent(state, order, disruption) {
         `预计退还：¥${disruption.refundTotal.toLocaleString()}`,
         "手续费：¥0",
         "退款将原路返回至支付账户",
-      ]),
+      ], "back-to-order-detail", "返回订单详情"),
     };
   }
 
@@ -266,13 +269,13 @@ function renderProcessingCard(title, progress = 0, steps = []) {
   `;
 }
 
-function renderSuccessCard(title, items) {
+function renderSuccessCard(title, items, action = "back-to-order-detail", label = "返回订单详情") {
   return `
     <section class="refund-success-card">
       <span class="refund-success-card__icon">${ICON.check(18)}</span>
       <h3>${title}</h3>
       <ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul>
-      <button class="refund-btn refund-btn--primary" data-action="back-to-prep">回到行程</button>
+      <button class="refund-btn refund-btn--primary" data-action="${action}">${label}</button>
     </section>
   `;
 }
@@ -302,7 +305,7 @@ function renderQuoteCard(fee, order) {
         ${fee ? `<small>已扣费 ¥${fee}</small>` : ""}
       </div>
       <div class="refund-order-card__actions">
-        <button class="refund-btn refund-btn--ghost" data-action="refund-status">订单详情</button>
+        <button class="refund-btn refund-btn--ghost" data-action="open-order-detail">订单详情</button>
         <button class="refund-btn refund-btn--primary" data-action="request-refund">申请退款</button>
       </div>
       ${renderOrderListHint()}
@@ -332,7 +335,7 @@ function renderBlockedCard() {
         <strong>暂不支持在线主动退票</strong>
         <small>该商品需前往订单详情查看退改规则，或联系平台人工处理。</small>
       </div>
-      <button class="refund-btn refund-btn--ghost" data-action="refund-status">查看订单详情</button>
+      <button class="refund-btn refund-btn--ghost" data-action="open-order-detail">查看订单详情</button>
     </section>
   `;
 }
@@ -354,17 +357,10 @@ function renderOrderListHint() {
   return `<p class="refund-order-hint">如你想操作其他订单，可以查看飞猪订单列表进行选择。<button data-action="refund-status">查看订单列表</button></p>`;
 }
 
-function renderRefundShortcuts() {
-  const items = [
-    ["disruption", "航变联动"],
-    ["replan-confirm", "替代方案"],
-    ["free", "普通退票"],
+function refundShortcuts() {
+  return [
+    { label: "航变联动", action: "start-refund", data: { flow: "disruption" } },
+    { label: "替代方案", action: "start-refund", data: { flow: "replan-confirm" } },
+    { label: "普通退票", action: "start-refund", data: { flow: "free" } },
   ];
-  return `
-    <div class="refund-shortcuts" aria-label="退改快捷入口">
-      ${items
-        .map(([flow, label]) => `<button type="button" data-action="start-refund" data-flow="${flow}">${label}</button>`)
-        .join("")}
-    </div>
-  `;
 }

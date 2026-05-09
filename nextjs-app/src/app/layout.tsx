@@ -7,8 +7,8 @@ import "@/styles/components.css";
 import "@/styles/hkg-push-demo.css";
 
 export const metadata: Metadata = {
-  title: "JourneyKit - 行程规划 H5",
-  description: "JourneyKit 香港行程规划演示",
+  title: "AirouteDemo - 行程规划 H5",
+  description: "AirouteDemo 香港行程规划演示",
 };
 
 export default function RootLayout({

@@ -10,7 +10,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>JourneyKit · 香港机场主动推送 demo</title>
+    <title>AirouteDemo · 香港机场主动推送 demo</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="legacy/hongkong_journey/prototypes/main-demo-v5/styles/tokens.css?v=v5-push-5" />
     <link rel="stylesheet" href="legacy/hongkong_journey/prototypes/main-demo-v5/styles/base.css?v=v5-push-5" />
@@ -37,8 +37,13 @@
       .demo-stage-dock-item:hover { background: rgba(255, 255, 255, 0.1); transform: translateX(-2px); }
       .demo-stage-dock-panel::-webkit-scrollbar { width: 4px; }
       .demo-stage-dock-panel::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.12); border-radius: 4px; }
+      /* 数据源（国内/国际）分段开关 —— 永远固定在 panel 最顶部 */
+      .demo-stage-dock-region { display: flex; gap: 4px; padding: 4px; margin: 0 0 8px; background: rgba(255, 255, 255, 0.06); border-radius: 12px; }
+      .demo-stage-dock-region button { flex: 1; appearance: none; border: 0; background: transparent; color: rgba(255, 255, 255, 0.65); font-size: 12px; font-weight: 600; line-height: 1; padding: 8px 10px; border-radius: 9px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }
+      .demo-stage-dock-region button[aria-pressed="true"] { background: #ffffff; color: #0f131a; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); }
+      .demo-stage-dock-region button:not([aria-pressed="true"]):hover { color: #fff; background: rgba(255, 255, 255, 0.08); }
       @media (prefers-reduced-motion: reduce) {
-        .demo-stage-dock-fab, .demo-stage-dock-item { transition: none; }
+        .demo-stage-dock-fab, .demo-stage-dock-item, .demo-stage-dock-region button { transition: none; }
       }
     </style>
   </head>
@@ -61,6 +66,10 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#ffffff" d="M12 14.5a2.5 2.5 0 1 1 2.5-2.5a2.5 2.5 0 0 1-2.5 2.5m0-4a1.5 1.5 0 1 0 1.5 1.5a1.5 1.5 0 0 0-1.5-1.5"/><path fill="#ffffff" d="M21.435 11.505h-1.46a7.98 7.98 0 0 0-7.48-7.48v-1.46a.51.51 0 0 0-.5-.5a.515.515 0 0 0-.5.5v1.46a8 8 0 0 0-7.48 7.48h-1.45a.5.5 0 1 0 0 1h1.45a8.01 8.01 0 0 0 7.48 7.48v1.45a.51.51 0 0 0 .5.5a.5.5 0 0 0 .5-.5v-1.45a8 8 0 0 0 7.48-7.48h1.46a.5.5 0 0 0 0-1M12 19.005a7 7 0 1 1 7-7a7.02 7.02 0 0 1-7 7"/></svg>
       </button>
       <div class="demo-stage-dock-panel" id="demoStageDockPanel" role="menu" aria-label="快速滚动">
+        <div class="demo-stage-dock-region" role="group" aria-label="数据源">
+          <button type="button" data-demo-region="international" aria-pressed="true">国际</button>
+          <button type="button" data-demo-region="domestic" aria-pressed="false">国内</button>
+        </div>
         <div class="demo-stage-dock-group-label">首页</div>
         <a class="demo-stage-dock-item" role="menuitem" href="payment.html?stage=home" target="_top">
           <span>首页</span>
@@ -105,6 +114,7 @@
       (function () {
         var root = document.getElementById("demoStageDockRoot");
         var fab = document.getElementById("demoStageDockFab");
+        var panel = document.getElementById("demoStageDockPanel");
         if (!root || !fab) return;
         function setOpen(open) {
           root.classList.toggle("open", open);
@@ -119,6 +129,28 @@
         });
         root.addEventListener("click", function (e) {
           e.stopPropagation();
+        });
+
+        // 数据源（国内/国际）分段开关：与 src/legacy/.../data-source.js 共用 localStorage key
+        var REGION_KEY = "demo-region";
+        var VALID = { international: 1, domestic: 1 };
+        function readRegion() {
+          try {
+            var v = window.localStorage.getItem(REGION_KEY);
+            return VALID[v] ? v : "international";
+          } catch (e) { return "international"; }
+        }
+        var current = readRegion();
+        var regionBtns = panel ? panel.querySelectorAll(".demo-stage-dock-region button[data-demo-region]") : [];
+        regionBtns.forEach(function (btn) {
+          btn.setAttribute("aria-pressed", btn.getAttribute("data-demo-region") === current ? "true" : "false");
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            var next = this.getAttribute("data-demo-region");
+            if (!VALID[next] || next === readRegion()) return;
+            try { window.localStorage.setItem(REGION_KEY, next); } catch (err) {}
+            window.location.reload();
+          });
         });
       })();
     </script>

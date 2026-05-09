@@ -452,11 +452,6 @@ export const prepCards = [
 // 但 detail 全部国内化，避免改动 DeviceShell 路由层。
 export const myTrips = [
   {
-    id: "trip-disruption",
-    kind: "disruption",
-    short: { topLine: "航变提醒", title: "CA4194 已取消", sub: "可免费改签 / 退款" },
-  },
-  {
     id: "trip-notice",
     kind: "notice",
     short: { topLine: "行前", title: "高反预防", sub: "红景天 / 氧气瓶" },
@@ -602,7 +597,7 @@ export const myTrips = [
         tasks: [
           { id: "arrive",   order: 1, time: "22:10", route: "下机 → T2 L2 国内中转区", mode: "步行", duration: "5m", reason: "已抵达中转区域", mapTarget: "overview" },
           { id: "hotel",    order: 2, time: "22:30", route: "T2 → 天府机场华品酒店", mode: "步行 · 8m", duration: "8m", reason: "机场内步行直达，含叫早", family: true, mapTarget: "checkin" },
-          { id: "rest",     order: 3, time: "23:00", route: "酒店休息 6h", mode: "过夜", duration: "6h", reason: "05:30 含早叫醒，05:50 退房", family: true, mapTarget: "security" },
+          { id: "rest",     order: 3, time: "23:00", route: "酒店休息 6h（含叫早）", mode: "过夜", duration: "6h", reason: "05:30 含早叫醒，05:50 退房", family: true, mapTarget: "checkin" },
           { id: "boarding", order: 4, time: "06:20", route: "退房 → 国内安检 → 登机口（C 区）", mode: "步行", duration: "30m", reason: "登机口公布后将自动更新路线", mapTarget: "lounge" },
         ],
         services: [

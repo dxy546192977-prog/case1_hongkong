@@ -1,0 +1,33 @@
+{
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/public/payment.html",
+      "destination": "/payment"
+    },
+    {
+      "source": "/public/refund.html",
+      "destination": "/refund"
+    },
+    {
+      "source": "/public/flipbook.html",
+      "destination": "/flipbook"
+    },
+    {
+      "source": "/payment.html",
+      "destination": "/payment"
+    },
+    {
+      "source": "/refund.html",
+      "destination": "/refund"
+    },
+    {
+      "source": "/flipbook.html",
+      "destination": "/flipbook"
+    },
+    {
+      "source": "/public/:path*",
+      "destination": "/:path*"
+    }
+  ]
+}

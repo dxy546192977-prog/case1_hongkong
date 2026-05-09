@@ -83,10 +83,6 @@ export function renderRefund(state) {
       ${userBubble}
       ${factLead}
       <div class="refund-assistant">
-        <div class="refund-assistant__meta">
-          <span class="refund-assistant__avatar">飞</span>
-          <span>飞猪旅行助手</span>
-        </div>
         <article class="refund-panel">
           ${content.body}
         </article>
@@ -214,7 +210,7 @@ function renderImpactList(disruption) {
       <h3>6 段行程影响明细</h3>
       ${disruption.impactList.map((item) => `
         <article class="refund-impact-row" data-impacted="${item.impacted}">
-          <span class="refund-impact-row__idx">${item.id}</span>
+          <span class="refund-impact-row__icon" aria-hidden="true">${renderImpactIcon(item.mode)}</span>
           <div>
             <strong>${item.mode}</strong>
             <small>${item.time ? `${item.time} · ` : ""}${item.route}</small>
@@ -225,6 +221,19 @@ function renderImpactList(disruption) {
       `).join("")}
     </section>
   `;
+}
+
+function renderImpactIcon(mode = "") {
+  if (/酒店|入住|住宿/.test(mode)) return ICON.hotel(17);
+  if (/飞机|航班/.test(mode)) return ICON.plane(17);
+  if (/大巴|巴士|机场快线|接驳/.test(mode)) return ICON.bus(17);
+  if (/高铁|火车|铁路/.test(mode)) return ICON.train(17);
+  if (/打车|接机|包车|自驾|出租|网约车/.test(mode)) return ICON.car(17);
+  if (/步行/.test(mode)) return ICON.walk(17);
+  if (/托运|行李|入境|取行李/.test(mode)) return ICON.luggage(17);
+  if (/值机|安检|通关/.test(mode)) return ICON.ticket(17);
+  if (/轮渡|船/.test(mode)) return ICON.ship(17);
+  return ICON.navigate(17);
 }
 
 function renderReplanCompare(disruption) {

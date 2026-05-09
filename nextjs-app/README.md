@@ -1,4 +1,4 @@
-# JourneyKit 行程规划 H5 - Next.js 版本
+# AirouteDemo 行程规划 H5 - Next.js 版本
 
 当前目录是从原静态 H5 Demo 整理出的 Next.js App Router 版本。原型交互逻辑保留在 `src/legacy/main-demo-v5`，Next 页面通过一个客户端外壳组件统一承载，后续可以逐步把 legacy 视图拆成 React 组件。
 
